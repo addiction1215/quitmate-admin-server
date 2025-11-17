@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url:
+    username:
+    password:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+oauth:
+  kakao:
+    api:
+      url: https://kapi.kakao.com
+      name: kakaoApi
+  google:
+    api:
+      url: https://www.googleapis.com
+      name: googleApi

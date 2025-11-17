@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:~/quitmate;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          exception-handling: ignore
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: quitmate1215@gmail.com
+    password: test
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
+jwt:
+  secret-key: 4a0pPV9g4/6OvKKzV1MpVdIchBeTfcjd/TRKbuWUgpNY3jyh6YA/aBnpe4kPsAY5WJoBBzOG358zqS5/E0TSag==
+
+oracle:
+  cloud:
+    region: ap-chuncheon-1
+  name-space-name: testnamespace
+  user:
+    bucket-name: testbucket
+  challenge:
+    bucket-name: testchallengebucket
