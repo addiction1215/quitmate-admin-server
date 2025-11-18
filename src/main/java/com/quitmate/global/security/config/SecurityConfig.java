@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -51,20 +52,30 @@ public class SecurityConfig {
 
 			.headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
 
+			// Session 설정
+			.sessionManagement(session -> session
+				.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+				.maximumSessions(1) // 동시 세션 1개로 제한
+				.maxSessionsPreventsLogin(false) // 새로운 로그인 시 기존 세션 만료
+			)
+
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(getPublicMatchers()).permitAll()
 				.anyRequest().hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
 			)
 
 			.logout((logout) -> logout
-				.logoutSuccessUrl("/"));
+				.logoutUrl("/api/v1/auth/logout")
+				.logoutSuccessUrl("/")
+				.invalidateHttpSession(true)
+				.deleteCookies("JSESSIONID")
+				.permitAll());
 
 		return http.build();
 	}
 
 	private RequestMatcher[] getPublicMatchers() {
 		return new RequestMatcher[] {
-			new AntPathRequestMatcher("/api/v1/jwt/**"),
 			new AntPathRequestMatcher("/api/v1/auth/**"),
 			new AntPathRequestMatcher("/api/v1/user/**"),
 			new AntPathRequestMatcher("/docs/**"),

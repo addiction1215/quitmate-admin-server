@@ -8,14 +8,4 @@ public interface UserReadService {
     User findByEmail(String email);
 
     User findById(Long id);
-
-    UserStartDateResponse findStartDate();
-
-    UserPurposeResponse findPurpose();
-
-    UserProfileResponse findProfile();
-
-    UserInfoResponse findUserInfo();
-
-    UserSimpleProfileResponse findSimpleProfile();
 }
