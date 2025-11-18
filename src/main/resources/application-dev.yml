@@ -50,8 +50,10 @@ spring:
           p6spy:
             enable-logging: true
 
-jwt:
-  secret-key: ${JWT_SECRET_KEY}
+# Session 설정
+  session:
+    timeout: 3600  # 1시간 (초 단위)
+    store-type: none  # 기본 메모리 저장소 사용
 
 aes:
   key-value: ${AES_KEY}
