@@ -71,11 +71,6 @@ dependencies {
     //openfeign
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
 
-    // jwt
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
     //MongoDB
     implementation ('org.springframework.boot:spring-boot-starter-data-mongodb')
@@ -170,7 +165,6 @@ tasks.processResources {
                 MYSQL_DB_ENDPOINT: System.getenv('MYSQL_DB_ENDPOINT'),
                 MYSQL_DB_USERNAME: System.getenv('MYSQL_DB_USERNAME'),
                 MYSQL_DB_PASSWORD: System.getenv('MYSQL_DB_PASSWORD'),
-                JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY'),
                 AES_KEY: System.getenv('AES_KEY'),
                 NAMESPACE_NAME: System.getenv('NAMESPACE_NAME'),
                 USER_BUCKET_NAME_DEV: System.getenv('USER_BUCKET_NAME_DEV'),
