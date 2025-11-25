@@ -25,12 +25,12 @@ public class NoticeUpdateResponse {
         this.updatedDate = updatedDate;
     }
 
-    public static NoticeUpdateResponse of(Notice notice) {
+    public static NoticeUpdateResponse createResponse(Notice notice) {
         return NoticeUpdateResponse.builder()
                 .id(notice.getId())
                 .type(notice.getType())
                 .content(notice.getContent())
-                .updatedDate(notice.getModifiedDate())
+                .updatedDate(notice.getUpdatedDate())
                 .build();
     }
 }

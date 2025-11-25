@@ -18,35 +18,37 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NoticeRepositoryImpl implements NoticeRepository {
 
-    private final NoticeRepository noticeRepository;
+    private final NoticeJpaRepository noticeJpaRepository;
+
+    private final NoticeQueryRepository noticeQueryRepository;
 
     @Override
     public List<Notice> findAll() {
-        return noticeRepository.findAll();
+        return noticeJpaRepository.findAll();
     }
 
     @Override
     public Notice save(Notice notice) {
-        return noticeRepository.save(notice);
+        return noticeJpaRepository.save(notice);
     }
 
     @Override
     public Optional<Notice> findById(Long id) {
-        return noticeRepository.findById(id);
+        return noticeJpaRepository.findById(id);
     }
 
     @Override
     public void deleteAllInBatch() {
-        noticeRepository.deleteAllInBatch();
+        noticeJpaRepository.deleteAllInBatch();
     }
 
     @Override
     public void saveAll(List<Notice> notices) {
-        noticeRepository.saveAll(notices);
+        noticeJpaRepository.saveAll(notices);
     }
 
     @Override
     public Page<NoticeDto> findNoticeList(NoticeListServiceRequest request, Pageable pageable) {
-        return noticeRepository.findNoticeList(request, pageable);
+        return noticeQueryRepository.findNoticeList(request, pageable);
     }
 }

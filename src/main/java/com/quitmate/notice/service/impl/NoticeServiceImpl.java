@@ -23,7 +23,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public NoticeCreateResponse createNotice(NoticeCreateServiceRequest request) {
-        return NoticeCreateResponse.of(noticeRepository.save(request.toEntity()));
+        return NoticeCreateResponse.createResponse(noticeRepository.save(request.toEntity()));
     }
 
     @Override
@@ -33,6 +33,6 @@ public class NoticeServiceImpl implements NoticeService {
 
         notice.update(request.getType(), request.getContent());
 
-        return NoticeUpdateResponse.of(notice);
+        return NoticeUpdateResponse.createResponse(notice);
     }
 }
