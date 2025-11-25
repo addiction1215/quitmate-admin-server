@@ -24,7 +24,7 @@ public class RewardHistoryReadServiceImpl implements RewardHistoryReadService {
         Pageable pageable = request.toPageable();
         Page<RewardHistoryDto> rewardHistoryDtoPage = rewardHistoryRepository.findRewardHistoryList(request, pageable);
         
-        Page<RewardHistoryListResponse> responsePage = rewardHistoryDtoPage.map(RewardHistoryListResponse::of);
+        Page<RewardHistoryListResponse> responsePage = rewardHistoryDtoPage.map(RewardHistoryListResponse::createResponse);
         
         return PageCustom.of(responsePage);
     }
