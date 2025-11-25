@@ -47,7 +47,7 @@ public class LoginServiceImpl implements LoginService {
         
         log.info("로그인 성공 - 사용자: {}, 세션 ID: {}", user.getEmail(), httpSession.getId());
 
-        return LoginResponse.of(user);
+        return LoginResponse.createResponse(user);
     }
 
 }

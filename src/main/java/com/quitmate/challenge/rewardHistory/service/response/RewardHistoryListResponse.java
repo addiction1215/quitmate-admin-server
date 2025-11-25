@@ -29,7 +29,7 @@ public class RewardHistoryListResponse {
         this.remainingPoint = remainingPoint;
     }
 
-    public static RewardHistoryListResponse of(RewardHistoryDto dto) {
+    public static RewardHistoryListResponse createResponse(RewardHistoryDto dto) {
         return RewardHistoryListResponse.builder()
                 .id(dto.getId())
                 .createdDate(dto.getCreatedDate())

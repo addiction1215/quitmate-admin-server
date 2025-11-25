@@ -25,7 +25,7 @@ public class NoticeListResponse {
         this.createdDate = createdDate;
     }
 
-    public static NoticeListResponse of(NoticeDto dto) {
+    public static NoticeListResponse createResponse(NoticeDto dto) {
         return NoticeListResponse.builder()
                 .id(dto.getId())
                 .type(dto.getType())

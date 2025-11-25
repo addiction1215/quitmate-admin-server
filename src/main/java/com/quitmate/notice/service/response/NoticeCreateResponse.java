@@ -25,7 +25,7 @@ public class NoticeCreateResponse {
         this.createdDate = createdDate;
     }
 
-    public static NoticeCreateResponse of(Notice notice) {
+    public static NoticeCreateResponse createResponse(Notice notice) {
         return NoticeCreateResponse.builder()
                 .id(notice.getId())
                 .type(notice.getType())

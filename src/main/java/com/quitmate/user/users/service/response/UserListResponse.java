@@ -30,7 +30,7 @@ public class UserListResponse {
         this.sex = sex;
     }
 
-    public static UserListResponse of(UserDto dto) {
+    public static UserListResponse createResponse(UserDto dto) {
         return UserListResponse.builder()
                 .id(dto.getId())
                 .createdDate(dto.getCreatedDate())

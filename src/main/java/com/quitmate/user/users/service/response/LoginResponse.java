@@ -16,7 +16,7 @@ public class LoginResponse {
         this.settingStatus = settingStatus;
     }
 
-    public static LoginResponse of(User user) {
+    public static LoginResponse createResponse(User user) {
         return LoginResponse.builder()
                 .email(user.getEmail())
                 .settingStatus(user.getSettingStatus())
