@@ -32,7 +32,6 @@ public class NoticeServiceImpl implements NoticeService {
                 .orElseThrow(() -> new QuitmateException(UNKNOWN_NOTICE));
 
         notice.update(request.getType(), request.getContent());
-
         return NoticeUpdateResponse.createResponse(notice);
     }
 }

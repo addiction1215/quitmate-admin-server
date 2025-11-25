@@ -18,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NoticeRepositoryImpl implements NoticeRepository {
 
+
     private final NoticeJpaRepository noticeJpaRepository;
 
     private final NoticeQueryRepository noticeQueryRepository;
@@ -29,6 +30,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public Notice save(Notice notice) {
+
         return noticeJpaRepository.save(notice);
     }
 
