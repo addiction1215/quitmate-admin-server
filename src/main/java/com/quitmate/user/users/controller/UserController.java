@@ -17,7 +17,7 @@ public class UserController {
     private final UserReadService userReadService;
 
     @GetMapping
-    public ApiResponse<PageCustom<UserListResponse>> getUserList(@Valid @ModelAttribute UserListRequest request) {
+    public ApiResponse<PageCustom<UserListResponse>> getUserList(@ModelAttribute UserListRequest request) {
         return ApiResponse.ok(userReadService.getUserList(request.toServiceRequest()));
     }
 }

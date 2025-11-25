@@ -23,7 +23,6 @@ public class UserReadServiceImpl implements UserReadService {
     private static final String UNKNOWN_USER = "해당 회원은 존재하지 않습니다.";
 
     private final UserRepository userRepository;
-    private final UserQueryRepository userQueryRepository;
 
     @Override
     public User findByEmail(String email) {
@@ -40,7 +39,7 @@ public class UserReadServiceImpl implements UserReadService {
 
     @Override
     public PageCustom<UserListResponse> getUserList(UserListServiceRequest request) {
-        return PageCustom.of(userQueryRepository.findUserList(request, request.toPageable()).map(UserListResponse::of));
+        return PageCustom.of(userRepository.findUserList(request, request.toPageable()).map(UserListResponse::of));
     }
 
 }
