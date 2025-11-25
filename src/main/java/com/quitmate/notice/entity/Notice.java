@@ -32,4 +32,9 @@ public class Notice extends BaseTimeEntity {
         this.content = content;
         this.useYn = "Y";
     }
+
+    public void update(NoticeType type, String content) {
+        this.type = type;
+        this.content = content;
+    }
 }
