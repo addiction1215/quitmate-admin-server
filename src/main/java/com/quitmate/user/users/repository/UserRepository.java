@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.quitmate.user.users.entity.User;
+import com.quitmate.user.users.repository.response.UserDto;
+import com.quitmate.user.users.service.request.UserListServiceRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserRepository {
     List<User> findAll();
@@ -21,4 +25,6 @@ public interface UserRepository {
 	void saveAll(List<User> users);
 
     boolean existsByEmail(String email);
+
+	Page<UserDto> findUserList(UserListServiceRequest request, Pageable pageable);
 }
