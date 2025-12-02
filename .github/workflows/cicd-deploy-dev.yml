@@ -37,11 +37,10 @@ jobs:
       - name: 🔨 Gradle 빌드
         run: ./gradlew build --parallel
 
-      - name: 📦 jar, appspec, 배포 스크립트 복사
+      - name: 📦 jar, 배포 스크립트 복사
         run: |
           mkdir -p before-deploy-admin
           cp ./build/libs/*.jar ./before-deploy-admin/
-          cp ./appspec.yml ./before-deploy-admin/
           cp -r ./scripts/dev/ ./before-deploy-admin/scripts/
 
       - name: 🗜️ 배포 패키지 생성

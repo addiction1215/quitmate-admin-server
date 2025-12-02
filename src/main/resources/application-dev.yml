@@ -1,3 +1,7 @@
+server:
+  servlet:
+    context-path: /admin
+
 spring:
   datasource:
     url: ${MYSQL_DB_ENDPOINT}
