@@ -15,14 +15,12 @@ public class NoticeCreateResponse {
     private Long id;
     private NoticeType type;
     private String content;
-    private LocalDateTime createdDate;
 
     @Builder
-    private NoticeCreateResponse(Long id, NoticeType type, String content, LocalDateTime createdDate) {
+    private NoticeCreateResponse(Long id, NoticeType type, String content) {
         this.id = id;
         this.type = type;
         this.content = content;
-        this.createdDate = createdDate;
     }
 
     public static NoticeCreateResponse createResponse(Notice notice) {
@@ -30,7 +28,6 @@ public class NoticeCreateResponse {
                 .id(notice.getId())
                 .type(notice.getType())
                 .content(notice.getContent())
-                .createdDate(notice.getCreatedDate())
                 .build();
     }
 }

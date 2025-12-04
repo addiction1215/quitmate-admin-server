@@ -12,6 +12,7 @@ import com.quitmate.notice.service.response.NoticeListResponse;
 import com.quitmate.notice.service.response.NoticeUpdateResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,6 +30,7 @@ public class NoticeController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<NoticeCreateResponse> createNotice(
             @Valid @RequestBody NoticeCreateRequest request) {
         return ApiResponse.created(noticeService.createNotice(request.toServiceRequest()));
