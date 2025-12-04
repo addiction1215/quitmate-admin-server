@@ -1,0 +1,11 @@
+[[reward-history-list]]
+=== 리워드 내역 목록 조회
+
+==== HTTP Request
+
+include::{snippets}/reward-history-list/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reward-history-list/http-response.adoc[]
+include::{snippets}/reward-history-list/response-fields.adoc[]
