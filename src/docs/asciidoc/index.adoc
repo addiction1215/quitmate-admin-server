@@ -38,8 +38,3 @@ include::api/inquiry/inquiry.adoc[]
 == Reward History API
 
 include::api/rewardHistory/rewardHistory.adoc[]
-
-[[Health-Check-API]]
-== Health Check API
-
-include::api/healthCheck/healthCheck.adoc[]

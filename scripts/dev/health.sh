@@ -14,7 +14,7 @@ TARGET_PORT=9080
 #fi
 
 
-echo "> Start health check of WAS at 'http://127.0.0.1:${TARGET_PORT}' ..."
+echo "> Start health check of WAS at 'http://127.0.0.1:${TARGET_PORT}'/admin/health-check ..."
 
 for RETRY_COUNT in {1..20}
 do
