@@ -8,18 +8,15 @@ import lombok.Getter;
 @Getter
 public class LoginResponse {
     private final String email;
-    private final SettingStatus settingStatus;
 
     @Builder
-    private LoginResponse(String email, SettingStatus settingStatus) {
+    private LoginResponse(String email) {
         this.email = email;
-        this.settingStatus = settingStatus;
     }
 
     public static LoginResponse createResponse(User user) {
         return LoginResponse.builder()
                 .email(user.getEmail())
-                .settingStatus(user.getSettingStatus())
                 .build();
     }
 }

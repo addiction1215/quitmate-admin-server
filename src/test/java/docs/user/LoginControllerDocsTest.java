@@ -2,7 +2,6 @@ package docs.user;
 
 import com.quitmate.user.users.controller.LoginController;
 import com.quitmate.user.users.controller.request.LoginRequest;
-import com.quitmate.user.users.entity.enums.SettingStatus;
 import com.quitmate.user.users.service.LoginService;
 import com.quitmate.user.users.service.response.LoginResponse;
 import docs.RestDocsSupport;
@@ -10,8 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-
-import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -39,13 +36,10 @@ public class LoginControllerDocsTest extends RestDocsSupport {
         LoginRequest request = LoginRequest.builder()
                 .email("admin@example.com")
                 .password("password123")
-                .deviceId("device-123")
-                .pushKey("push-key-123")
                 .build();
 
         LoginResponse response = LoginResponse.builder()
                 .email("admin@example.com")
-                .settingStatus(SettingStatus.COMPLETE)
                 .build();
 
         given(loginService.normalLogin(any()))
@@ -66,11 +60,7 @@ public class LoginControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("email").type(JsonFieldType.STRING)
                                         .description("이메일"),
                                 fieldWithPath("password").type(JsonFieldType.STRING)
-                                        .description("비밀번호"),
-                                fieldWithPath("deviceId").type(JsonFieldType.STRING)
-                                        .description("디바이스 ID"),
-                                fieldWithPath("pushKey").type(JsonFieldType.STRING)
-                                        .description("푸시 키").optional()
+                                        .description("비밀번호")
                         ),
                         responseFields(
                                 fieldWithPath("statusCode").type(JsonFieldType.NUMBER)
@@ -82,9 +72,7 @@ public class LoginControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data").type(JsonFieldType.OBJECT)
                                         .description("응답 데이터"),
                                 fieldWithPath("data.email").type(JsonFieldType.STRING)
-                                        .description("이메일"),
-                                fieldWithPath("data.settingStatus").type(JsonFieldType.STRING)
-                                        .description("설정 상태: " + Arrays.toString(SettingStatus.values()))
+                                        .description("이메일")
                         )
                 ));
     }

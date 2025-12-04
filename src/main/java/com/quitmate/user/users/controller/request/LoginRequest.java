@@ -15,24 +15,17 @@ public class LoginRequest {
 	private String email;
 	@NotNull(message = "비밀번호는 필수입니다.")
 	private String password;
-	@NotNull(message = "디바이스ID는 필수입니다.")
-	private String deviceId;
-	private String pushKey;
 
 	@Builder
-	private LoginRequest(String email, String password, String deviceId, String pushKey) {
+	private LoginRequest(String email, String password) {
 		this.email = email;
 		this.password = password;
-		this.deviceId = deviceId;
-		this.pushKey = pushKey;
 	}
 
 	public LoginServiceRequest toServiceRequest() {
 		return LoginServiceRequest.builder()
 			.email(email)
 			.password(password)
-			.deviceId(deviceId)
-			.pushKey(pushKey)
 			.build();
 	}
 }

@@ -23,8 +23,6 @@ public class LoginControllerTest extends ControllerTestSupport {
 		LoginRequest request = LoginRequest.builder()
 			.email("tkdrl8908@naver.com")
 			.password("1234")
-			.deviceId("testdeviceId")
-			.pushKey("testPushToken")
 			.build();
 
 		// when // then
@@ -48,8 +46,6 @@ public class LoginControllerTest extends ControllerTestSupport {
 		// given
 		LoginRequest request = LoginRequest.builder()
 			.password("1234")
-			.deviceId("testdeviceId")
-			.pushKey("testPushToken")
 			.build();
 
 		// when // then
@@ -73,8 +69,6 @@ public class LoginControllerTest extends ControllerTestSupport {
 		// given
 		LoginRequest request = LoginRequest.builder()
 			.email("tkdrl8908@naver.com")
-			.deviceId("testdeviceId")
-			.pushKey("testPushToken")
 			.build();
 
 		// when // then
