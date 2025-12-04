@@ -1,0 +1,45 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= Quitmate Admin Server REST API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Login-API]]
+== Login API
+
+include::api/login/login.adoc[]
+
+[[User-API]]
+== User API
+
+include::api/user/user.adoc[]
+
+[[Challenge-API]]
+== Challenge API
+
+include::api/challenge/challenge.adoc[]
+
+[[Notice-API]]
+== Notice API
+
+include::api/notice/notice.adoc[]
+
+[[Inquiry-API]]
+== Inquiry API
+
+include::api/inquiry/inquiry.adoc[]
+
+[[Reward-History-API]]
+== Reward History API
+
+include::api/rewardHistory/rewardHistory.adoc[]
+
+[[Health-Check-API]]
+== Health Check API
+
+include::api/healthCheck/healthCheck.adoc[]
