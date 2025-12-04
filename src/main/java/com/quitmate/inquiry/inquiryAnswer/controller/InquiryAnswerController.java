@@ -6,10 +6,8 @@ import com.quitmate.inquiry.inquiryAnswer.service.InquiryAnswerService;
 import com.quitmate.inquiry.inquiryAnswer.service.response.InquiryAnswerCreateResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +20,7 @@ public class InquiryAnswerController {
      * 답변 등록 API
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<InquiryAnswerCreateResponse> createInquiryAnswer(
             @Valid @RequestBody InquiryAnswerCreateRequest request) {
         return ApiResponse.created(inquiryAnswerService.createInquiryAnswer(request.toServiceRequest()));

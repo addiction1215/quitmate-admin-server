@@ -1,0 +1,49 @@
+[[notice-list]]
+=== 공지사항 목록 조회
+
+==== HTTP Request
+
+include::{snippets}/notice-list/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/notice-list/http-response.adoc[]
+include::{snippets}/notice-list/response-fields.adoc[]
+
+[[notice-create]]
+=== 공지사항 생성
+
+==== HTTP Request
+
+include::{snippets}/notice-create/http-request.adoc[]
+include::{snippets}/notice-create/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/notice-create/http-response.adoc[]
+include::{snippets}/notice-create/response-fields.adoc[]
+
+[[notice-update]]
+=== 공지사항 수정
+
+==== HTTP Request
+
+include::{snippets}/notice-update/http-request.adoc[]
+include::{snippets}/notice-update/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/notice-update/http-response.adoc[]
+include::{snippets}/notice-update/response-fields.adoc[]
+
+[[notice-delete]]
+=== 공지사항 삭제
+
+==== HTTP Request
+
+include::{snippets}/notice-delete/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/notice-delete/http-response.adoc[]
+include::{snippets}/notice-delete/response-fields.adoc[]

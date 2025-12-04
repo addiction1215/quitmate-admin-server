@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
 @NoArgsConstructor
 public class NoticeUpdateResponse {
@@ -15,14 +13,12 @@ public class NoticeUpdateResponse {
     private Long id;
     private NoticeType type;
     private String content;
-    private LocalDateTime updatedDate;
 
     @Builder
-    private NoticeUpdateResponse(Long id, NoticeType type, String content, LocalDateTime updatedDate) {
+    private NoticeUpdateResponse(Long id, NoticeType type, String content) {
         this.id = id;
         this.type = type;
         this.content = content;
-        this.updatedDate = updatedDate;
     }
 
     public static NoticeUpdateResponse createResponse(Notice notice) {
@@ -30,7 +26,6 @@ public class NoticeUpdateResponse {
                 .id(notice.getId())
                 .type(notice.getType())
                 .content(notice.getContent())
-                .updatedDate(notice.getUpdatedDate())
                 .build();
     }
 }

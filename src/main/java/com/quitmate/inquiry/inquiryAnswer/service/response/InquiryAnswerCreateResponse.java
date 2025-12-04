@@ -14,14 +14,12 @@ public class InquiryAnswerCreateResponse {
     private Long answerId;
     private Long inquiryQuestionId;
     private String content;
-    private LocalDateTime createdDate;
 
     @Builder
-    private InquiryAnswerCreateResponse(Long answerId, Long inquiryQuestionId, String content, LocalDateTime createdDate) {
+    private InquiryAnswerCreateResponse(Long answerId, Long inquiryQuestionId, String content) {
         this.answerId = answerId;
         this.inquiryQuestionId = inquiryQuestionId;
         this.content = content;
-        this.createdDate = createdDate;
     }
 
     public static InquiryAnswerCreateResponse createResponse(InquiryAnswer inquiryAnswer) {
@@ -29,7 +27,6 @@ public class InquiryAnswerCreateResponse {
                 .answerId(inquiryAnswer.getId())
                 .inquiryQuestionId(inquiryAnswer.getInquiryQuestion().getId())
                 .content(inquiryAnswer.getContent())
-                .createdDate(inquiryAnswer.getCreatedDate())
                 .build();
     }
 }
