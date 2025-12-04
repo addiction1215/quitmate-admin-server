@@ -77,6 +77,9 @@ public class InquiryQuestionControllerDocsTest extends RestDocsSupport {
                         get("/api/v1/inquiry-questions")
                                 .param("page", "1")
                                 .param("size", "10")
+                                .param("sortBy", "CREATED_DATE")
+                                .param("category", "TITLE")
+                                .param("keyword", "문의")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -85,7 +88,10 @@ public class InquiryQuestionControllerDocsTest extends RestDocsSupport {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호 (기본값: 1)").optional(),
-                                parameterWithName("size").description("페이지 크기 (기본값: 10)").optional()
+                                parameterWithName("size").description("페이지 크기 (기본값: 10)").optional(),
+                                parameterWithName("sortBy").description("정렬 기준 (CREATED_DATE, WRITER_NAME, STATUS) (선택)").optional(),
+                                parameterWithName("category").description("검색 카테고리 (CREATED_DATE, WRITER_NAME, TITLE, STATUS) (선택)").optional(),
+                                parameterWithName("keyword").description("검색어 (선택)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("statusCode").type(JsonFieldType.NUMBER)

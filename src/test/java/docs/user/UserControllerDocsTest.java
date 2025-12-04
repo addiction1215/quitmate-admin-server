@@ -93,10 +93,10 @@ public class UserControllerDocsTest extends RestDocsSupport {
                                 parameterWithName("page").description("페이지 번호 (기본값: 1)").optional(),
                                 parameterWithName("size").description("페이지 크기 (기본값: 10)").optional(),
                                 parameterWithName("sortBy").description("정렬 기준: " + 
-                                        Arrays.toString(UserSortType.values())).optional(),
+                                        Arrays.toString(UserSortType.values()) + " (선택)").optional(),
                                 parameterWithName("category").description("검색 카테고리: " + 
-                                        Arrays.toString(UserSearchCategory.values())).optional(),
-                                parameterWithName("keyword").description("검색어").optional()
+                                        Arrays.toString(UserSearchCategory.values()) + " (선택)").optional(),
+                                parameterWithName("keyword").description("검색어 (선택)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("statusCode").type(JsonFieldType.NUMBER)

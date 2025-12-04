@@ -5,15 +5,13 @@ import com.quitmate.inquiry.inquryQuestion.enums.InquirySearchCategory;
 import com.quitmate.inquiry.inquryQuestion.enums.InquirySortType;
 import com.quitmate.inquiry.inquryQuestion.service.request.InquiryQuestionListServiceRequest;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 public class InquiryQuestionListRequest extends PageInfoRequest {
 
     private final InquirySortType sortBy;
-    private  final InquirySearchCategory category;
-    private  final String keyword;
+    private final InquirySearchCategory category;
+    private final String keyword;
 
     public InquiryQuestionListRequest(InquirySearchCategory category, String keyword, InquirySortType sortBy) {
         this.category = category;
