@@ -1,0 +1,36 @@
+[[inquiry-list]]
+=== 문의사항 목록 조회
+
+==== HTTP Request
+
+include::{snippets}/inquiry-list/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/inquiry-list/http-response.adoc[]
+include::{snippets}/inquiry-list/response-fields.adoc[]
+
+[[inquiry-detail]]
+=== 문의사항 상세 조회
+
+==== HTTP Request
+
+include::{snippets}/inquiry-detail/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/inquiry-detail/http-response.adoc[]
+include::{snippets}/inquiry-detail/response-fields.adoc[]
+
+[[inquiry-answer]]
+=== 문의사항 답변
+
+==== HTTP Request
+
+include::{snippets}/inquiry-answer/http-request.adoc[]
+include::{snippets}/inquiry-answer/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/inquiry-answer/http-response.adoc[]
+include::{snippets}/inquiry-answer/response-fields.adoc[]
