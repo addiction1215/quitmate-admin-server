@@ -4,6 +4,7 @@
 ==== HTTP Request
 
 include::{snippets}/reward-history-list/http-request.adoc[]
+include::{snippets}/reward-history-list/query-parameters.adoc[]
 
 ==== HTTP Response
 
