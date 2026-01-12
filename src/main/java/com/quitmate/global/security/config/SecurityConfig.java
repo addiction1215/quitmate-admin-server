@@ -37,7 +37,8 @@ public class SecurityConfig {
             config.setAllowedOrigins(Arrays.asList(
                     "https://www.quitmate.co.kr",
                     "https://quitmate.co.kr",
-                    "http://localhost:8081"
+                    "http://localhost:8081",
+                    "http://localhost:5173"
             ));
 			config.setAllowCredentials(true);
 			return config;
