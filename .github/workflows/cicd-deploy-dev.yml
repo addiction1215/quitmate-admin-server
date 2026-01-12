@@ -11,6 +11,7 @@ jobs:
       MYSQL_DB_ENDPOINT: ${{ secrets.MYSQL_DB_ENDPOINT }}
       MYSQL_DB_USERNAME: ${{ secrets.MYSQL_DB_USERNAME }}
       MYSQL_DB_PASSWORD: ${{ secrets.MYSQL_DB_PASSWORD }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
