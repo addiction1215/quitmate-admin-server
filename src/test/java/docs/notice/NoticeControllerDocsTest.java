@@ -49,14 +49,14 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
         // given
         NoticeListResponse notice1 = NoticeListResponse.builder()
                 .id(1L)
-                .type(NoticeType.FEATURE_UPDATE)
+                .type(NoticeType.FEATURE_UPDATE.getDescription())
                 .content("첫 번째 공지사항입니다.")
                 .createdDate(LocalDateTime.of(2024, 1, 1, 10, 0))
                 .build();
 
         NoticeListResponse notice2 = NoticeListResponse.builder()
                 .id(2L)
-                .type(NoticeType.EVENT)
+                .type(NoticeType.EVENT.getDescription())
                 .content("이벤트 공지사항입니다.")
                 .createdDate(LocalDateTime.of(2024, 1, 2, 10, 0))
                 .build();

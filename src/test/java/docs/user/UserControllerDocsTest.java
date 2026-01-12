@@ -49,7 +49,7 @@ public class UserControllerDocsTest extends RestDocsSupport {
                 .email("user1@example.com")
                 .nickName("사용자1")
                 .birthDay("19900101")
-                .sex(Sex.MALE)
+                .sex(Sex.MALE.getDescription())
                 .build();
 
         UserListResponse user2 = UserListResponse.builder()
@@ -58,7 +58,7 @@ public class UserControllerDocsTest extends RestDocsSupport {
                 .email("user2@example.com")
                 .nickName("사용자2")
                 .birthDay("19910202")
-                .sex(Sex.FEMALE)
+                .sex(Sex.FEMALE.getDescription())
                 .build();
 
         PageableCustom pageableCustom = PageableCustom.builder()

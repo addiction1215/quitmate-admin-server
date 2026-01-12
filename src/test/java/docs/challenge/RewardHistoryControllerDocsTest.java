@@ -45,7 +45,7 @@ public class RewardHistoryControllerDocsTest extends RestDocsSupport {
                 .id(1L)
                 .createdDate(LocalDateTime.of(2024, 1, 1, 10, 0))
                 .userName("사용자1")
-                .type(RewardType.ACQUIRE)
+                .type(RewardType.ACQUIRE.getDescription())
                 .point(100)
                 .remainingPoint(1000)
                 .build();
@@ -54,7 +54,7 @@ public class RewardHistoryControllerDocsTest extends RestDocsSupport {
                 .id(2L)
                 .createdDate(LocalDateTime.of(2024, 1, 2, 10, 0))
                 .userName("사용자2")
-                .type(RewardType.USED)
+                .type(RewardType.USED.getDescription())
                 .point(-50)
                 .remainingPoint(950)
                 .build();
