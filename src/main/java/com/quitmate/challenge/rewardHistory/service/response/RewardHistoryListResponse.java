@@ -14,13 +14,13 @@ public class RewardHistoryListResponse {
     private final Long id;                        // 내역 ID
     private final LocalDateTime createdDate;      // 발생일자
     private final String userName;                // 유저명
-    private final RewardType type;                // 유형 (사용/획득)
+    private final String type;                // 유형 (사용/획득)
     private final Integer point;                  // 포인트 증감량
     private final Integer remainingPoint;         // 남은 포인트
 
     @Builder
     private RewardHistoryListResponse(Long id, LocalDateTime createdDate, String userName,
-                                      RewardType type, Integer point, Integer remainingPoint) {
+                                      String type, Integer point, Integer remainingPoint) {
         this.id = id;
         this.createdDate = createdDate;
         this.userName = userName;
@@ -34,7 +34,7 @@ public class RewardHistoryListResponse {
                 .id(dto.getId())
                 .createdDate(dto.getCreatedDate())
                 .userName(dto.getUserName())
-                .type(dto.getType())
+                .type(dto.getType().getDescription())
                 .point(dto.getPoint())
                 .remainingPoint(dto.getRemainingPoint())
                 .build();

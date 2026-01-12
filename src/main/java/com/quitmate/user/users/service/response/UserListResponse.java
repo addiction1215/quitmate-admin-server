@@ -1,6 +1,5 @@
 package com.quitmate.user.users.service.response;
 
-import com.quitmate.user.users.entity.enums.Sex;
 import com.quitmate.user.users.repository.response.UserDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,11 +16,11 @@ public class UserListResponse {
     private String email;               // 이메일
     private String nickName;            // 유저명
     private String birthDay;            // 생년월일
-    private Sex sex;                    // 성별
+    private String sex;                    // 성별
 
     @Builder
     private UserListResponse(Long id, LocalDateTime createdDate, String email, String nickName,
-                             String birthDay, Sex sex) {
+                             String birthDay, String sex) {
         this.id = id;
         this.createdDate = createdDate;
         this.email = email;
@@ -37,7 +36,7 @@ public class UserListResponse {
                 .email(dto.getEmail())
                 .nickName(dto.getNickName())
                 .birthDay(dto.getBirthDay())
-                .sex(dto.getSex())
+                .sex(dto.getSex().getDescription())
                 .build();
     }
 }

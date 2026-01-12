@@ -9,5 +9,5 @@ public enum Sex {
 	FEMALE("여성"),
     MALE("남성");
 
-	private final String text;
+	private final String description;
 }
