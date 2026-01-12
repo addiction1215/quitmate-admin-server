@@ -174,7 +174,8 @@ tasks.processResources {
                 NAMESPACE_NAME: System.getenv('NAMESPACE_NAME'),
                 USER_BUCKET_NAME_DEV: System.getenv('USER_BUCKET_NAME_DEV'),
                 CHALLENGE_BUCKET_NAME_DEV: System.getenv('CHALLENGE_BUCKET_NAME_DEV'),
-                EMAIL_PASSWORD: System.getenv('EMAIL_PASSWORD')
+                EMAIL_PASSWORD: System.getenv('EMAIL_PASSWORD'),
+                JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY')
         )
     }
 }
