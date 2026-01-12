@@ -8,14 +8,10 @@ import lombok.NoArgsConstructor;
 public class LoginServiceRequest {
     private final String email;
     private final String password;
-    private final String deviceId;
-    private final String pushKey;
 
     @Builder
-    private LoginServiceRequest(String email, String password, String deviceId, String pushKey) {
+    private LoginServiceRequest(String email, String password) {
         this.email = email;
         this.password = password;
-        this.deviceId = deviceId;
-        this.pushKey = pushKey;
     }
 }

@@ -40,6 +40,7 @@ public class LoginControllerDocsTest extends RestDocsSupport {
 
         LoginResponse response = LoginResponse.builder()
                 .email("admin@example.com")
+                .accessToken("testAccessToken")
                 .build();
 
         given(loginService.normalLogin(any()))
@@ -72,7 +73,9 @@ public class LoginControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data").type(JsonFieldType.OBJECT)
                                         .description("응답 데이터"),
                                 fieldWithPath("data.email").type(JsonFieldType.STRING)
-                                        .description("이메일")
+                                        .description("이메일"),
+                                fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
+                                        .description("엑세스토큰")
                         )
                 ));
     }

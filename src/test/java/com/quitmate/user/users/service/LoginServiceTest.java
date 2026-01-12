@@ -37,7 +37,6 @@ public class LoginServiceTest extends IntegrationTestSupport {
 		LoginServiceRequest request = LoginServiceRequest.builder()
 			.email(savedUser.getEmail())
 			.password("1234")
-			.deviceId("asdfasdfasdfsadfsf")
 			.build();
 
 		// when
@@ -54,7 +53,6 @@ public class LoginServiceTest extends IntegrationTestSupport {
 		LoginServiceRequest request = LoginServiceRequest.builder()
 			.email("tkdrl8908@naver.com")
 			.password("1234")
-			.deviceId("testdeviceId")
 			.build();
 
 		// when
@@ -75,7 +73,6 @@ public class LoginServiceTest extends IntegrationTestSupport {
 		LoginServiceRequest request = LoginServiceRequest.builder()
 			.email("tkdrl8908@naver.com")
 			.password("12345678")
-			.deviceId("testdeviceId")
 			.build();
 
 		// when

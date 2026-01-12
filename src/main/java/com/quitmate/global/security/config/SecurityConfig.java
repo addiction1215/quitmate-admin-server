@@ -1,5 +1,8 @@
 package com.quitmate.global.security.config;
 
+import com.quitmate.global.jwt.JwtTokenProvider;
+import com.quitmate.global.jwt.filter.JwtAuthenticationFilter;
+import com.quitmate.global.jwt.filter.JwtExceptionHandlerFilter;
 import com.quitmate.user.users.entity.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,9 +11,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -25,6 +28,8 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public BCryptPasswordEncoder encoder() {
@@ -44,6 +49,7 @@ public class SecurityConfig {
             config.setAllowedOrigins(Arrays.asList(
                     "https://www.quitmate.co.kr",
                     "https://quitmate.co.kr",
+                    "http://localhost:3000",
                     "http://localhost:8081",
                     "http://localhost:5173"
             ));
@@ -60,47 +66,17 @@ public class SecurityConfig {
 
                 .headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
 
-                // SecurityContext를 세션에 저장하도록 명시적으로 설정
-                .securityContext((securityContext) -> securityContext
-                        .securityContextRepository(securityContextRepository())
-                )
-
-                // Session 설정 - 세션 기반 인증 사용
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 필요시 세션 생성
-                        .maximumSessions(1) // 동시 세션 1개로 제한
-                        .maxSessionsPreventsLogin(false) // 새로운 로그인 시 기존 세션 만료
-                )
-
-                // 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(getPublicMatchers()).permitAll() // 로그인, 회원가입 등은 인증 없이 접근 가능
-                        .anyRequest().authenticated() // 나머지는 인증 필요 (세션이 있어야 함)
+                        .requestMatchers(getPublicMatchers()).permitAll()
+                        .anyRequest().hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
                 )
 
-                // 로그아웃 설정
                 .logout((logout) -> logout
-                        .logoutUrl("/api/v1/auth/logout")
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true) // 세션 무효화
-                        .deleteCookies("JSESSIONID") // 쿠키 삭제
-                        .clearAuthentication(true) // 인증 정보 제거
-                        .permitAll()
-                )
+                        .logoutSuccessUrl("/"))
 
-                // 인증 실패 시 처리 (401 에러 반환)
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(401);
-                            response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"code\":\"UNAUTHORIZED\",\"message\":\"인증이 필요합니다.\"}");
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.setStatus(403);
-                            response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"code\":\"FORBIDDEN\",\"message\":\"접근 권한이 없습니다.\"}");
-                        })
-                );
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionHandlerFilter(),
+                        JwtAuthenticationFilter.class); //JwtAuthenticationFilter에서 뱉은 에러를 처리하기 위한 Filter
 
         return http.build();
     }
