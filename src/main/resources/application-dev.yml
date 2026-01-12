@@ -57,3 +57,6 @@ spring:
 
 logging:
   config: classpath:logback/logback-config.xml
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
