@@ -30,7 +30,7 @@ public class ChallengeQueryRepository {
     /**
      * Admin용 챌린지 목록 조회 (검색, 정렬, 페이징 지원)
      */
-    public Page<ChallengeDto> findAllForAdmin(ChallengeSearchServiceRequest request, Pageable pageable) {
+    public Page<ChallengeDto> findChallengeList(ChallengeSearchServiceRequest request, Pageable pageable) {
         List<ChallengeDto> content = jpaQueryFactory
                 .select(Projections.constructor(ChallengeDto.class,
                         challenge.id,

@@ -16,6 +16,6 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
 
     @Override
     public Page<ChallengeDto> findChallengeList(ChallengeSearchServiceRequest request, Pageable pageable) {
-        return challengeQueryRepository.findAllForAdmin(request, pageable);
+        return challengeQueryRepository.findChallengeList(request, pageable);
     }
 }
