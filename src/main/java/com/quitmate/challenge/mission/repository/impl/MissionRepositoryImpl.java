@@ -18,4 +18,14 @@ public class MissionRepositoryImpl implements MissionRepository {
     public List<Mission> saveAll(List<Mission> missions) {
         return missionJpaRepository.saveAll(missions);
     }
+
+    @Override
+    public List<Mission> findByChallengeId(Long challengeId) {
+        return missionJpaRepository.findByChallengeId(challengeId);
+    }
+
+    @Override
+    public void deleteByChallengeId(Long challengeId) {
+        missionJpaRepository.deleteByChallengeId(challengeId);
+    }
 }

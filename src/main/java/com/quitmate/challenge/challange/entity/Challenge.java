@@ -34,4 +34,10 @@ public class Challenge extends BaseTimeEntity {
         this.badge = badge;
         this.reward = reward;
     }
+
+    public void update(String title, String badge, Integer reward) {
+        this.title = title;
+        this.badge = badge;
+        this.reward = reward;
+    }
 }

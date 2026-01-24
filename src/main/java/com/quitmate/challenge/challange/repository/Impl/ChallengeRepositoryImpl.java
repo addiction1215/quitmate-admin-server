@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class ChallengeRepositoryImpl implements ChallengeRepository {
@@ -25,5 +27,15 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     @Override
     public Challenge save(Challenge challenge) {
         return challengeJpaRepository.save(challenge);
+    }
+
+    @Override
+    public Optional<Challenge> findById(Long id) {
+        return challengeJpaRepository.findById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        challengeJpaRepository.deleteById(id);
     }
 }

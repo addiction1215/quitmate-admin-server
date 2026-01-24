@@ -2,9 +2,11 @@ package com.quitmate.challenge.challange.controller;
 
 import com.quitmate.challenge.challange.controller.request.ChallengeCreateRequest;
 import com.quitmate.challenge.challange.controller.request.ChallengeSearchRequest;
+import com.quitmate.challenge.challange.controller.request.ChallengeUpdateRequest;
 import com.quitmate.challenge.challange.service.ChallengeReadService;
 import com.quitmate.challenge.challange.service.ChallengeService;
 import com.quitmate.challenge.challange.service.response.ChallengeCreateResponse;
+import com.quitmate.challenge.challange.service.response.ChallengeDetailResponse;
 import com.quitmate.challenge.challange.service.response.ChallengeListResponse;
 import com.quitmate.global.ApiResponse;
 import com.quitmate.global.page.response.PageCustom;
@@ -33,6 +35,15 @@ public class ChallengeController {
     }
 
     /**
+     * 챌린지 상세 조회 API
+     */
+    @GetMapping("/{id}")
+    public ApiResponse<ChallengeDetailResponse> getChallengeDetail(
+            @PathVariable Long id) {
+        return ApiResponse.ok(challengeReadService.getChallengeDetail(id));
+    }
+
+    /**
      * 챌린지 생성 API
      */
     @PostMapping
@@ -40,5 +51,25 @@ public class ChallengeController {
     public ApiResponse<ChallengeCreateResponse> createChallenge(
             @Valid @RequestBody ChallengeCreateRequest request) {
         return ApiResponse.created(challengeService.createChallenge(request.toServiceRequest()));
+    }
+
+    /**
+     * 챌린지 수정 API
+     */
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateChallenge(
+            @PathVariable Long id,
+            @Valid @RequestBody ChallengeUpdateRequest request) {
+        challengeService.updateChallenge(id, request.toServiceRequest());
+    }
+
+    /**
+     * 챌린지 삭제 API
+     */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteChallenge(@PathVariable Long id) {
+        challengeService.deleteChallenge(id);
     }
 }
