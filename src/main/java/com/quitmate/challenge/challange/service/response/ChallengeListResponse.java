@@ -1,20 +1,20 @@
-package com.quitmate.challenge.challange.repository.response;
+package com.quitmate.challenge.challange.service.response;
 
-import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class AdminChallengeDto {
-    
+public class ChallengeListResponse {
+
     private final Long challengeId;
     private final String title;
     private final String badge;
     private final Integer reward;
     private final Long missionCount;
     private final Long accumulatedCount;
-    
-    @QueryProjection
-    public AdminChallengeDto(
+
+    @Builder
+    public ChallengeListResponse(
             Long challengeId,
             String title,
             String badge,
@@ -25,7 +25,7 @@ public class AdminChallengeDto {
         this.title = title;
         this.badge = badge;
         this.reward = reward;
-        this.missionCount = missionCount != null ? missionCount : 0L;
-        this.accumulatedCount = accumulatedCount != null ? accumulatedCount : 0L;
+        this.missionCount = missionCount;
+        this.accumulatedCount = accumulatedCount;
     }
 }
