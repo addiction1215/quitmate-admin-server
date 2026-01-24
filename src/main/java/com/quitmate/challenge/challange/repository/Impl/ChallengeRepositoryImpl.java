@@ -1,5 +1,7 @@
 package com.quitmate.challenge.challange.repository.Impl;
 
+import com.quitmate.challenge.challange.entity.Challenge;
+import com.quitmate.challenge.challange.repository.ChallengeJpaRepository;
 import com.quitmate.challenge.challange.repository.ChallengeQueryRepository;
 import com.quitmate.challenge.challange.repository.ChallengeRepository;
 import com.quitmate.challenge.challange.repository.response.ChallengeDto;
@@ -13,9 +15,15 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class ChallengeRepositoryImpl implements ChallengeRepository {
     private final ChallengeQueryRepository challengeQueryRepository;
+    private final ChallengeJpaRepository challengeJpaRepository;
 
     @Override
     public Page<ChallengeDto> findChallengeList(ChallengeSearchServiceRequest request, Pageable pageable) {
         return challengeQueryRepository.findChallengeList(request, pageable);
+    }
+
+    @Override
+    public Challenge save(Challenge challenge) {
+        return challengeJpaRepository.save(challenge);
     }
 }
