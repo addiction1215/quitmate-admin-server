@@ -61,4 +61,7 @@ public class MissionHistory extends BaseTimeEntity {
         this.abstinenceTime = abstinenceTime;
     }
 
+    public void updateStatus(MissionStatus status) {
+        this.status = status;
+    }
 }

@@ -31,7 +31,7 @@ public class MissionHistoryQueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public Page<MissionHistoryDto> findCompletionRequestList(
+    public Page<MissionHistoryDto> findMissionHistoryList(
             MissionHistoryListServiceRequest request, Pageable pageable) {
 
         List<MissionHistoryDto> content = jpaQueryFactory
