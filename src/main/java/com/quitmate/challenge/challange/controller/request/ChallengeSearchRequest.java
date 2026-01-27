@@ -2,6 +2,7 @@ package com.quitmate.challenge.challange.controller.request;
 
 import com.quitmate.challenge.challange.service.request.ChallengeSearchServiceRequest;
 import com.quitmate.global.page.request.PageInfoRequest;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ public class ChallengeSearchRequest extends PageInfoRequest {
     private String keyword;
     private SortType sortType;
 
+    @Builder
     public ChallengeSearchRequest(SearchCategory category, String keyword, SortType sortType) {
         this.category = category;
         this.keyword = keyword;

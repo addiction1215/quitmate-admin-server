@@ -12,6 +12,7 @@ import com.quitmate.challenge.challange.service.response.ChallengeCreateResponse
 import com.quitmate.challenge.challange.service.response.ChallengeDetailResponse;
 import com.quitmate.challenge.challange.service.response.ChallengeListResponse;
 import com.quitmate.challenge.mission.entity.MissionCategoryStatus;
+import com.quitmate.global.page.request.PageInfoRequest;
 import com.quitmate.global.page.response.PageCustom;
 import com.quitmate.global.page.response.PageableCustom;
 import docs.RestDocsSupport;
@@ -48,20 +49,19 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
     @DisplayName("챌린지 목록 조회 API")
     @Test
     void 챌린지_목록_조회_API() throws Exception {
-        // given
-        ChallengeSearchRequest request = new ChallengeSearchRequest(
-                SearchCategory.TITLE,
-                "금연",
-                SortType.ID
-        );
-        request.setPage(1);
-        request.setSize(10);
+        ChallengeSearchRequest request = ChallengeSearchRequest.builder()
+                .sortType(SortType.ID)
+                .category(SearchCategory.TITLE)
+                .keyword("금연")
+                .build();
 
         ChallengeListResponse challenge1 = ChallengeListResponse.builder()
                 .challengeId(1L)
                 .title("금연 챌린지")
                 .badge("금연 뱃지")
                 .reward(100)
+                .missionCount(5L)
+                .accumulatedCount(100L)
                 .build();
 
         ChallengeListResponse challenge2 = ChallengeListResponse.builder()
@@ -69,6 +69,8 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .title("건강 챌린지")
                 .badge("건강 뱃지")
                 .reward(200)
+                .missionCount(3L)
+                .accumulatedCount(50L)
                 .build();
 
         PageableCustom pageableCustom = PageableCustom.builder()
@@ -82,7 +84,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .pageInfo(pageableCustom)
                 .build();
 
-        given(challengeReadService.getChallengeList(request.toServiceRequest()))
+        given(challengeReadService.getChallengeList(any()))
                 .willReturn(pageCustom);
 
         // when // then
@@ -117,7 +119,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                         .description("응답 데이터"),
                                 fieldWithPath("data.content[]").type(JsonFieldType.ARRAY)
                                         .description("챌린지 목록"),
-                                fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("data.content[].challengeId").type(JsonFieldType.NUMBER)
                                         .description("챌린지 ID"),
                                 fieldWithPath("data.content[].title").type(JsonFieldType.STRING)
                                         .description("챌린지 제목"),
@@ -125,6 +127,10 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                         .description("뱃지명"),
                                 fieldWithPath("data.content[].reward").type(JsonFieldType.NUMBER)
                                         .description("보상 포인트"),
+                                fieldWithPath("data.content[].missionCount").type(JsonFieldType.NUMBER)
+                                        .description("미션 개수"),
+                                fieldWithPath("data.content[].accumulatedCount").type(JsonFieldType.NUMBER)
+                                        .description("누적 참여 수"),
                                 fieldWithPath("data.pageInfo").type(JsonFieldType.OBJECT)
                                         .description("페이징 정보"),
                                 fieldWithPath("data.pageInfo.currentPage").type(JsonFieldType.NUMBER)
@@ -165,7 +171,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .missions(List.of(mission1, mission2))
                 .build();
 
-        given(challengeReadService.getChallengeDetail(1L))
+        given(challengeReadService.getChallengeDetail(anyLong()))
                 .willReturn(response);
 
         // when // then
@@ -240,6 +246,10 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
 
         ChallengeCreateResponse response = ChallengeCreateResponse.builder()
                 .challengeId(1L)
+                .title("금연 챌린지")
+                .badge("금연 뱃지")
+                .reward(100)
+                .missionCount(2)
                 .build();
 
         given(challengeService.createChallenge(any()))
@@ -284,7 +294,15 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data").type(JsonFieldType.OBJECT)
                                         .description("응답 데이터"),
                                 fieldWithPath("data.challengeId").type(JsonFieldType.NUMBER)
-                                        .description("생성된 챌린지 ID")
+                                        .description("생성된 챌린지 ID"),
+                                fieldWithPath("data.title").type(JsonFieldType.STRING)
+                                        .description("챌린지 제목"),
+                                fieldWithPath("data.badge").type(JsonFieldType.STRING)
+                                        .description("뱃지명"),
+                                fieldWithPath("data.reward").type(JsonFieldType.NUMBER)
+                                        .description("보상 포인트"),
+                                fieldWithPath("data.missionCount").type(JsonFieldType.NUMBER)
+                                        .description("미션 개수")
                         )
                 ));
     }
