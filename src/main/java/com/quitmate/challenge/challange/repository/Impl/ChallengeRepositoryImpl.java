@@ -1,0 +1,41 @@
+package com.quitmate.challenge.challange.repository.Impl;
+
+import com.quitmate.challenge.challange.entity.Challenge;
+import com.quitmate.challenge.challange.repository.ChallengeJpaRepository;
+import com.quitmate.challenge.challange.repository.ChallengeQueryRepository;
+import com.quitmate.challenge.challange.repository.ChallengeRepository;
+import com.quitmate.challenge.challange.repository.response.ChallengeDto;
+import com.quitmate.challenge.challange.service.request.ChallengeSearchServiceRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+@RequiredArgsConstructor
+public class ChallengeRepositoryImpl implements ChallengeRepository {
+    private final ChallengeQueryRepository challengeQueryRepository;
+    private final ChallengeJpaRepository challengeJpaRepository;
+
+    @Override
+    public Page<ChallengeDto> findChallengeList(ChallengeSearchServiceRequest request, Pageable pageable) {
+        return challengeQueryRepository.findChallengeList(request, pageable);
+    }
+
+    @Override
+    public Challenge save(Challenge challenge) {
+        return challengeJpaRepository.save(challenge);
+    }
+
+    @Override
+    public Optional<Challenge> findById(Long id) {
+        return challengeJpaRepository.findById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        challengeJpaRepository.deleteById(id);
+    }
+}

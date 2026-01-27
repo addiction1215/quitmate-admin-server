@@ -24,6 +24,11 @@ include::api/user/user.adoc[]
 
 include::api/challenge/challenge.adoc[]
 
+[[Mission-History-API]]
+== Mission History API
+
+include::api/missionHistory/missionHistory.adoc[]
+
 [[Notice-API]]
 == Notice API
 
