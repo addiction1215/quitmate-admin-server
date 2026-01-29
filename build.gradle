@@ -168,19 +168,15 @@ tasks.processResources {
     filesMatching('application-dev.yml') {
         // build.gradle에 설정된 환경변수들을 주입
         expand(
-                MONGO_DB_URL: System.getenv('MONGO_DB_URL'),
-                DB_ENDPOINT: System.getenv('DB_ENDPOINT'),
+                DB_HOST: System.getenv('DB_HOST'),
                 DB_USERNAME: System.getenv('DB_USERNAME'),
                 DB_PASSWORD: System.getenv('DB_PASSWORD'),
-                MYSQL_DB_ENDPOINT: System.getenv('MYSQL_DB_ENDPOINT'),
-                MYSQL_DB_USERNAME: System.getenv('MYSQL_DB_USERNAME'),
-                MYSQL_DB_PASSWORD: System.getenv('MYSQL_DB_PASSWORD'),
-                AES_KEY: System.getenv('AES_KEY'),
-                NAMESPACE_NAME: System.getenv('NAMESPACE_NAME'),
-                USER_BUCKET_NAME_DEV: System.getenv('USER_BUCKET_NAME_DEV'),
-                CHALLENGE_BUCKET_NAME_DEV: System.getenv('CHALLENGE_BUCKET_NAME_DEV'),
-                EMAIL_PASSWORD: System.getenv('EMAIL_PASSWORD'),
-                JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY')
+                JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY'),
+                AWS_ACCESS_KEY: System.getenv('AWS_ACCESS_KEY'),
+                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY'),
+                USER_BUCKET: System.getenv('USER_BUCKET'),
+                CHALLENGE_BUCKET: System.getenv('CHALLENGE_BUCKET'),
+                CHALLENGE_BADGE_BUCKET: System.getenv('CHALLENGE_BADGE_BUCKET')
         )
     }
 }

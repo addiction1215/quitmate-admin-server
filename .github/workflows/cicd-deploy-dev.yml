@@ -7,11 +7,17 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: dev  # dev 환경 secrets 사용
     env:
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      USER_BUCKET: ${{ secrets.USER_BUCKET }}
+      CHALLENGE_BUCKET: ${{ secrets.CHALLENGE_BUCKET }}
+      CHALLENGE_BADGE_BUCKET: ${{ secrets.CHALLENGE_BADGE_BUCKET }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
