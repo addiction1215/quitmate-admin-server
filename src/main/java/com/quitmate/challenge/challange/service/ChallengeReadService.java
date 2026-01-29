@@ -10,10 +10,11 @@ import com.quitmate.challenge.mission.entity.Mission;
 import com.quitmate.challenge.mission.repository.MissionRepository;
 import com.quitmate.global.exception.QuitmateException;
 import com.quitmate.global.page.response.PageCustom;
+import com.quitmate.global.page.response.PageableCustom;
+import com.quitmate.storage.enums.BucketKind;
+import com.quitmate.storage.service.S3StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,8 @@ public class ChallengeReadService {
 
     private static final String UNKNOWN_CHALLENGE = "해당 챌린지는 존재하지 않습니다.";
 
+    private final S3StorageService s3StorageService;
+
     private final ChallengeRepository challengeRepository;
     private final MissionRepository missionRepository;
 
@@ -35,9 +38,16 @@ public class ChallengeReadService {
     }
 
     public PageCustom<ChallengeListResponse> getChallengeList(ChallengeSearchServiceRequest request) {
-        Page<ChallengeDto> challengePage = challengeRepository.findChallengeList(request, request.toPageable());
+        Page<ChallengeDto> page = challengeRepository.findChallengeList(request, request.toPageable());
 
-        return PageCustom.of(challengePage.map(this::toResponse));
+        List<ChallengeListResponse> challengeResponses = page.getContent().stream()
+                .map(challenge -> ChallengeListResponse.createResponse(challenge, s3StorageService.createPresignedUrl(challenge.getBadge(), BucketKind.CHALLENGE_BADGE)))
+                .toList();
+
+        return PageCustom.<ChallengeListResponse>builder()
+                .content(challengeResponses)
+                .pageInfo(PageableCustom.of(page))
+                .build();
     }
 
     public ChallengeDetailResponse getChallengeDetail(Long id) {
@@ -45,16 +55,5 @@ public class ChallengeReadService {
         List<Mission> missions = missionRepository.findByChallengeId(id);
 
         return ChallengeDetailResponse.createResponse(challenge, missions);
-    }
-
-    private ChallengeListResponse toResponse(ChallengeDto dto) {
-        return ChallengeListResponse.builder()
-                .challengeId(dto.getChallengeId())
-                .title(dto.getTitle())
-                .badge(dto.getBadge())
-                .reward(dto.getReward())
-                .missionCount(dto.getMissionCount())
-                .accumulatedCount(dto.getAccumulatedCount())
-                .build();
     }
 }
