@@ -33,11 +33,12 @@ spring:
 jwt:
   secret-key: 4a0pPV9g4/6OvKKzV1MpVdIchBeTfcjd/TRKbuWUgpNY3jyh6YA/aBnpe4kPsAY5WJoBBzOG358zqS5/E0TSag==
 
-oracle:
-  cloud:
-    region: ap-chuncheon-1
-  name-space-name: testnamespace
-  user:
-    bucket-name: testbucket
-  challenge:
-    bucket-name: testchallengebucket
+aws:
+  access-key: testaccesskey  # AWS IAM Access Key
+  secret-key: testsecretkey  # AWS IAM Secret Key
+  s3:
+    region: ap-northeast-2  # Seoul Region
+    bucket:
+      user: testuserbucket  # 사용자 관련 파일 버킷
+      challenge: testchallengebucket  # 챌린지 관련 파일 버킷
+      challenge-badge: testchallengebadgebucket  # 챌린지 배지 관련 파일 버킷
