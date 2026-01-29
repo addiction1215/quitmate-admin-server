@@ -35,8 +35,7 @@ public class ChallengeReadService {
     }
 
     public PageCustom<ChallengeListResponse> getChallengeList(ChallengeSearchServiceRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        Page<ChallengeDto> challengePage = challengeRepository.findChallengeList(request, pageable);
+        Page<ChallengeDto> challengePage = challengeRepository.findChallengeList(request, request.toPageable());
 
         return PageCustom.of(challengePage.map(this::toResponse));
     }
