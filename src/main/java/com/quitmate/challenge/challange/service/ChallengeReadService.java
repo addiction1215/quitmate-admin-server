@@ -54,6 +54,6 @@ public class ChallengeReadService {
         Challenge challenge = findById(id);
         List<Mission> missions = missionRepository.findByChallengeId(id);
 
-        return ChallengeDetailResponse.createResponse(challenge, missions);
+        return ChallengeDetailResponse.createResponse(challenge, missions, s3StorageService.createPresignedUrl(challenge.getBadge(), BucketKind.CHALLENGE_BADGE));
     }
 }

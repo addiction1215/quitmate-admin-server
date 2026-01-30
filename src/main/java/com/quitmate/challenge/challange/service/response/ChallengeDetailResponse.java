@@ -27,11 +27,11 @@ public class ChallengeDetailResponse {
         this.missions = missions;
     }
 
-    public static ChallengeDetailResponse createResponse(Challenge challenge, List<Mission> missions) {
+    public static ChallengeDetailResponse createResponse(Challenge challenge, List<Mission> missions, String badge) {
         return ChallengeDetailResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
-                .badge(challenge.getBadge())
+                .badge(badge)
                 .reward(challenge.getReward())
                 .missions(missions.stream()
                         .map(MissionResponse::createResponse)
