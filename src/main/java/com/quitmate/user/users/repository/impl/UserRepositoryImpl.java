@@ -34,6 +34,11 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
+	public List<User> findAllWithPushes() {
+		return userJpaRepository.findAllWithPushes();
+	}
+
+	@Override
 	public Optional<User> findByEmail(String email) {
 		return userJpaRepository.findByEmail(email);
 	}

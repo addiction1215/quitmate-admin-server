@@ -1,5 +1,7 @@
 package com.quitmate;
 
+import com.quitmate.firebase.FirebaseService;
+import com.quitmate.global.config.FCMConfig;
 import com.quitmate.global.security.LoginUserInfo;
 import com.quitmate.global.security.SecurityService;
 import com.quitmate.user.users.entity.User;
@@ -22,6 +24,10 @@ public abstract class IntegrationTestSupport {
 
     @MockitoBean
     protected SecurityService securityService;
+    @MockitoBean
+    protected FirebaseService firebaseService;
+    @MockitoBean
+    protected FCMConfig fcmConfig;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired

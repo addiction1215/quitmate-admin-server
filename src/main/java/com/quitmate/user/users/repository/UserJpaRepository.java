@@ -25,4 +25,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
+	@Query("select distinct u from User u left join fetch u.pushes where u.useYn = 'Y'")
+	List<User> findAllWithPushes();
+
 }

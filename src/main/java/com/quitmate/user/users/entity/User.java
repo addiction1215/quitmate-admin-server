@@ -1,6 +1,7 @@
 package com.quitmate.user.users.entity;
 
 import com.quitmate.global.BaseTimeEntity;
+import com.quitmate.user.push.entity.Push;
 import com.quitmate.user.users.entity.enums.Role;
 import com.quitmate.user.users.entity.enums.SettingStatus;
 import com.quitmate.user.users.entity.enums.Sex;
@@ -12,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -58,6 +61,9 @@ public class User extends BaseTimeEntity {
     private SettingStatus settingStatus;
 
     private String useYn;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Push> pushes = new ArrayList<>();
 
     @Builder
     public User(String profileUrl, String email, String password, String nickName, String phoneNumber, String birthDay, String purpose,
