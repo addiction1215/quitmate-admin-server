@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,6 +38,11 @@ public class UserReadServiceImpl implements UserReadService {
     @Override
     public PageCustom<UserListResponse> getUserList(UserListServiceRequest request) {
         return PageCustom.of(userRepository.findUserList(request, request.toPageable()).map(UserListResponse::createResponse));
+    }
+
+    @Override
+    public List<User> findAllWithPushes() {
+        return userRepository.findAllWithPushes();
     }
 
 }

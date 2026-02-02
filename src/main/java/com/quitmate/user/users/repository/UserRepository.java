@@ -14,6 +14,8 @@ public interface UserRepository {
 
 	User save(User user);
 
+	List<User> findAllWithPushes();
+
 	Optional<User> findByEmail(String email);
 
 	Optional<User> findByEmailAndNickName(String email, String nickName);
