@@ -41,6 +41,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: 🔑 SSH 키 설정
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: 🔑 Ubuntu 호스트 추가
+        run: |
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: 🔥 FCM 설정 파일 가져오기
+        run: |
+          mkdir -p src/main/resources
+          scp ubuntu@${{ secrets.SERVER_IP }}:/home/ubuntu/fcm/addiction-firebase.json ./src/main/resources/addiction-firebase.json
+
       - name: 🔨 Gradle 빌드
         run: ./gradlew build --parallel
 
@@ -52,15 +66,6 @@ jobs:
 
       - name: 🗜️ 배포 패키지 생성
         run: zip -r -qq ./deploy.zip ./before-deploy-admin/
-
-      - name: 🔑 SSH 키 설정
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      - name: 🔑 Ubuntu 호스트 추가
-        run: |
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: 🚀 서버에 파일 업로드
         run: |
