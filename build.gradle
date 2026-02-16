@@ -179,4 +179,18 @@ tasks.processResources {
                 CHALLENGE_BADGE_BUCKET: System.getenv('CHALLENGE_BADGE_BUCKET')
         )
     }
+    filesMatching('application-prd.yml') {
+        // build.gradle에 설정된 환경변수들을 주입
+        expand(
+                DB_HOST: System.getenv('DB_HOST'),
+                DB_USERNAME: System.getenv('DB_USERNAME'),
+                DB_PASSWORD: System.getenv('DB_PASSWORD'),
+                JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY'),
+                AWS_ACCESS_KEY: System.getenv('AWS_ACCESS_KEY'),
+                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY'),
+                USER_BUCKET: System.getenv('USER_BUCKET'),
+                CHALLENGE_BUCKET: System.getenv('CHALLENGE_BUCKET'),
+                CHALLENGE_BADGE_BUCKET: System.getenv('CHALLENGE_BADGE_BUCKET')
+        )
+    }
 }

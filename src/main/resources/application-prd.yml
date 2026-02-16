@@ -1,19 +1,53 @@
+server:
+  servlet:
+    context-path: /admin
+
 spring:
   datasource:
-    url:
-    username:
-    password:
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mysql://${DB_HOST}:3306/addiction?useSSL=true&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 3000
   jpa:
     hibernate:
       ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          exception-handling: ignore
 
-oauth:
-  kakao:
-    api:
-      url: https://kapi.kakao.com
-      name: kakaoApi
-  google:
-    api:
-      url: https://www.googleapis.com
-      name: googleApi
+    logging:
+      level:
+        p6spy: info
+
+      decorator:
+        datasource:
+          p6spy:
+            enable-logging: true
+
+  # Session 설정
+  session:
+    timeout: 3600  # 1시간 (초 단위)
+    store-type: none  # 기본 메모리 저장소 사용
+
+logging:
+  config: classpath:logback/logback-config.xml
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
+aws:
+  access-key: ${AWS_ACCESS_KEY}  # AWS IAM Access Key
+  secret-key: ${AWS_SECRET_KEY}  # AWS IAM Secret Key
+  s3:
+    region: ap-northeast-2  # Seoul Region
+    bucket:
+      user: ${USER_BUCKET}  # 사용자 관련 파일 버킷
+      challenge: ${CHALLENGE_BUCKET}  # 챌린지 관련 파일 버킷
+      challenge-badge: ${CHALLENGE_BADGE_BUCKET}  # 챌린지 관련 파일 버킷
