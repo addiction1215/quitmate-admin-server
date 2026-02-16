@@ -49,6 +49,7 @@ public class SecurityConfig {
             config.setAllowedOrigins(Arrays.asList(
                     "https://www.quitmate.co.kr",
                     "https://quitmate.co.kr",
+                    "https://admin.quitmate.co.kr",
                     "http://localhost:3000",
                     "http://localhost:8081",
                     "http://localhost:5173"
