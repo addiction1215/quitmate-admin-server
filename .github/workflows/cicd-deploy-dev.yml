@@ -1,8 +1,7 @@
 name: 🚀 배포
 
 on:
-  push:
-    branches: [ "dev" ]
+  workflow_dispatch:
 
 jobs:
   deploy:
