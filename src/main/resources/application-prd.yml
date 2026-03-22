@@ -13,7 +13,7 @@ spring:
       connection-timeout: 3000
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     open-in-view: false
     properties:
       hibernate:

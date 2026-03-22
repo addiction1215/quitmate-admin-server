@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/reward-histories")
+@RequestMapping("/api/v1/reward-history")
 public class RewardHistoryController {
 
     private final RewardHistoryReadService rewardHistoryReadService;

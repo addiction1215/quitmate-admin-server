@@ -75,7 +75,7 @@ public class RewardHistoryControllerDocsTest extends RestDocsSupport {
 
         // when // then
         mockMvc.perform(
-                        get("/api/v1/reward-histories")
+                        get("/api/v1/reward-history")
                                 .param("page", "1")
                                 .param("size", "10")
                                 .param("sortBy", "CREATED_DATE")

@@ -33,10 +33,10 @@ public class UserListResponse {
         return UserListResponse.builder()
                 .id(dto.getId())
                 .createdDate(dto.getCreatedDate())
-                .email(dto.getEmail())
-                .nickName(dto.getNickName())
-                .birthDay(dto.getBirthDay())
-                .sex(dto.getSex().getDescription())
+                .email(dto.getEmail() != null ? dto.getEmail() : "")
+                .nickName(dto.getNickName() != null ? dto.getNickName() : "")
+                .birthDay(dto.getBirthDay() != null ? dto.getBirthDay() : "")
+                .sex(dto.getSex() != null ? dto.getSex().getDescription() : "")
                 .build();
     }
 }
