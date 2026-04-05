@@ -40,7 +40,8 @@ public class MissionHistoryDetailResponse {
         this.abstinenceData = abstinenceData;
     }
 
-    public static MissionHistoryDetailResponse createResponse(MissionHistory missionHistory) {
+    public static MissionHistoryDetailResponse createResponse(MissionHistory missionHistory,
+                                                               String photoUrl1, String photoUrl2, String photoUrl3) {
         MissionCategoryStatus category = missionHistory.getMission().getCategory();
 
         return MissionHistoryDetailResponse.builder()
@@ -54,9 +55,7 @@ public class MissionHistoryDetailResponse {
                 .locationData(category == MissionCategoryStatus.LOCATION ?
                         LocationVerificationData.of(missionHistory.getGpsVerifyCount()) : null)
                 .photoData(category == MissionCategoryStatus.REPLACE_ACTION ?
-                        PhotoVerificationData.of(missionHistory.getPhotoUrl1(),
-                                missionHistory.getPhotoUrl2(),
-                                missionHistory.getPhotoUrl3()) : null)
+                        PhotoVerificationData.of(photoUrl1, photoUrl2, photoUrl3) : null)
                 .abstinenceData(category == MissionCategoryStatus.HOLD ?
                         AbstinenceVerificationData.of(missionHistory.getAbstinenceTime()) : null)
                 .build();
