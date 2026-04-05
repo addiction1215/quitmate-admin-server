@@ -43,8 +43,12 @@ public class NoticeServiceImpl implements NoticeService {
 
         List<User> users = userReadService.findAllWithPushes();
 
+        SendFirebaseDataDto dataDto = SendFirebaseDataDto.builder()
+                .alert_destination_type(AlertDestinationType.NOTICE)
+                .alert_destination_info("공지사항")
+                .build();
+
         for (User user : users) {
-            // 알림 설정 확인
             if (!shouldSendPush(user)) {
                 continue;
             }
@@ -52,13 +56,15 @@ public class NoticeServiceImpl implements NoticeService {
             if (pushes.isEmpty()) {
                 continue;
             }
-            for (Push push : pushes) {
-                if (push == null) {
-                    continue;
-                }
-                // Push 알림 전송
-                sendPushNotification(noticeCreateResponse.getContent(), push);
-            }
+
+            SendFirebaseServiceRequest serviceRequest = SendFirebaseServiceRequest.builder()
+                    .push(pushes.get(0))
+                    .body(noticeCreateResponse.getContent())
+                    .sound("default")
+                    .sendFirebaseDataDto(dataDto)
+                    .build();
+
+            firebaseService.sendPushNotificationToAll(pushes, serviceRequest);
         }
         return noticeCreateResponse;
     }
@@ -101,19 +107,4 @@ public class NoticeServiceImpl implements NoticeService {
         return user.getPushes() != null ? user.getPushes() : List.of();
     }
 
-    private void sendPushNotification(String message, Push push) {
-        SendFirebaseDataDto dataDto = SendFirebaseDataDto.builder()
-                .alert_destination_type(AlertDestinationType.NOTICE)
-                .alert_destination_info("데일리 리포트")
-                .build();
-
-        SendFirebaseServiceRequest serviceRequest = SendFirebaseServiceRequest.builder()
-                .push(push)
-                .body(message)
-                .sound("default")
-                .sendFirebaseDataDto(dataDto)
-                .build();
-
-        firebaseService.sendPushNotification(serviceRequest);
-    }
 }
