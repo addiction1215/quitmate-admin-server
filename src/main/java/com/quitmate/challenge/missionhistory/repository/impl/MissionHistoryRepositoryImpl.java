@@ -30,4 +30,9 @@ public class MissionHistoryRepositoryImpl implements MissionHistoryRepository {
     public Optional<MissionHistory> findById(Long id) {
         return missionHistoryJpaRepository.findById(id);
     }
+
+    @Override
+    public Optional<MissionHistory> findByIdWithAddresses(Long id) {
+        return missionHistoryJpaRepository.findByIdWithAddresses(id);
+    }
 }

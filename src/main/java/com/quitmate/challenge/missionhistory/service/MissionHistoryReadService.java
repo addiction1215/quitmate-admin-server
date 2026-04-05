@@ -35,7 +35,8 @@ public class MissionHistoryReadService {
     }
 
     public MissionHistoryDetailResponse getMissionHistoryDetail(Long id) {
-        MissionHistory missionHistory = findById(id);
+        MissionHistory missionHistory = missionHistoryRepository.findByIdWithAddresses(id)
+                .orElseThrow(() -> new QuitmateException(UNKNOWN_MISSION_HISTORY));
         String photoUrl1 = toPresignedUrl(missionHistory.getPhotoUrl1());
         String photoUrl2 = toPresignedUrl(missionHistory.getPhotoUrl2());
         String photoUrl3 = toPresignedUrl(missionHistory.getPhotoUrl3());

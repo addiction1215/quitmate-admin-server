@@ -12,4 +12,6 @@ public interface MissionHistoryRepository {
     Page<MissionHistoryDto> findMissionHistoryList(MissionHistoryListServiceRequest request, Pageable pageable);
 
     Optional<MissionHistory> findById(Long id);
+
+    Optional<MissionHistory> findByIdWithAddresses(Long id);
 }
