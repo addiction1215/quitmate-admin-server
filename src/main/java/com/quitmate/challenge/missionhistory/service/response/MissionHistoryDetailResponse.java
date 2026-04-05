@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class MissionHistoryDetailResponse {
@@ -53,7 +54,7 @@ public class MissionHistoryDetailResponse {
                 .userName(missionHistory.getUser().getNickName())
                 .createdDate(missionHistory.getCreatedDate())
                 .locationData(category == MissionCategoryStatus.LOCATION ?
-                        LocationVerificationData.of(missionHistory.getGpsVerifyCount()) : null)
+                        LocationVerificationData.of(missionHistory.getGpsVerifyCount(), missionHistory.getAddresses()) : null)
                 .photoData(category == MissionCategoryStatus.REPLACE_ACTION ?
                         PhotoVerificationData.of(photoUrl1, photoUrl2, photoUrl3) : null)
                 .abstinenceData(category == MissionCategoryStatus.HOLD ?
@@ -64,13 +65,15 @@ public class MissionHistoryDetailResponse {
     @Getter
     public static class LocationVerificationData {
         private final Integer gpsVerifyCount;
+        private final List<String> addresses;
 
-        private LocationVerificationData(Integer gpsVerifyCount) {
+        private LocationVerificationData(Integer gpsVerifyCount, List<String> addresses) {
             this.gpsVerifyCount = gpsVerifyCount;
+            this.addresses = addresses;
         }
 
-        public static LocationVerificationData of(Integer gpsVerifyCount) {
-            return new LocationVerificationData(gpsVerifyCount);
+        public static LocationVerificationData of(Integer gpsVerifyCount, List<String> addresses) {
+            return new LocationVerificationData(gpsVerifyCount, addresses);
         }
     }
 

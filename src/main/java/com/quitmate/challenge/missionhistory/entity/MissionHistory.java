@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,7 +33,10 @@ public class MissionHistory extends BaseTimeEntity {
 
     private LocalDateTime completeAt;
 
-    private String address;
+    @ElementCollection
+    @CollectionTable(name = "mission_history_address", joinColumns = @JoinColumn(name = "mission_history_id"))
+    @Column(name = "address")
+    private List<String> addresses = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
@@ -45,14 +50,16 @@ public class MissionHistory extends BaseTimeEntity {
 
     @Builder
     public MissionHistory(Long id, Mission mission, ChallengeHistory challengeHistory, MissionStatus status,
-                          LocalDateTime completeAt, String address, User user,
+                          LocalDateTime completeAt, List<String> addresses, User user,
                           Integer gpsVerifyCount, String photoUrl1, String photoUrl2, String photoUrl3, Integer abstinenceTime) {
         this.id = id;
         this.mission = mission;
         this.challengeHistory = challengeHistory;
         this.status = status;
         this.completeAt = completeAt;
-        this.address = address;
+        if (addresses != null) {
+            this.addresses.addAll(addresses);
+        }
         this.user = user;
         this.gpsVerifyCount = gpsVerifyCount;
         this.photoUrl1 = photoUrl1;

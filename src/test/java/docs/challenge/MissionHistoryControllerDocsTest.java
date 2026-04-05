@@ -143,7 +143,7 @@ public class MissionHistoryControllerDocsTest extends RestDocsSupport {
     void 미션_히스토리_상세_조회_API_LOCATION() throws Exception {
         // given
         MissionHistoryDetailResponse.LocationVerificationData locationData =
-                MissionHistoryDetailResponse.LocationVerificationData.of(5);
+                MissionHistoryDetailResponse.LocationVerificationData.of(5, List.of("서울시 강남구", "서울시 서초구"));
 
         MissionHistoryDetailResponse response = MissionHistoryDetailResponse.builder()
                 .missionHistoryId(1L)
@@ -200,6 +200,8 @@ public class MissionHistoryControllerDocsTest extends RestDocsSupport {
                                         .description("위치 인증 데이터 (LOCATION 타입일 때만)").optional(),
                                 fieldWithPath("data.locationData.gpsVerifyCount").type(JsonFieldType.NUMBER)
                                         .description("GPS 검증 횟수"),
+                                fieldWithPath("data.locationData.addresses").type(JsonFieldType.ARRAY)
+                                        .description("인증된 주소 목록"),
                                 fieldWithPath("data.photoData").type(JsonFieldType.NULL)
                                         .description("사진 인증 데이터 (REPLACE_ACTION 타입일 때만)").optional(),
                                 fieldWithPath("data.abstinenceData").type(JsonFieldType.NULL)
