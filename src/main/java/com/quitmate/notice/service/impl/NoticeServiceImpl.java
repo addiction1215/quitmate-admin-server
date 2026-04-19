@@ -4,7 +4,7 @@ import com.quitmate.alertHistory.entity.AlertDestinationType;
 import com.quitmate.alertSetting.entity.AlertSetting;
 import com.quitmate.alertSetting.entity.enums.AlertType;
 import com.quitmate.alertSetting.service.AlertSettingReadService;
-import com.quitmate.expo.ExpoNotiService;
+import com.quitmate.expo.event.PushNotificationEvent;
 import com.quitmate.firebase.request.SendFirebaseDataDto;
 import com.quitmate.firebase.request.SendFirebaseServiceRequest;
 import com.quitmate.global.exception.QuitmateException;
@@ -19,9 +19,11 @@ import com.quitmate.user.push.entity.Push;
 import com.quitmate.user.users.entity.User;
 import com.quitmate.user.users.service.UserReadService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,7 +33,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     private static final String UNKNOWN_NOTICE = "해당 공지사항은 존재하지 않습니다.";
 
-    private final ExpoNotiService expoNotiService;
+    private final ApplicationEventPublisher eventPublisher;
     private final UserReadService userReadService;
 
     private final NoticeRepository noticeRepository;
@@ -48,23 +50,24 @@ public class NoticeServiceImpl implements NoticeService {
                 .alert_destination_info("공지사항")
                 .build();
 
+        List<SendFirebaseServiceRequest> pushRequests = new ArrayList<>();
         for (User user : users) {
-            if (!shouldSendPush(user)) {
-                continue;
-            }
+            if (!shouldSendPush(user)) continue;
             List<Push> pushes = getPushToken(user);
-            if (pushes.isEmpty()) {
-                continue;
-            }
+            if (pushes.isEmpty()) continue;
 
-            SendFirebaseServiceRequest serviceRequest = SendFirebaseServiceRequest.builder()
-                    .push(pushes.get(0))
-                    .body(noticeCreateResponse.getContent())
-                    .sound("default")
-                    .sendFirebaseDataDto(dataDto)
-                    .build();
+            pushes.forEach(push -> pushRequests.add(
+                    SendFirebaseServiceRequest.builder()
+                            .push(push)
+                            .body(noticeCreateResponse.getContent())
+                            .sound("default")
+                            .sendFirebaseDataDto(dataDto)
+                            .build()
+            ));
+        }
 
-            expoNotiService.sendPushNotificationToAll(pushes, serviceRequest);
+        if (!pushRequests.isEmpty()) {
+            eventPublisher.publishEvent(new PushNotificationEvent(pushRequests));
         }
         return noticeCreateResponse;
     }

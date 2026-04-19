@@ -32,17 +32,8 @@ public class ExpoNotiService {
     private final AlertHistoryService alertHistoryService;
     private final ObjectMapper objectMapper;
 
-    public void sendPushNotificationToAll(List<Push> pushes, SendFirebaseServiceRequest baseRequest) {
-        if (pushes.isEmpty()) return;
-
-        List<SendFirebaseServiceRequest> requests = pushes.stream()
-                .map(push -> SendFirebaseServiceRequest.builder()
-                        .push(push)
-                        .sound(baseRequest.getSound())
-                        .body(baseRequest.getBody())
-                        .sendFirebaseDataDto(baseRequest.getSendFirebaseDataDto())
-                        .build())
-                .toList();
+    public void sendBatchPushNotification(List<SendFirebaseServiceRequest> requests) {
+        if (requests.isEmpty()) return;
 
         List<Map<String, Object>> bodies = buildPushBodies(requests);
         if (!bodies.isEmpty()) {
