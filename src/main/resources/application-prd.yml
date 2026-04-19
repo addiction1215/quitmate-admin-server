@@ -51,3 +51,4 @@ aws:
       user: quitmate-user-prd
       challenge: quitmate-challenge-prd
       challenge-badge: quitmate-challenge-badge-prd
+      inquiry: quitmate-inquiry-prd

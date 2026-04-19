@@ -35,6 +35,9 @@ public class S3StorageService {
     @Value("${aws.s3.bucket.challenge-badge}")
     private String challengeBadgeBucketName;
 
+    @Value("${aws.s3.bucket.inquiry}")
+    private String inquiryBucketName;
+
     @Value("${aws.s3.region}")
     private String region;
 
@@ -139,6 +142,7 @@ public class S3StorageService {
             case USER -> userBucketName;
             case CHALLENGE -> challengeBucketName;
             case CHALLENGE_BADGE -> challengeBadgeBucketName;
+            case INQUIRY -> inquiryBucketName;
         };
     }
 

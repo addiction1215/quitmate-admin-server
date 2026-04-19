@@ -51,3 +51,4 @@ aws:
       user: quitmate-user-dev
       challenge: quitmate-challenge-dev
       challenge-badge: quitmate-challenge-badge-dev
+      inquiry: quitmate-inquiry-dev

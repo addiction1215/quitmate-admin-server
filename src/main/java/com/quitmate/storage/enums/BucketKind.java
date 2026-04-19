@@ -7,6 +7,7 @@ public enum BucketKind {
 
     USER,
     CHALLENGE,
-    CHALLENGE_BADGE
+    CHALLENGE_BADGE,
+    INQUIRY
 
 }
