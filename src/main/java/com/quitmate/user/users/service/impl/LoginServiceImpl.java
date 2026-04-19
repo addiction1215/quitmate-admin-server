@@ -6,6 +6,7 @@ import com.quitmate.global.jwt.JwtTokenGenerator;
 import com.quitmate.global.jwt.dto.JwtToken;
 import com.quitmate.global.jwt.dto.LoginUserInfo;
 import com.quitmate.user.users.entity.User;
+import com.quitmate.user.users.entity.enums.Role;
 import com.quitmate.user.users.service.LoginService;
 import com.quitmate.user.users.service.UserReadService;
 import com.quitmate.user.users.service.request.LoginServiceRequest;
@@ -35,6 +36,10 @@ public class LoginServiceImpl implements LoginService {
 
         if (!bCryptPasswordEncoder.matches(loginServiceRequest.getPassword(), user.getPassword())) {
             throw new QuitmateException("아이디 또는 패스워드가 일치하지 않습니다.");
+        }
+
+        if (user.getRole() != Role.ADMIN) {
+            throw new QuitmateException("관리자만 로그인할 수 있습니다.");
         }
 
         JwtToken jwtToken = setJwtTokenPushKey(user);
