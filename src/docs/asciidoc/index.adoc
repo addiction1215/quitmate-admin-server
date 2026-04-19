@@ -48,3 +48,8 @@ include::api/rewardHistory/rewardHistory.adoc[]
 == storage API
 
 include::api/storage/storage.adoc[]
+
+[[FAQ-API]]
+== FAQ API
+
+include::api/faq/faq.adoc[]

@@ -1,0 +1,38 @@
+[[faq-create]]
+=== FAQ 등록
+
+==== HTTP Request
+
+include::{snippets}/faq-create/http-request.adoc[]
+include::{snippets}/faq-create/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/faq-create/http-response.adoc[]
+include::{snippets}/faq-create/response-fields.adoc[]
+
+[[faq-update]]
+=== FAQ 수정
+
+==== HTTP Request
+
+include::{snippets}/faq-update/http-request.adoc[]
+include::{snippets}/faq-update/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/faq-update/http-response.adoc[]
+include::{snippets}/faq-update/response-fields.adoc[]
+
+[[faq-delete]]
+=== FAQ 삭제
+
+==== HTTP Request
+
+include::{snippets}/faq-delete/http-request.adoc[]
+include::{snippets}/faq-delete/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/faq-delete/http-response.adoc[]
+include::{snippets}/faq-delete/response-fields.adoc[]
