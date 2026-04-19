@@ -65,6 +65,10 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Push> pushes = new ArrayList<>();
 
+    public void updateRole(Role role) {
+        this.role = role;
+    }
+
     @Builder
     public User(String profileUrl, String email, String password, String nickName, String phoneNumber, String birthDay, String purpose,
                 Integer totalScore, String introduction, Integer cigarettePrice, SnsType snsType, Sex sex, Role role,
