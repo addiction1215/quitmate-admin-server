@@ -4,7 +4,7 @@ import com.quitmate.alertHistory.entity.AlertDestinationType;
 import com.quitmate.alertSetting.entity.AlertSetting;
 import com.quitmate.alertSetting.entity.enums.AlertType;
 import com.quitmate.alertSetting.service.AlertSettingReadService;
-import com.quitmate.firebase.FirebaseService;
+import com.quitmate.expo.ExpoNotiService;
 import com.quitmate.firebase.request.SendFirebaseDataDto;
 import com.quitmate.firebase.request.SendFirebaseServiceRequest;
 import com.quitmate.global.exception.QuitmateException;
@@ -31,7 +31,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     private static final String UNKNOWN_NOTICE = "해당 공지사항은 존재하지 않습니다.";
 
-    private final FirebaseService firebaseService;
+    private final ExpoNotiService expoNotiService;
     private final UserReadService userReadService;
 
     private final NoticeRepository noticeRepository;
@@ -64,7 +64,7 @@ public class NoticeServiceImpl implements NoticeService {
                     .sendFirebaseDataDto(dataDto)
                     .build();
 
-            firebaseService.sendPushNotificationToAll(pushes, serviceRequest);
+            expoNotiService.sendPushNotificationToAll(pushes, serviceRequest);
         }
         return noticeCreateResponse;
     }
