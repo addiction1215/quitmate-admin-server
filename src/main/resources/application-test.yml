@@ -42,3 +42,4 @@ aws:
       user: testuserbucket  # 사용자 관련 파일 버킷
       challenge: testchallengebucket  # 챌린지 관련 파일 버킷
       challenge-badge: testchallengebadgebucket  # 챌린지 배지 관련 파일 버킷
+      inquiry: testinquirybucket  # 문의사항 관련 파일 버킷
