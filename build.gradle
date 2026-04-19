@@ -170,10 +170,7 @@ tasks.processResources {
                 DB_PASSWORD: System.getenv('DB_PASSWORD'),
                 JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY'),
                 AWS_ACCESS_KEY: System.getenv('AWS_ACCESS_KEY'),
-                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY'),
-                USER_BUCKET: System.getenv('USER_BUCKET'),
-                CHALLENGE_BUCKET: System.getenv('CHALLENGE_BUCKET'),
-                CHALLENGE_BADGE_BUCKET: System.getenv('CHALLENGE_BADGE_BUCKET')
+                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY')
         )
     }
     filesMatching('application-prd.yml') {
@@ -184,10 +181,7 @@ tasks.processResources {
                 DB_PASSWORD: System.getenv('DB_PASSWORD'),
                 JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY'),
                 AWS_ACCESS_KEY: System.getenv('AWS_ACCESS_KEY'),
-                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY'),
-                USER_BUCKET: System.getenv('USER_BUCKET'),
-                CHALLENGE_BUCKET: System.getenv('CHALLENGE_BUCKET'),
-                CHALLENGE_BADGE_BUCKET: System.getenv('CHALLENGE_BADGE_BUCKET')
+                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY')
         )
     }
 }

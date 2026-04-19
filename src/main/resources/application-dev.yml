@@ -48,6 +48,6 @@ aws:
   s3:
     region: ap-northeast-2  # Seoul Region
     bucket:
-      user: ${USER_BUCKET}  # 사용자 관련 파일 버킷
-      challenge: ${CHALLENGE_BUCKET}  # 챌린지 관련 파일 버킷
-      challenge-badge: ${CHALLENGE_BADGE_BUCKET}  # 챌린지 관련 파일 버킷
+      user: quitmate-user-dev
+      challenge: quitmate-challenge-dev
+      challenge-badge: quitmate-challenge-badge-dev
