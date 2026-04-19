@@ -44,7 +44,7 @@ public abstract class IntegrationTestSupport {
                 .nickName("테스트 닉네임")
                 .phoneNumber("010-1234-1234")
                 .sex(Sex.MALE)
-                .role(Role.USER)
+                .role(Role.ADMIN)
                 .snsType(snsType)
                 .settingStatus(settingStatus)
                 .purpose("테스트 목표")
