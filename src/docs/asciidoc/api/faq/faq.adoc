@@ -36,3 +36,16 @@ include::{snippets}/faq-delete/path-parameters.adoc[]
 
 include::{snippets}/faq-delete/http-response.adoc[]
 include::{snippets}/faq-delete/response-fields.adoc[]
+
+[[faq-list]]
+=== FAQ 리스트 조회
+
+==== HTTP Request
+
+include::{snippets}/faq-list/http-request.adoc[]
+include::{snippets}/faq-list/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/faq-list/http-response.adoc[]
+include::{snippets}/faq-list/response-fields.adoc[]

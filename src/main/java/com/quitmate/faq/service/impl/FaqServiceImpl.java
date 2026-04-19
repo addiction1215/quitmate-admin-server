@@ -1,13 +1,17 @@
 package com.quitmate.faq.service.impl;
 
 import com.quitmate.faq.entity.Faq;
+import com.quitmate.faq.repository.FaqQueryRepository;
 import com.quitmate.faq.repository.FaqRepository;
 import com.quitmate.faq.service.FaqService;
 import com.quitmate.faq.service.request.FaqCreateServiceRequest;
+import com.quitmate.faq.service.request.FaqListServiceRequest;
 import com.quitmate.faq.service.request.FaqUpdateServiceRequest;
 import com.quitmate.faq.service.response.FaqCreateResponse;
+import com.quitmate.faq.service.response.FaqListResponse;
 import com.quitmate.faq.service.response.FaqUpdateResponse;
 import com.quitmate.global.exception.QuitmateException;
+import com.quitmate.global.page.response.PageCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,7 @@ public class FaqServiceImpl implements FaqService {
     private static final String UNKNOWN_FAQ = "해당 FAQ는 존재하지 않습니다.";
 
     private final FaqRepository faqRepository;
+    private final FaqQueryRepository faqQueryRepository;
 
     @Override
     public FaqCreateResponse createFaq(FaqCreateServiceRequest request) {
@@ -39,5 +44,11 @@ public class FaqServiceImpl implements FaqService {
         Faq faq = faqRepository.findById(id)
                 .orElseThrow(() -> new QuitmateException(UNKNOWN_FAQ));
         faq.delete();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageCustom<FaqListResponse> getFaqList(FaqListServiceRequest request) {
+        return PageCustom.of(faqQueryRepository.findFaqList(request, request.toPageable()));
     }
 }

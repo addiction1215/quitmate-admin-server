@@ -1,11 +1,14 @@
 package com.quitmate.faq.controller;
 
 import com.quitmate.faq.controller.request.FaqCreateRequest;
+import com.quitmate.faq.controller.request.FaqListRequest;
 import com.quitmate.faq.controller.request.FaqUpdateRequest;
 import com.quitmate.faq.service.FaqService;
 import com.quitmate.faq.service.response.FaqCreateResponse;
+import com.quitmate.faq.service.response.FaqListResponse;
 import com.quitmate.faq.service.response.FaqUpdateResponse;
 import com.quitmate.global.ApiResponse;
+import com.quitmate.global.page.response.PageCustom;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,5 +38,11 @@ public class FaqController {
     public ApiResponse<Void> deleteFaq(@PathVariable Long id) {
         faqService.deleteFaq(id);
         return ApiResponse.ok(null);
+    }
+
+    @GetMapping
+    public ApiResponse<PageCustom<FaqListResponse>> getFaqList(
+            @ModelAttribute FaqListRequest request) {
+        return ApiResponse.ok(faqService.getFaqList(request.toServiceRequest()));
     }
 }
