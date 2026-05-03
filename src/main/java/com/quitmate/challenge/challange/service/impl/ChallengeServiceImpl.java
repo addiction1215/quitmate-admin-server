@@ -47,7 +47,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         Challenge challenge = challengeReadService.findById(id);
 
         // 2. 챌린지 정보 업데이트
-        challenge.update(request.getTitle(), request.getBadge(), request.getReward());
+        challenge.update(request.getTitle(), request.getBadge(), request.getContent(), request.getReward());
 
         // 3. 기존 미션 삭제
         missionRepository.deleteByChallengeId(id);

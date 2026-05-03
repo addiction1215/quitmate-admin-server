@@ -15,14 +15,16 @@ public class ChallengeDetailResponse {
     private final Long challengeId;
     private final String title;
     private final String badge;
+    private final String content;
     private final Integer reward;
     private final List<MissionResponse> missions;
 
     @Builder
-    private ChallengeDetailResponse(Long challengeId, String title, String badge, Integer reward, List<MissionResponse> missions) {
+    private ChallengeDetailResponse(Long challengeId, String title, String badge, String content, Integer reward, List<MissionResponse> missions) {
         this.challengeId = challengeId;
         this.title = title;
         this.badge = badge;
+        this.content = content;
         this.reward = reward;
         this.missions = missions;
     }
@@ -32,6 +34,7 @@ public class ChallengeDetailResponse {
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .badge(badge)
+                .content(challenge.getContent())
                 .reward(challenge.getReward())
                 .missions(missions.stream()
                         .map(MissionResponse::createResponse)

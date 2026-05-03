@@ -24,6 +24,9 @@ public class ChallengeCreateRequest {
     @NotBlank(message = "챌린지 뱃지는 필수입니다.")
     private String badge;
 
+    @NotBlank(message = "챌린지 내용은 필수입니다.")
+    private String content;
+
     @NotNull(message = "챌린지 리워드는 필수입니다.")
     private Integer reward;
 
@@ -32,9 +35,10 @@ public class ChallengeCreateRequest {
     private List<MissionRequest> missions;
 
     @Builder
-    public ChallengeCreateRequest(String title, String badge, Integer reward, List<MissionRequest> missions) {
+    public ChallengeCreateRequest(String title, String badge, String content, Integer reward, List<MissionRequest> missions) {
         this.title = title;
         this.badge = badge;
+        this.content = content;
         this.reward = reward;
         this.missions = missions;
     }
@@ -43,6 +47,7 @@ public class ChallengeCreateRequest {
         return ChallengeCreateServiceRequest.builder()
                 .title(title)
                 .badge(badge)
+                .content(content)
                 .reward(reward)
                 .missions(missions.stream()
                         .map(MissionRequest::toServiceRequest)

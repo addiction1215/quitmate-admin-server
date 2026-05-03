@@ -12,13 +12,15 @@ public class ChallengeUpdateServiceRequest {
 
     private String title;
     private String badge;
+    private String content;
     private Integer reward;
     private List<MissionUpdateServiceRequest> missions;
 
     @Builder
-    public ChallengeUpdateServiceRequest(String title, String badge, Integer reward, List<MissionUpdateServiceRequest> missions) {
+    public ChallengeUpdateServiceRequest(String title, String badge, String content, Integer reward, List<MissionUpdateServiceRequest> missions) {
         this.title = title;
         this.badge = badge;
+        this.content = content;
         this.reward = reward;
         this.missions = missions;
     }

@@ -10,14 +10,16 @@ public class ChallengeCreateResponse {
     private final Long challengeId;
     private final String title;
     private final String badge;
+    private final String content;
     private final Integer reward;
     private final Integer missionCount;
 
     @Builder
-    private ChallengeCreateResponse(Long challengeId, String title, String badge, Integer reward, Integer missionCount) {
+    private ChallengeCreateResponse(Long challengeId, String title, String badge, String content, Integer reward, Integer missionCount) {
         this.challengeId = challengeId;
         this.title = title;
         this.badge = badge;
+        this.content = content;
         this.reward = reward;
         this.missionCount = missionCount;
     }
@@ -27,6 +29,7 @@ public class ChallengeCreateResponse {
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .badge(challenge.getBadge())
+                .content(challenge.getContent())
                 .reward(challenge.getReward())
                 .missionCount(missionCount)
                 .build();

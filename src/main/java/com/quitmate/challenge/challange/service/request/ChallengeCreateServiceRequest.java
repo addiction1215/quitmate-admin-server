@@ -13,13 +13,15 @@ public class ChallengeCreateServiceRequest {
 
     private String title;
     private String badge;
+    private String content;
     private Integer reward;
     private List<MissionCreateServiceRequest> missions;
 
     @Builder
-    public ChallengeCreateServiceRequest(String title, String badge, Integer reward, List<MissionCreateServiceRequest> missions) {
+    public ChallengeCreateServiceRequest(String title, String badge, String content, Integer reward, List<MissionCreateServiceRequest> missions) {
         this.title = title;
         this.badge = badge;
+        this.content = content;
         this.reward = reward;
         this.missions = missions;
     }
@@ -28,6 +30,7 @@ public class ChallengeCreateServiceRequest {
         return Challenge.builder()
                 .title(title)
                 .badge(badge)
+                .content(content)
                 .reward(reward)
                 .build();
     }

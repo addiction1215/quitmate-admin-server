@@ -167,6 +167,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .challengeId(1L)
                 .title("금연 챌린지")
                 .badge("금연 뱃지")
+                .content("흡연 욕구를 이겨내기 위한 7일 챌린지입니다.")
                 .reward(100)
                 .missions(List.of(mission1, mission2))
                 .build();
@@ -201,6 +202,8 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                         .description("챌린지 제목"),
                                 fieldWithPath("data.badge").type(JsonFieldType.STRING)
                                         .description("뱃지명"),
+                                fieldWithPath("data.content").type(JsonFieldType.STRING)
+                                        .description("챌린지 내용"),
                                 fieldWithPath("data.reward").type(JsonFieldType.NUMBER)
                                         .description("보상 포인트"),
                                 fieldWithPath("data.missions[]").type(JsonFieldType.ARRAY)
@@ -240,6 +243,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
         ChallengeCreateRequest request = ChallengeCreateRequest.builder()
                 .title("금연 챌린지")
                 .badge("금연 뱃지")
+                .content("흡연 욕구를 이겨내기 위한 7일 챌린지입니다.")
                 .reward(100)
                 .missions(List.of(mission1, mission2))
                 .build();
@@ -248,6 +252,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .challengeId(1L)
                 .title("금연 챌린지")
                 .badge("금연 뱃지")
+                .content("흡연 욕구를 이겨내기 위한 7일 챌린지입니다.")
                 .reward(100)
                 .missionCount(2)
                 .build();
@@ -271,6 +276,8 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                         .description("챌린지 제목"),
                                 fieldWithPath("badge").type(JsonFieldType.STRING)
                                         .description("뱃지명"),
+                                fieldWithPath("content").type(JsonFieldType.STRING)
+                                        .description("챌린지 내용"),
                                 fieldWithPath("reward").type(JsonFieldType.NUMBER)
                                         .description("보상 포인트"),
                                 fieldWithPath("missions[]").type(JsonFieldType.ARRAY)
@@ -299,6 +306,8 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                         .description("챌린지 제목"),
                                 fieldWithPath("data.badge").type(JsonFieldType.STRING)
                                         .description("뱃지명"),
+                                fieldWithPath("data.content").type(JsonFieldType.STRING)
+                                        .description("챌린지 내용"),
                                 fieldWithPath("data.reward").type(JsonFieldType.NUMBER)
                                         .description("보상 포인트"),
                                 fieldWithPath("data.missionCount").type(JsonFieldType.NUMBER)
@@ -321,6 +330,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
         ChallengeUpdateRequest request = ChallengeUpdateRequest.builder()
                 .title("금연 챌린지 수정")
                 .badge("금연 뱃지 수정")
+                .content("흡연 욕구를 이겨내기 위한 14일 챌린지입니다.")
                 .reward(150)
                 .missions(List.of(mission1))
                 .build();
@@ -344,6 +354,8 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                         .description("챌린지 제목"),
                                 fieldWithPath("badge").type(JsonFieldType.STRING)
                                         .description("뱃지명"),
+                                fieldWithPath("content").type(JsonFieldType.STRING)
+                                        .description("챌린지 내용"),
                                 fieldWithPath("reward").type(JsonFieldType.NUMBER)
                                         .description("보상 포인트"),
                                 fieldWithPath("missions[]").type(JsonFieldType.ARRAY)
