@@ -1,5 +1,6 @@
 package com.quitmate.faq.controller.request;
 
+import com.quitmate.faq.enums.FaqCategory;
 import com.quitmate.faq.service.request.FaqListServiceRequest;
 import com.quitmate.global.page.request.PageInfoRequest;
 import lombok.Builder;
@@ -8,11 +9,13 @@ import lombok.Getter;
 @Getter
 public class FaqListRequest extends PageInfoRequest {
 
+    private final FaqCategory category;
     private final String keyword;
 
     @Builder
-    public FaqListRequest(int page, int size, String keyword) {
+    public FaqListRequest(int page, int size, FaqCategory category, String keyword) {
         super(page, size);
+        this.category = category;
         this.keyword = keyword;
     }
 
@@ -20,6 +23,7 @@ public class FaqListRequest extends PageInfoRequest {
         return FaqListServiceRequest.builder()
                 .page(getPage())
                 .size(getSize())
+                .category(category)
                 .keyword(keyword)
                 .build();
     }

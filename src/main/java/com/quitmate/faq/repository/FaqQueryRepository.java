@@ -3,6 +3,7 @@ package com.quitmate.faq.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.quitmate.faq.enums.FaqCategory;
 import com.quitmate.faq.service.request.FaqListServiceRequest;
 import com.quitmate.faq.service.response.FaqListResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +28,23 @@ public class FaqQueryRepository {
         List<FaqListResponse> content = jpaQueryFactory
                 .select(Projections.constructor(FaqListResponse.class,
                         faq.id,
+                        faq.category,
+                        faq.pinned,
+                        faq.sortOrder,
                         faq.title,
                         faq.description
                 ))
                 .from(faq)
                 .where(
                         faq.useYn.eq("Y"),
+                        categoryCondition(request.getCategory()),
                         keywordCondition(request.getKeyword())
                 )
-                .orderBy(faq.createdDate.desc())
+                .orderBy(
+                        faq.pinned.desc(),
+                        faq.sortOrder.asc(),
+                        faq.createdDate.desc()
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -46,12 +55,20 @@ public class FaqQueryRepository {
                         .from(faq)
                         .where(
                                 faq.useYn.eq("Y"),
+                                categoryCondition(request.getCategory()),
                                 keywordCondition(request.getKeyword())
                         )
                         .fetchOne()
         ).orElse(0L);
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    private BooleanExpression categoryCondition(FaqCategory category) {
+        if (category == null) {
+            return null;
+        }
+        return faq.category.eq(category);
     }
 
     private BooleanExpression keywordCondition(String keyword) {

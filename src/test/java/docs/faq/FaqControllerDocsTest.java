@@ -3,6 +3,7 @@ package docs.faq;
 import com.quitmate.faq.controller.FaqController;
 import com.quitmate.faq.controller.request.FaqCreateRequest;
 import com.quitmate.faq.controller.request.FaqUpdateRequest;
+import com.quitmate.faq.enums.FaqCategory;
 import com.quitmate.faq.service.FaqService;
 import com.quitmate.faq.service.response.FaqCreateResponse;
 import com.quitmate.faq.service.response.FaqListResponse;
@@ -43,12 +44,18 @@ public class FaqControllerDocsTest extends RestDocsSupport {
     @Test
     void FAQ_등록_API() throws Exception {
         FaqCreateRequest request = FaqCreateRequest.builder()
+                .category(FaqCategory.INFO_FRIEND)
+                .pinned(true)
+                .sortOrder(10)
                 .title("자주 묻는 질문입니다.")
                 .description("자주 묻는 질문에 대한 답변입니다.")
                 .build();
 
         FaqCreateResponse response = FaqCreateResponse.builder()
                 .id(1L)
+                .category(FaqCategory.INFO_FRIEND)
+                .pinned(true)
+                .sortOrder(10)
                 .title("자주 묻는 질문입니다.")
                 .description("자주 묻는 질문에 대한 답변입니다.")
                 .build();
@@ -66,6 +73,9 @@ public class FaqControllerDocsTest extends RestDocsSupport {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("FAQ 카테고리"),
+                                fieldWithPath("pinned").type(JsonFieldType.BOOLEAN).description("상단 고정 여부"),
+                                fieldWithPath("sortOrder").type(JsonFieldType.NUMBER).description("카테고리 내 정렬 순서"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("FAQ 제목"),
                                 fieldWithPath("description").type(JsonFieldType.STRING).description("FAQ 내용")
                         ),
@@ -75,6 +85,9 @@ public class FaqControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("메세지"),
                                 fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("FAQ ID"),
+                                fieldWithPath("data.category").type(JsonFieldType.STRING).description("FAQ 카테고리"),
+                                fieldWithPath("data.pinned").type(JsonFieldType.BOOLEAN).description("상단 고정 여부"),
+                                fieldWithPath("data.sortOrder").type(JsonFieldType.NUMBER).description("카테고리 내 정렬 순서"),
                                 fieldWithPath("data.title").type(JsonFieldType.STRING).description("FAQ 제목"),
                                 fieldWithPath("data.description").type(JsonFieldType.STRING).description("FAQ 내용")
                         )
@@ -86,12 +99,18 @@ public class FaqControllerDocsTest extends RestDocsSupport {
     void FAQ_수정_API() throws Exception {
         FaqUpdateRequest request = FaqUpdateRequest.builder()
                 .id(1L)
+                .category(FaqCategory.INFO_FRIEND)
+                .pinned(false)
+                .sortOrder(20)
                 .title("수정된 질문입니다.")
                 .description("수정된 답변입니다.")
                 .build();
 
         FaqUpdateResponse response = FaqUpdateResponse.builder()
                 .id(1L)
+                .category(FaqCategory.INFO_FRIEND)
+                .pinned(false)
+                .sortOrder(20)
                 .title("수정된 질문입니다.")
                 .description("수정된 답변입니다.")
                 .build();
@@ -110,6 +129,9 @@ public class FaqControllerDocsTest extends RestDocsSupport {
                         preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("FAQ ID"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("FAQ 카테고리"),
+                                fieldWithPath("pinned").type(JsonFieldType.BOOLEAN).description("상단 고정 여부"),
+                                fieldWithPath("sortOrder").type(JsonFieldType.NUMBER).description("카테고리 내 정렬 순서"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("FAQ 제목"),
                                 fieldWithPath("description").type(JsonFieldType.STRING).description("FAQ 내용")
                         ),
@@ -119,6 +141,9 @@ public class FaqControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("메세지"),
                                 fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("FAQ ID"),
+                                fieldWithPath("data.category").type(JsonFieldType.STRING).description("FAQ 카테고리"),
+                                fieldWithPath("data.pinned").type(JsonFieldType.BOOLEAN).description("상단 고정 여부"),
+                                fieldWithPath("data.sortOrder").type(JsonFieldType.NUMBER).description("카테고리 내 정렬 순서"),
                                 fieldWithPath("data.title").type(JsonFieldType.STRING).description("FAQ 제목"),
                                 fieldWithPath("data.description").type(JsonFieldType.STRING).description("FAQ 내용")
                         )
@@ -155,6 +180,9 @@ public class FaqControllerDocsTest extends RestDocsSupport {
     void FAQ_리스트_조회_API() throws Exception {
         FaqListResponse item = FaqListResponse.builder()
                 .id(1L)
+                .category(FaqCategory.INFO_FRIEND)
+                .pinned(true)
+                .sortOrder(10)
                 .title("자주 묻는 질문입니다.")
                 .description("자주 묻는 질문에 대한 답변입니다.")
                 .build();
@@ -169,6 +197,7 @@ public class FaqControllerDocsTest extends RestDocsSupport {
                         get("/api/v1/faq")
                                 .param("page", "1")
                                 .param("size", "12")
+                                .param("category", "INFO_FRIEND")
                                 .param("keyword", "자주")
                 )
                 .andDo(print())
@@ -179,6 +208,7 @@ public class FaqControllerDocsTest extends RestDocsSupport {
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호 (기본값: 1)"),
                                 parameterWithName("size").description("페이지 크기 (기본값: 12)"),
+                                parameterWithName("category").description("FAQ 카테고리 (선택)"),
                                 parameterWithName("keyword").description("제목 검색어 (선택)")
                         ),
                         responseFields(
@@ -188,6 +218,9 @@ public class FaqControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("data.content[]").type(JsonFieldType.ARRAY).description("FAQ 목록"),
                                 fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER).description("FAQ ID"),
+                                fieldWithPath("data.content[].category").type(JsonFieldType.STRING).description("FAQ 카테고리"),
+                                fieldWithPath("data.content[].pinned").type(JsonFieldType.BOOLEAN).description("상단 고정 여부"),
+                                fieldWithPath("data.content[].sortOrder").type(JsonFieldType.NUMBER).description("카테고리 내 정렬 순서"),
                                 fieldWithPath("data.content[].title").type(JsonFieldType.STRING).description("FAQ 제목"),
                                 fieldWithPath("data.content[].description").type(JsonFieldType.STRING).description("FAQ 내용"),
                                 fieldWithPath("data.pageInfo").type(JsonFieldType.OBJECT).description("페이징 정보"),

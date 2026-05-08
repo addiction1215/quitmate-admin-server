@@ -35,7 +35,7 @@ public class FaqServiceImpl implements FaqService {
     public FaqUpdateResponse updateFaq(FaqUpdateServiceRequest request) {
         Faq faq = faqRepository.findById(request.getId())
                 .orElseThrow(() -> new QuitmateException(UNKNOWN_FAQ));
-        faq.update(request.getTitle(), request.getDescription());
+        faq.update(request.getCategory(), request.getPinned(), request.getSortOrder(), request.getTitle(), request.getDescription());
         return FaqUpdateResponse.createResponse(faq);
     }
 

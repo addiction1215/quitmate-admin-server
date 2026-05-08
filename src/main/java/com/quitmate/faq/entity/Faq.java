@@ -1,5 +1,6 @@
 package com.quitmate.faq.entity;
 
+import com.quitmate.faq.enums.FaqCategory;
 import com.quitmate.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,17 +22,31 @@ public class Faq extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    private FaqCategory category;
+
+    @Column(name = "is_pinned")
+    private Boolean pinned;
+
+    private Integer sortOrder;
+
     private String useYn;
 
     @Builder
-    public Faq(Long id, String title, String description) {
+    public Faq(Long id, String title, String description, FaqCategory category, Boolean pinned, Integer sortOrder) {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.category = category;
+        this.pinned = pinned;
+        this.sortOrder = sortOrder;
         this.useYn = "Y";
     }
 
-    public void update(String title, String description) {
+    public void update(FaqCategory category, Boolean pinned, Integer sortOrder, String title, String description) {
+        this.category = category;
+        this.pinned = pinned;
+        this.sortOrder = sortOrder;
         this.title = title;
         this.description = description;
     }
