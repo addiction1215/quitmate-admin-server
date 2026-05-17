@@ -40,7 +40,7 @@ public class InquiryQuestionReadServiceImpl implements InquiryQuestionReadServic
     public InquiryQuestionDetailResponse getInquiryQuestionDetail(Long id) {
         return InquiryQuestionDetailResponse.createResponse(
                 findById(id),
-                inquiryAnswerReadService.findByInquiryQuestionId(id)
+                inquiryAnswerReadService.findOptionalByInquiryQuestionId(id).orElse(null)
         );
     }
 }

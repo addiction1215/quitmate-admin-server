@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,9 +25,8 @@ public class InquiryAnswerReadServiceImpl implements InquiryAnswerReadService {
     }
 
     @Override
-    public InquiryAnswer findByInquiryQuestionId(Long questionId) {
-        return inquiryAnswerRepository.findByInquiryQuestionId(questionId)
-                .orElseThrow(() -> new IllegalArgumentException(INQUIRY_ANSWER_NOT_FOUND));
+    public Optional<InquiryAnswer> findOptionalByInquiryQuestionId(Long questionId) {
+        return inquiryAnswerRepository.findByInquiryQuestionId(questionId);
     }
 
 }
