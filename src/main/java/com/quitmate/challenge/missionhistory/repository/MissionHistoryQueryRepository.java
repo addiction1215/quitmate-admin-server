@@ -2,6 +2,7 @@ package com.quitmate.challenge.missionhistory.repository;
 
 import com.quitmate.challenge.missionhistory.controller.request.MissionHistorySearchCategory;
 import com.quitmate.challenge.missionhistory.controller.request.MissionHistorySortType;
+import com.quitmate.challenge.missionhistory.controller.request.MissionHistoryStatusFilter;
 import com.quitmate.challenge.missionhistory.entity.MissionStatus;
 import com.quitmate.challenge.missionhistory.repository.response.MissionHistoryDto;
 import com.quitmate.challenge.missionhistory.service.request.MissionHistoryListServiceRequest;
@@ -50,7 +51,7 @@ public class MissionHistoryQueryRepository {
                 .join(missionHistory.challengeHistory, challengeHistory)
                 .join(missionHistory.user, user)
                 .where(
-                        missionHistory.status.eq(MissionStatus.READY),
+                        statusFilterCondition(request.getStatus()),
                         searchCondition(request.getCategory(), request.getKeyword())
                 )
                 .orderBy(getOrderSpecifier(request.getSortBy()))
@@ -73,7 +74,7 @@ public class MissionHistoryQueryRepository {
                         .join(missionHistory.challengeHistory, challengeHistory)
                         .join(missionHistory.user, user)
                         .where(
-                                missionHistory.status.eq(MissionStatus.READY),
+                                statusFilterCondition(request.getStatus()),
                                 searchCondition(request.getCategory(), request.getKeyword())
                         )
                         .fetchOne()
@@ -96,12 +97,38 @@ public class MissionHistoryQueryRepository {
     private BooleanExpression statusCondition(String keyword) {
         if ("대기".equals(keyword) || "READY".equalsIgnoreCase(keyword)) {
             return missionHistory.status.eq(MissionStatus.READY);
+        } else if ("처리완료".equals(keyword) || "처리 완료".equals(keyword) || "PROCESSED".equalsIgnoreCase(keyword)) {
+            return processedCondition();
         } else if ("완료".equals(keyword) || "COMPLETED".equalsIgnoreCase(keyword)) {
+            return missionHistory.status.eq(MissionStatus.COMPLETED);
+        } else if ("SUCCESS".equalsIgnoreCase(keyword)) {
             return missionHistory.status.eq(MissionStatus.COMPLETED);
         } else if ("실패".equals(keyword) || "FAILED".equalsIgnoreCase(keyword)) {
             return missionHistory.status.eq(MissionStatus.FAILED);
+        } else if ("FAIL".equalsIgnoreCase(keyword)) {
+            return missionHistory.status.eq(MissionStatus.FAILED);
+        } else if ("취소".equals(keyword) || "포기".equals(keyword) || "CANCELLED".equalsIgnoreCase(keyword)) {
+            return missionHistory.status.eq(MissionStatus.CANCELLED);
         }
         return null;
+    }
+
+    private BooleanExpression statusFilterCondition(MissionHistoryStatusFilter status) {
+        if (status == null) {
+            return null;
+        }
+
+        return switch (status) {
+            case READY -> missionHistory.status.eq(MissionStatus.READY);
+            case PROCESSED -> processedCondition();
+            case COMPLETED, SUCCESS -> missionHistory.status.eq(MissionStatus.COMPLETED);
+            case FAILED, FAIL -> missionHistory.status.eq(MissionStatus.FAILED);
+            case CANCELLED -> missionHistory.status.eq(MissionStatus.CANCELLED);
+        };
+    }
+
+    private BooleanExpression processedCondition() {
+        return missionHistory.status.notIn(MissionStatus.READY, MissionStatus.PROGRESSING);
     }
 
     private OrderSpecifier<?> getOrderSpecifier(MissionHistorySortType sortBy) {

@@ -98,6 +98,7 @@ public class MissionHistoryControllerDocsTest extends RestDocsSupport {
                                 parameterWithName("page").description("페이지 번호 (기본값: 1)").optional(),
                                 parameterWithName("size").description("페이지 크기 (기본값: 10)").optional(),
                                 parameterWithName("sortBy").description("정렬 기준 (CREATED_DATE, STATUS) (선택)").optional(),
+                                parameterWithName("status").description("상태 필터 (READY, PROCESSED, COMPLETED, SUCCESS, FAILED, FAIL, CANCELLED) (선택)").optional(),
                                 parameterWithName("category").description("검색 카테고리 (CHALLENGE_TITLE, MISSION_TITLE, USER_NAME, STATUS) (선택)").optional(),
                                 parameterWithName("keyword").description("검색어 (선택)").optional()
                         ),
