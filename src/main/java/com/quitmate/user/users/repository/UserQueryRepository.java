@@ -38,8 +38,8 @@ public class UserQueryRepository {
                 ))
                 .from(user)
                 .where(
-                        searchCondition(request.getCategory(), request.getKeyword())
-//                        ,user.useYn.eq("Y")
+                        searchCondition(request.getCategory(), request.getKeyword()),
+                        isActiveUser()
                 )
                 .orderBy(getOrderSpecifier(request.getSortBy()))
                 .offset(pageable.getOffset())
@@ -57,11 +57,15 @@ public class UserQueryRepository {
                         .select(user.count())
                         .from(user)
                         .where(
-                                searchCondition(request.getCategory(), request.getKeyword())
-//                                ,user.useYn.eq("Y")
+                                searchCondition(request.getCategory(), request.getKeyword()),
+                                isActiveUser()
                         )
                         .fetchOne()
         ).orElse(0L);
+    }
+
+    private BooleanExpression isActiveUser() {
+        return user.useYn.eq("Y");
     }
 
     private BooleanExpression searchCondition(UserSearchCategory category, String keyword) {
