@@ -41,4 +41,10 @@ public class NoticeController {
             @Valid @RequestBody NoticeUpdateRequest request) {
         return ApiResponse.ok(noticeService.updateNotice(request.toServiceRequest()));
     }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteNotice(@PathVariable Long id) {
+        noticeService.deleteNotice(id);
+        return ApiResponse.ok(null);
+    }
 }

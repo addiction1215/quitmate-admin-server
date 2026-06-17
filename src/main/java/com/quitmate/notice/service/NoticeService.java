@@ -10,4 +10,6 @@ public interface NoticeService {
     NoticeCreateResponse createNotice(NoticeCreateServiceRequest request);
 
     NoticeUpdateResponse updateNotice(NoticeUpdateServiceRequest request);
+
+    void deleteNotice(Long id);
 }

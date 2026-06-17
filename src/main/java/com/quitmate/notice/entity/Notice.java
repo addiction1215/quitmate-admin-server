@@ -37,4 +37,8 @@ public class Notice extends BaseTimeEntity {
         this.type = type;
         this.content = content;
     }
+
+    public void delete() {
+        this.useYn = "N";
+    }
 }

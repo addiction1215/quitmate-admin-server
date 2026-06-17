@@ -23,11 +23,13 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -234,6 +236,35 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                         .description("유형"),
                                 fieldWithPath("data.content").type(JsonFieldType.STRING)
                                         .description("내용")
+                        )
+                ));
+    }
+
+    @DisplayName("공지사항 삭제 API")
+    @Test
+    void 공지사항_삭제_API() throws Exception {
+        doNothing().when(noticeService).deleteNotice(any());
+
+        mockMvc.perform(
+                        delete("/api/v1/notice/{id}", 1L)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("notice-delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("공지사항 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("statusCode").type(JsonFieldType.NUMBER)
+                                        .description("코드"),
+                                fieldWithPath("httpStatus").type(JsonFieldType.STRING)
+                                        .description("상태"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("메세지"),
+                                fieldWithPath("data").type(JsonFieldType.NULL)
+                                        .description("응답 데이터 (없음)")
                         )
                 ));
     }

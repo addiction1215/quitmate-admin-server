@@ -81,6 +81,14 @@ public class NoticeServiceImpl implements NoticeService {
         return NoticeUpdateResponse.createResponse(notice);
     }
 
+    @Override
+    public void deleteNotice(Long id) {
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new QuitmateException(UNKNOWN_NOTICE));
+
+        notice.delete();
+    }
+
     /**
      * 사용자에게 Push 알림을 전송해야 하는지 확인
      * - 전체 알림 설정 확인

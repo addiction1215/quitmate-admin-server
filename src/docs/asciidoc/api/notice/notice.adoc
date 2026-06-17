@@ -43,6 +43,7 @@ include::{snippets}/notice-update/response-fields.adoc[]
 ==== HTTP Request
 
 include::{snippets}/notice-delete/http-request.adoc[]
+include::{snippets}/notice-delete/path-parameters.adoc[]
 
 ==== HTTP Response
 
