@@ -11,13 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MissionUpdateServiceRequest {
 
+    private Long missionId;
     private MissionCategoryStatus category;
     private String title;
     private Integer reward;
     private String content;
 
     @Builder
-    public MissionUpdateServiceRequest(MissionCategoryStatus category, String title, Integer reward, String content) {
+    public MissionUpdateServiceRequest(Long missionId, MissionCategoryStatus category, String title, Integer reward, String content) {
+        this.missionId = missionId;
         this.category = category;
         this.title = title;
         this.reward = reward;

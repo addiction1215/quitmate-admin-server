@@ -41,7 +41,7 @@ public class ChallengeQueryRepository {
                         challengeHistory.count()
                 ))
                 .from(challenge)
-                .leftJoin(mission).on(mission.challenge.id.eq(challenge.id))
+                .leftJoin(mission).on(mission.challenge.id.eq(challenge.id), mission.useYn.eq("Y"))
                 .leftJoin(challengeHistory).on(challengeHistory.challenge.id.eq(challenge.id))
                 .where(searchCondition(request.getCategory(), request.getKeyword()))
                 .groupBy(challenge.id, challenge.title, challenge.badge, challenge.reward)

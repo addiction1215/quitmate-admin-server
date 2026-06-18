@@ -28,6 +28,8 @@ public class Mission extends BaseTimeEntity {
 
     private String content;
 
+    private String useYn;
+
     @Builder
     public Mission(Long id, Challenge challenge, MissionCategoryStatus category, String title, Integer reward, String content) {
         this.id = id;
@@ -36,5 +38,17 @@ public class Mission extends BaseTimeEntity {
         this.title = title;
         this.reward = reward;
         this.content = content;
+        this.useYn = "Y";
+    }
+
+    public void update(MissionCategoryStatus category, String title, Integer reward, String content) {
+        this.category = category;
+        this.title = title;
+        this.reward = reward;
+        this.content = content;
+    }
+
+    public void delete() {
+        this.useYn = "N";
     }
 }

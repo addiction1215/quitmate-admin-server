@@ -321,6 +321,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
     void 챌린지_수정_API() throws Exception {
         // given
         ChallengeUpdateRequest.MissionUpdateRequest mission1 = ChallengeUpdateRequest.MissionUpdateRequest.builder()
+                .missionId(1L)
                 .category(MissionCategoryStatus.LOCATION)
                 .title("흡연 루트 피하기")
                 .reward(50)
@@ -360,6 +361,8 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                         .description("보상 포인트"),
                                 fieldWithPath("missions[]").type(JsonFieldType.ARRAY)
                                         .description("미션 목록"),
+                                fieldWithPath("missions[].missionId").type(JsonFieldType.NUMBER).optional()
+                                        .description("미션 ID (기존 미션 수정 시 전달, 신규 미션 생성 시 생략 가능)"),
                                 fieldWithPath("missions[].category").type(JsonFieldType.STRING)
                                         .description("미션 카테고리: " + Arrays.toString(MissionCategoryStatus.values())),
                                 fieldWithPath("missions[].title").type(JsonFieldType.STRING)

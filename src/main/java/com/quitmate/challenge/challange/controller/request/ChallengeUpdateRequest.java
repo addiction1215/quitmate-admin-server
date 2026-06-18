@@ -59,6 +59,8 @@ public class ChallengeUpdateRequest {
     @NoArgsConstructor
     public static class MissionUpdateRequest {
 
+        private Long missionId;
+
         @NotNull(message = "미션 카테고리는 필수입니다.")
         private MissionCategoryStatus category;
 
@@ -72,7 +74,8 @@ public class ChallengeUpdateRequest {
         private String content;
 
         @Builder
-        public MissionUpdateRequest(MissionCategoryStatus category, String title, Integer reward, String content) {
+        public MissionUpdateRequest(Long missionId, MissionCategoryStatus category, String title, Integer reward, String content) {
+            this.missionId = missionId;
             this.category = category;
             this.title = title;
             this.reward = reward;
@@ -81,6 +84,7 @@ public class ChallengeUpdateRequest {
 
         public MissionUpdateServiceRequest toServiceRequest() {
             return MissionUpdateServiceRequest.builder()
+                    .missionId(missionId)
                     .category(category)
                     .title(title)
                     .reward(reward)
