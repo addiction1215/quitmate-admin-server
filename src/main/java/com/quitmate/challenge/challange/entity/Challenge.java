@@ -1,6 +1,7 @@
 package com.quitmate.challenge.challange.entity;
 
 import com.quitmate.global.BaseTimeEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +23,7 @@ public class Challenge extends BaseTimeEntity {
 
     private String content;
 
+    @Column(columnDefinition = "TEXT")
     private String badge;
 
     private Integer reward;
