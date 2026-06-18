@@ -23,9 +23,4 @@ public class MissionRepositoryImpl implements MissionRepository {
     public List<Mission> findByChallengeId(Long challengeId) {
         return missionJpaRepository.findByChallengeId(challengeId);
     }
-
-    @Override
-    public void deleteByChallengeId(Long challengeId) {
-        missionJpaRepository.deleteByChallengeId(challengeId);
-    }
 }

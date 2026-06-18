@@ -99,11 +99,11 @@ public class ChallengeServiceImpl implements ChallengeService {
         // 1. 챌린지 존재 확인
         Challenge challenge = challengeReadService.findById(id);
 
-        // 2. 미션 삭제
-        missionRepository.deleteByChallengeId(id);
+        // 2. 이력 보존을 위해 활성 미션 soft delete
+        missionRepository.findByChallengeId(id)
+                .forEach(Mission::delete);
 
-        // 3. 챌린지 삭제
-        challengeRepository.deleteById(id);
+        // 3. 챌린지 soft delete
+        challenge.delete();
     }
 }
-

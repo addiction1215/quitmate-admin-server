@@ -43,7 +43,10 @@ public class ChallengeQueryRepository {
                 .from(challenge)
                 .leftJoin(mission).on(mission.challenge.id.eq(challenge.id), mission.useYn.eq("Y"))
                 .leftJoin(challengeHistory).on(challengeHistory.challenge.id.eq(challenge.id))
-                .where(searchCondition(request.getCategory(), request.getKeyword()))
+                .where(
+                        challenge.useYn.eq("Y"),
+                        searchCondition(request.getCategory(), request.getKeyword())
+                )
                 .groupBy(challenge.id, challenge.title, challenge.badge, challenge.reward)
                 .orderBy(getOrderSpecifier(request.getSortType()))
                 .offset(pageable.getOffset())
@@ -63,7 +66,10 @@ public class ChallengeQueryRepository {
                 jpaQueryFactory
                         .select(challenge.countDistinct())
                         .from(challenge)
-                        .where(searchCondition(request.getCategory(), request.getKeyword()))
+                        .where(
+                                challenge.useYn.eq("Y"),
+                                searchCondition(request.getCategory(), request.getKeyword())
+                        )
                         .fetchOne()
         ).orElse(0L);
     }

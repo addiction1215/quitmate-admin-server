@@ -33,9 +33,4 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     public Optional<Challenge> findById(Long id) {
         return challengeJpaRepository.findById(id);
     }
-
-    @Override
-    public void deleteById(Long id) {
-        challengeJpaRepository.deleteById(id);
-    }
 }

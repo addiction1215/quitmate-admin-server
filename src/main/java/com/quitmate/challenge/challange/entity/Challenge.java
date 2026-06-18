@@ -28,6 +28,8 @@ public class Challenge extends BaseTimeEntity {
 
     private Integer reward;
 
+    private String useYn;
+
     @Builder
     public Challenge(Long id, String title, String content, String badge, Integer reward) {
         this.id = id;
@@ -35,6 +37,7 @@ public class Challenge extends BaseTimeEntity {
         this.content = content;
         this.badge = badge;
         this.reward = reward;
+        this.useYn = "Y";
     }
 
     public void update(String title, String badge, String content, Integer reward) {
@@ -44,5 +47,9 @@ public class Challenge extends BaseTimeEntity {
         if(badge != null) {
             this.badge = badge;
         }
+    }
+
+    public void delete() {
+        this.useYn = "N";
     }
 }

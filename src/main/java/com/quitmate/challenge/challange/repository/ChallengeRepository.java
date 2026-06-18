@@ -14,6 +14,4 @@ public interface ChallengeRepository {
     Challenge save(Challenge challenge);
 
     Optional<Challenge> findById(Long id);
-
-    void deleteById(Long id);
 }

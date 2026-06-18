@@ -10,6 +10,4 @@ import java.util.List;
 public interface MissionJpaRepository extends JpaRepository<Mission, Long> {
     @Query("select m from Mission m where m.challenge.id = :challengeId and m.useYn = 'Y'")
     List<Mission> findByChallengeId(@Param("challengeId") Long challengeId);
-
-    void deleteByChallengeId(Long challengeId);
 }

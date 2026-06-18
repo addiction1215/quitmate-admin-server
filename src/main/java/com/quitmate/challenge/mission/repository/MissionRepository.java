@@ -8,6 +8,4 @@ public interface MissionRepository {
     List<Mission> saveAll(List<Mission> missions);
 
     List<Mission> findByChallengeId(Long challengeId);
-
-    void deleteByChallengeId(Long challengeId);
 }
