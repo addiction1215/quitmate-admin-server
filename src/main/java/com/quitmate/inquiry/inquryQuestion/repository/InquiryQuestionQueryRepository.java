@@ -33,6 +33,7 @@ public class InquiryQuestionQueryRepository {
                 .select(Projections.constructor(InquiryQuestionDto.class,
                         inquiryQuestion.id,
                         user.nickName,
+                        user.email,
                         inquiryQuestion.title,
                         inquiryQuestion.createdDate,
                         inquiryQuestion.inquiryStatus

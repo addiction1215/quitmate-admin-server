@@ -14,15 +14,17 @@ public class InquiryQuestionListResponse {
 
     private Long id;
     private String writerName;
+    private String email;
     private String title;
     private LocalDateTime createdDate;
     private InquiryStatus status;
 
     @Builder
-    private InquiryQuestionListResponse(Long id, String writerName, String title, 
+    private InquiryQuestionListResponse(Long id, String writerName, String email, String title,
                                        LocalDateTime createdDate, InquiryStatus status) {
         this.id = id;
         this.writerName = writerName;
+        this.email = email;
         this.title = title;
         this.createdDate = createdDate;
         this.status = status;
@@ -32,6 +34,7 @@ public class InquiryQuestionListResponse {
         return InquiryQuestionListResponse.builder()
                 .id(dto.getId())
                 .writerName(dto.getWriterName())
+                .email(dto.getEmail())
                 .title(dto.getTitle())
                 .createdDate(dto.getCreatedDate())
                 .status(dto.getStatus())

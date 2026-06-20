@@ -45,6 +45,7 @@ public class InquiryQuestionControllerDocsTest extends RestDocsSupport {
         InquiryQuestionListResponse inquiry1 = InquiryQuestionListResponse.builder()
                 .id(1L)
                 .writerName("사용자1")
+                .email("user1@test.com")
                 .title("문의사항 제목1")
                 .createdDate(LocalDateTime.of(2024, 1, 1, 10, 0))
                 .status(InquiryStatus.WAITING)
@@ -53,6 +54,7 @@ public class InquiryQuestionControllerDocsTest extends RestDocsSupport {
         InquiryQuestionListResponse inquiry2 = InquiryQuestionListResponse.builder()
                 .id(2L)
                 .writerName("사용자2")
+                .email("user2@test.com")
                 .title("문의사항 제목2")
                 .createdDate(LocalDateTime.of(2024, 1, 2, 10, 0))
                 .status(InquiryStatus.DONE)
@@ -108,6 +110,8 @@ public class InquiryQuestionControllerDocsTest extends RestDocsSupport {
                                         .description("문의사항 ID"),
                                 fieldWithPath("data.content[].writerName").type(JsonFieldType.STRING)
                                         .description("작성자명"),
+                                fieldWithPath("data.content[].email").type(JsonFieldType.STRING)
+                                        .description("작성자 이메일"),
                                 fieldWithPath("data.content[].title").type(JsonFieldType.STRING)
                                         .description("제목"),
                                 fieldWithPath("data.content[].createdDate").type(JsonFieldType.STRING)
