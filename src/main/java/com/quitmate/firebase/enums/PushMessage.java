@@ -12,6 +12,7 @@ public enum PushMessage {
 	FRIEND("친구 추가 알림"),
 	FRIEND_CODE("친구 추가요청 수신알림"),
 	NOTICE("공지사항 알림"),
+	INQUIRY("1:1 문의 답변 알림"),
 	DEFAULT("Quitmate 알림");
 
 	private final String text;
@@ -22,6 +23,7 @@ public enum PushMessage {
 			case FRIEND -> FRIEND;
 			case FRIEND_CODE -> FRIEND_CODE;
 			case NOTICE -> NOTICE;
+			case INQUIRY -> INQUIRY;
 		};
 	}
 }
