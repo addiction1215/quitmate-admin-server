@@ -46,6 +46,8 @@ public class User extends BaseTimeEntity {
 
     private LocalDateTime startDate;
 
+    private LocalDateTime lastLoginAt;
+
     private String profileUrl;
 
     @Enumerated(EnumType.STRING)

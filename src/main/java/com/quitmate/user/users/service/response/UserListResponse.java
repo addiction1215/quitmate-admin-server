@@ -13,16 +13,18 @@ public class UserListResponse {
 
     private Long id;                    // 회원ID
     private LocalDateTime createdDate;  // 가입일자
+    private LocalDateTime lastLoginAt;  // 최근 로그인
     private String email;               // 이메일
     private String nickName;            // 유저명
     private String birthDay;            // 생년월일
     private String sex;                    // 성별
 
     @Builder
-    private UserListResponse(Long id, LocalDateTime createdDate, String email, String nickName,
+    private UserListResponse(Long id, LocalDateTime createdDate, LocalDateTime lastLoginAt, String email, String nickName,
                              String birthDay, String sex) {
         this.id = id;
         this.createdDate = createdDate;
+        this.lastLoginAt = lastLoginAt;
         this.email = email;
         this.nickName = nickName;
         this.birthDay = birthDay;
@@ -33,6 +35,7 @@ public class UserListResponse {
         return UserListResponse.builder()
                 .id(dto.getId())
                 .createdDate(dto.getCreatedDate())
+                .lastLoginAt(dto.getLastLoginAt())
                 .email(dto.getEmail() != null ? dto.getEmail() : "")
                 .nickName(dto.getNickName() != null ? dto.getNickName() : "")
                 .birthDay(dto.getBirthDay() != null ? dto.getBirthDay() : "")
