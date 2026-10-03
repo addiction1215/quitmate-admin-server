@@ -46,6 +46,7 @@ public class UserControllerDocsTest extends RestDocsSupport {
         UserListResponse user1 = UserListResponse.builder()
                 .id(1L)
                 .createdDate(LocalDateTime.of(2024, 1, 1, 10, 0))
+                .lastLoginAt(LocalDateTime.of(2024, 2, 1, 12, 30))
                 .email("user1@example.com")
                 .nickName("사용자1")
                 .birthDay("19900101")
@@ -55,6 +56,7 @@ public class UserControllerDocsTest extends RestDocsSupport {
         UserListResponse user2 = UserListResponse.builder()
                 .id(2L)
                 .createdDate(LocalDateTime.of(2024, 1, 2, 10, 0))
+                .lastLoginAt(LocalDateTime.of(2024, 2, 2, 14, 0))
                 .email("user2@example.com")
                 .nickName("사용자2")
                 .birthDay("19910202")
@@ -113,6 +115,8 @@ public class UserControllerDocsTest extends RestDocsSupport {
                                         .description("회원 ID"),
                                 fieldWithPath("data.content[].createdDate").type(JsonFieldType.STRING)
                                         .description("가입일자"),
+                                fieldWithPath("data.content[].lastLoginAt").type(JsonFieldType.STRING)
+                                        .description("최근 로그인 시각 (기록이 없으면 null)"),
                                 fieldWithPath("data.content[].email").type(JsonFieldType.STRING)
                                         .description("이메일"),
                                 fieldWithPath("data.content[].nickName").type(JsonFieldType.STRING)
