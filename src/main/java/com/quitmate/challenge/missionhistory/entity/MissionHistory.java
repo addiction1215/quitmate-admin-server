@@ -3,6 +3,7 @@ package com.quitmate.challenge.missionhistory.entity;
 import com.quitmate.challenge.challengehistory.entity.ChallengeHistory;
 import com.quitmate.challenge.mission.entity.Mission;
 import com.quitmate.global.BaseTimeEntity;
+import com.quitmate.global.exception.QuitmateException;
 import com.quitmate.user.users.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -68,7 +69,32 @@ public class MissionHistory extends BaseTimeEntity {
         this.abstinenceTime = abstinenceTime;
     }
 
-    public void updateStatus(MissionStatus status) {
-        this.status = status;
+    /**
+     * 관리자 심사 결과를 반영한다. 승인 대기(READY) 미션만 심사할 수 있다.
+     * 반려하면 제출 내용을 비워 사용자가 처음부터 다시 제출할 수 있게 하고,
+     * 상태는 FAILED로 남겨 앱이 반려 안내를 띄울 수 있게 한다.
+     */
+    public void judge(boolean isSuccess) {
+        if (this.status != MissionStatus.READY) {
+            throw new QuitmateException("승인 대기 중인 미션만 심사할 수 있습니다.");
+        }
+
+        if (isSuccess) {
+            this.status = MissionStatus.COMPLETED;
+            this.completeAt = LocalDateTime.now();
+            return;
+        }
+
+        this.status = MissionStatus.FAILED;
+        clearSubmission();
+    }
+
+    private void clearSubmission() {
+        this.addresses.clear();
+        this.gpsVerifyCount = 0;
+        this.photoUrl1 = null;
+        this.photoUrl2 = null;
+        this.photoUrl3 = null;
+        this.abstinenceTime = 0;
     }
 }
