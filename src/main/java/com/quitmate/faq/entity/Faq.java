@@ -25,7 +25,8 @@ public class Faq extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private FaqCategory category;
 
-    @Column(name = "is_pinned")
+    // 앱 서버(addiction)가 같은 faq 테이블의 pinned 컬럼을 읽는다.
+    @Column(name = "pinned", nullable = false)
     private Boolean pinned;
 
     private Integer sortOrder;
