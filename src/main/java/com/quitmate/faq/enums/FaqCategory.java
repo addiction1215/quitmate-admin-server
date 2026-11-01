@@ -6,10 +6,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum FaqCategory {
-    INFO_FRIEND("정보 및 친구"),
-    REPORT("리포트"),
+    INFO_FRIEND("앱 사용법"),
+    REPORT("통계"),
     LEADERBOARD("리더보드"),
-    CHALLENGE("챌린지");
+    CHALLENGE("챌린지"),
+    SMOKING_RECORD("흡연 기록");
 
     private final String description;
 }
