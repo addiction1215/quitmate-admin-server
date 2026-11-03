@@ -10,13 +10,15 @@ import lombok.NoArgsConstructor;
 public class SendFirebaseServiceRequest {
     private Push push;
     private String sound;
+    private String title;
     private String body;
     private SendFirebaseDataDto sendFirebaseDataDto;
 
     @Builder
-    private SendFirebaseServiceRequest(Push push, String sound, String body, SendFirebaseDataDto sendFirebaseDataDto) {
+    private SendFirebaseServiceRequest(Push push, String sound, String title, String body, SendFirebaseDataDto sendFirebaseDataDto) {
         this.push = push;
         this.sound = sound;
+        this.title = title;
         this.body = body;
         this.sendFirebaseDataDto = sendFirebaseDataDto;
     }

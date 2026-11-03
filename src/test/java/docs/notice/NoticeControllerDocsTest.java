@@ -51,14 +51,16 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
         // given
         NoticeListResponse notice1 = NoticeListResponse.builder()
                 .id(1L)
-                .type(NoticeType.FEATURE_UPDATE.getDescription())
+                .type(NoticeType.FEATURE_UPDATE)
+                .title("1.2.0 업데이트 안내")
                 .content("첫 번째 공지사항입니다.")
                 .createdDate(LocalDateTime.of(2024, 1, 1, 10, 0))
                 .build();
 
         NoticeListResponse notice2 = NoticeListResponse.builder()
                 .id(2L)
-                .type(NoticeType.EVENT.getDescription())
+                .type(NoticeType.EVENT)
+                .title("금연 챌린지 이벤트")
                 .content("이벤트 공지사항입니다.")
                 .createdDate(LocalDateTime.of(2024, 1, 2, 10, 0))
                 .build();
@@ -95,7 +97,7 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                 parameterWithName("page").description("페이지 번호 (기본값: 1)").optional(),
                                 parameterWithName("size").description("페이지 크기 (기본값: 10)").optional(),
                                 parameterWithName("sortBy").description("정렬 기준 (CREATED_DATE, TYPE) (선택)").optional(),
-                                parameterWithName("category").description("검색 카테고리 (CREATED_DATE, TYPE, CONTENT) (선택)").optional(),
+                                parameterWithName("category").description("검색 카테고리 (CREATED_DATE, TYPE, TITLE, CONTENT) (선택)").optional(),
                                 parameterWithName("keyword").description("검색어 (선택)").optional()
                         ),
                         responseFields(
@@ -113,6 +115,8 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                         .description("공지사항 ID"),
                                 fieldWithPath("data.content[].type").type(JsonFieldType.STRING)
                                         .description("유형: " + Arrays.toString(NoticeType.values())),
+                                fieldWithPath("data.content[].title").type(JsonFieldType.STRING)
+                                        .description("제목"),
                                 fieldWithPath("data.content[].content").type(JsonFieldType.STRING)
                                         .description("내용"),
                                 fieldWithPath("data.content[].createdDate").type(JsonFieldType.STRING)
@@ -135,12 +139,14 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
         // given
         NoticeCreateRequest request = NoticeCreateRequest.builder()
                 .type(NoticeType.FEATURE_UPDATE)
+                .title("공지 제목")
                 .content("새로운 공지사항입니다.")
                 .build();
 
         NoticeCreateResponse response = NoticeCreateResponse.builder()
                 .id(1L)
                 .type(NoticeType.FEATURE_UPDATE)
+                .title("공지 제목")
                 .content("새로운 공지사항입니다.")
                 .build();
 
@@ -161,6 +167,8 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                         requestFields(
                                 fieldWithPath("type").type(JsonFieldType.STRING)
                                         .description("유형: " + Arrays.toString(NoticeType.values())),
+                                fieldWithPath("title").type(JsonFieldType.STRING)
+                                        .description("제목 (100자 이하)"),
                                 fieldWithPath("content").type(JsonFieldType.STRING)
                                         .description("내용")
                         ),
@@ -177,6 +185,8 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                         .description("공지사항 ID"),
                                 fieldWithPath("data.type").type(JsonFieldType.STRING)
                                         .description("유형"),
+                                fieldWithPath("data.title").type(JsonFieldType.STRING)
+                                        .description("제목"),
                                 fieldWithPath("data.content").type(JsonFieldType.STRING)
                                         .description("내용")
                         )
@@ -190,12 +200,14 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
         NoticeUpdateRequest request = NoticeUpdateRequest.builder()
                 .id(1L)
                 .type(NoticeType.FEATURE_UPDATE)
+                .title("공지 제목")
                 .content("수정된 공지사항입니다.")
                 .build();
 
         NoticeUpdateResponse response = NoticeUpdateResponse.builder()
                 .id(1L)
                 .type(NoticeType.FEATURE_UPDATE)
+                .title("공지 제목")
                 .content("수정된 공지사항입니다.")
                 .build();
 
@@ -218,6 +230,8 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                         .description("공지사항 ID"),
                                 fieldWithPath("type").type(JsonFieldType.STRING)
                                         .description("유형: " + Arrays.toString(NoticeType.values())),
+                                fieldWithPath("title").type(JsonFieldType.STRING)
+                                        .description("제목 (100자 이하)"),
                                 fieldWithPath("content").type(JsonFieldType.STRING)
                                         .description("내용")
                         ),
@@ -234,6 +248,8 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                         .description("공지사항 ID"),
                                 fieldWithPath("data.type").type(JsonFieldType.STRING)
                                         .description("유형"),
+                                fieldWithPath("data.title").type(JsonFieldType.STRING)
+                                        .description("제목"),
                                 fieldWithPath("data.content").type(JsonFieldType.STRING)
                                         .description("내용")
                         )

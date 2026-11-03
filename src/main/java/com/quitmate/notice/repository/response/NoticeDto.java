@@ -9,12 +9,14 @@ import java.time.LocalDateTime;
 public class NoticeDto {
     private Long id;                        // 공지사항 ID
     private NoticeType type;                // 유형
+    private String title;                   // 제목
     private String content;                 // 내용
     private LocalDateTime createdDate;      // 작성일시
 
-    public NoticeDto(Long id, NoticeType type, String content, LocalDateTime createdDate) {
+    public NoticeDto(Long id, NoticeType type, String title, String content, LocalDateTime createdDate) {
         this.id = id;
         this.type = type;
+        this.title = title;
         this.content = content;
         this.createdDate = createdDate;
     }

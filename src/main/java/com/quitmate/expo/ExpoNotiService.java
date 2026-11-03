@@ -53,7 +53,9 @@ public class ExpoNotiService {
     }
 
     private Map<String, Object> toPushBody(SendFirebaseServiceRequest request) {
-        String title = PushMessage.from(request.getSendFirebaseDataDto().getAlert_destination_type()).getText();
+        String title = request.getTitle() != null
+                ? request.getTitle()
+                : PushMessage.from(request.getSendFirebaseDataDto().getAlert_destination_type()).getText();
         Map<String, Object> data = objectMapper.convertValue(request.getSendFirebaseDataDto(), Map.class);
 
         return Map.of(
