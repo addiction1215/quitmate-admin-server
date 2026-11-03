@@ -2,10 +2,14 @@ package com.quitmate.notice.service;
 
 import com.quitmate.IntegrationTestSupport;
 import com.quitmate.alertSetting.repository.AlertSettingJpaRepository;
+import com.quitmate.expo.event.PushNotificationEvent;
+import com.quitmate.firebase.request.SendFirebaseServiceRequest;
 import com.quitmate.notice.enums.NoticeType;
 import com.quitmate.notice.repository.NoticeJpaRepository;
 import com.quitmate.notice.service.request.NoticeCreateServiceRequest;
 import com.quitmate.notice.service.response.NoticeCreateResponse;
+import com.quitmate.user.push.entity.Push;
+import com.quitmate.user.push.repository.PushJpaRepository;
 import com.quitmate.user.users.entity.User;
 import com.quitmate.user.users.entity.enums.SettingStatus;
 import com.quitmate.user.users.entity.enums.SnsType;
@@ -14,9 +18,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RecordApplicationEvents
 public class NoticeServiceTest extends IntegrationTestSupport {
 
 	@Autowired
@@ -29,10 +36,17 @@ public class NoticeServiceTest extends IntegrationTestSupport {
 	private AlertSettingJpaRepository alertSettingJpaRepository;
 
 	@Autowired
+	private PushJpaRepository pushJpaRepository;
+
+	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private ApplicationEvents events;
 
 	@AfterEach
 	void deleteNoticesAndAlertSettings() {
+		pushJpaRepository.deleteAllInBatch();
 		noticeJpaRepository.deleteAllInBatch();
 		alertSettingJpaRepository.deleteAllInBatch();
 	}
@@ -48,6 +62,7 @@ public class NoticeServiceTest extends IntegrationTestSupport {
 
 		NoticeCreateServiceRequest request = NoticeCreateServiceRequest.builder()
 			.type(NoticeType.NOTICE)
+			.title("QuitMate 서비스 이용 안내")
 			.content("QuitMate 서비스 이용 안내")
 			.build();
 
@@ -57,5 +72,31 @@ public class NoticeServiceTest extends IntegrationTestSupport {
 		// then
 		assertThat(response.getContent()).isEqualTo("QuitMate 서비스 이용 안내");
 		assertThat(noticeJpaRepository.findById(response.getId())).isPresent();
+	}
+
+	@DisplayName("공지 푸시 제목은 공지 제목이고, 본문은 알림 기록 칸(255자)에 맞춰 줄인다.")
+	@Test
+	void createNoticePushUsesTitleAndShortBody() {
+		// given
+		User user = userRepository.save(
+			createUser("push@test.com", "1234", SnsType.NORMAL, SettingStatus.COMPLETE));
+		pushJpaRepository.save(Push.of("device-1", user, "ExponentPushToken[test]"));
+
+		NoticeCreateServiceRequest request = NoticeCreateServiceRequest.builder()
+			.type(NoticeType.NOTICE)
+			.title("서비스 이용 안내")
+			.content("가".repeat(300))
+			.build();
+
+		// when
+		NoticeCreateResponse response = noticeService.createNotice(request);
+
+		// then
+		assertThat(noticeJpaRepository.findById(response.getId()).orElseThrow().getTitle()).isEqualTo("서비스 이용 안내");
+		assertThat(events.stream(PushNotificationEvent.class)).hasSize(1);
+		SendFirebaseServiceRequest push = events.stream(PushNotificationEvent.class)
+			.findFirst().orElseThrow().getRequests().get(0);
+		assertThat(push.getTitle()).isEqualTo("서비스 이용 안내");
+		assertThat(push.getBody()).hasSize(255).endsWith("…");
 	}
 }

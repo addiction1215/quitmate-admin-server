@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum NoticeSearchCategory {
     CREATED_DATE("createdDate", "작성일시"),
     TYPE("type", "유형"),
+    TITLE("title", "제목"),
     CONTENT("content", "내용");
 
     private final String value;

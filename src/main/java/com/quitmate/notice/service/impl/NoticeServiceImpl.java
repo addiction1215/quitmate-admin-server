@@ -32,6 +32,8 @@ import java.util.List;
 public class NoticeServiceImpl implements NoticeService {
 
     private static final String UNKNOWN_NOTICE = "해당 공지사항은 존재하지 않습니다.";
+    // 푸시 본문이 알림 기록(alert_history.alert_description, varchar(255))에 그대로 들어가 넘으면 기록 저장이 실패한다.
+    private static final int PUSH_BODY_MAX_LENGTH = 255;
 
     private final ApplicationEventPublisher eventPublisher;
     private final UserReadService userReadService;
@@ -50,6 +52,7 @@ public class NoticeServiceImpl implements NoticeService {
                 .alert_destination_info("공지사항")
                 .build();
 
+        String pushBody = toPushBody(noticeCreateResponse.getContent());
         List<SendFirebaseServiceRequest> pushRequests = new ArrayList<>();
         for (User user : users) {
             if (!shouldSendPush(user)) continue;
@@ -59,7 +62,8 @@ public class NoticeServiceImpl implements NoticeService {
             pushes.forEach(push -> pushRequests.add(
                     SendFirebaseServiceRequest.builder()
                             .push(push)
-                            .body(noticeCreateResponse.getContent())
+                            .title(noticeCreateResponse.getTitle())
+                            .body(pushBody)
                             .sound("default")
                             .sendFirebaseDataDto(dataDto)
                             .build()
@@ -77,7 +81,7 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findById(request.getId())
                 .orElseThrow(() -> new QuitmateException(UNKNOWN_NOTICE));
 
-        notice.update(request.getType(), request.getContent());
+        notice.update(request.getType(), request.getTitle(), request.getContent());
         return NoticeUpdateResponse.createResponse(notice);
     }
 
@@ -110,6 +114,13 @@ public class NoticeServiceImpl implements NoticeService {
         return alertSetting.getReport() != AlertType.OFF;
     }
 
+
+    private String toPushBody(String content) {
+        if (content.codePointCount(0, content.length()) <= PUSH_BODY_MAX_LENGTH) {
+            return content;
+        }
+        return content.substring(0, content.offsetByCodePoints(0, PUSH_BODY_MAX_LENGTH - 1)) + "…";
+    }
 
     /**
      * 사용자의 Push 토큰 조회

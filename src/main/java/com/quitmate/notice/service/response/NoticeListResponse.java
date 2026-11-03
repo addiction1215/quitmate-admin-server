@@ -13,14 +13,16 @@ import java.time.LocalDateTime;
 public class NoticeListResponse {
 
     private Long id;                        // 공지사항 ID
-    private String type;                // 유형
+    private NoticeType type;                // 유형
+    private String title;                   // 제목
     private String content;                 // 내용
     private LocalDateTime createdDate;      // 작성일시
 
     @Builder
-    private NoticeListResponse(Long id, String type, String content, LocalDateTime createdDate) {
+    private NoticeListResponse(Long id, NoticeType type, String title, String content, LocalDateTime createdDate) {
         this.id = id;
         this.type = type;
+        this.title = title;
         this.content = content;
         this.createdDate = createdDate;
     }
@@ -28,7 +30,8 @@ public class NoticeListResponse {
     public static NoticeListResponse createResponse(NoticeDto dto) {
         return NoticeListResponse.builder()
                 .id(dto.getId())
-                .type(dto.getType().getDescription())
+                .type(dto.getType())
+                .title(dto.getTitle())
                 .content(dto.getContent())
                 .createdDate(dto.getCreatedDate())
                 .build();

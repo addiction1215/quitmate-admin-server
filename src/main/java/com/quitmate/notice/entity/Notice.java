@@ -20,21 +20,25 @@ public class Notice extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private NoticeType type;
 
+    private String title;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
     private String useYn;
 
     @Builder
-    public Notice(Long id, NoticeType type, String content) {
+    public Notice(Long id, NoticeType type, String title, String content) {
         this.id = id;
         this.type = type;
+        this.title = title;
         this.content = content;
         this.useYn = "Y";
     }
 
-    public void update(NoticeType type, String content) {
+    public void update(NoticeType type, String title, String content) {
         this.type = type;
+        this.title = title;
         this.content = content;
     }
 

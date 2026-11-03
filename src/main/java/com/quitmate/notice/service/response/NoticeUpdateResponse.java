@@ -12,12 +12,14 @@ public class NoticeUpdateResponse {
 
     private Long id;
     private NoticeType type;
+    private String title;
     private String content;
 
     @Builder
-    private NoticeUpdateResponse(Long id, NoticeType type, String content) {
+    private NoticeUpdateResponse(Long id, NoticeType type, String title, String content) {
         this.id = id;
         this.type = type;
+        this.title = title;
         this.content = content;
     }
 
@@ -25,6 +27,7 @@ public class NoticeUpdateResponse {
         return NoticeUpdateResponse.builder()
                 .id(notice.getId())
                 .type(notice.getType())
+                .title(notice.getTitle())
                 .content(notice.getContent())
                 .build();
     }

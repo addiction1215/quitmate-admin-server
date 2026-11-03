@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.quitmate.notice.entity.QNotice.notice;
@@ -32,6 +33,7 @@ public class NoticeQueryRepository {
                 .select(Projections.constructor(NoticeDto.class,
                         notice.id,
                         notice.type,
+                        notice.title,
                         notice.content,
                         notice.createdDate
                 ))
@@ -69,6 +71,7 @@ public class NoticeQueryRepository {
         }
 
         return switch (category) {
+            case TITLE -> notice.title.containsIgnoreCase(keyword);
             case CONTENT -> notice.content.containsIgnoreCase(keyword);
             case TYPE -> typeCondition(keyword);
             case CREATED_DATE -> notice.createdDate.stringValue().contains(keyword);
@@ -76,16 +79,10 @@ public class NoticeQueryRepository {
     }
 
     private BooleanExpression typeCondition(String keyword) {
-        if ("새 기능 추가".equals(keyword) || "NEW_FEATURE".equalsIgnoreCase(keyword)) {
-            return notice.type.eq(NoticeType.NEW_FEATURE);
-        } else if ("기존 기능 수정".equals(keyword) || "FEATURE_UPDATE".equalsIgnoreCase(keyword)) {
-            return notice.type.eq(NoticeType.FEATURE_UPDATE);
-        } else if ("이벤트".equals(keyword) || "EVENT".equalsIgnoreCase(keyword)) {
-            return notice.type.eq(NoticeType.EVENT);
-        } else if ("서비스 점검".equals(keyword) || "SERVICE_CHECK".equalsIgnoreCase(keyword)) {
-            return notice.type.eq(NoticeType.SERVICE_CHECK);
-        }
-        return null;
+        List<NoticeType> types = Arrays.stream(NoticeType.values())
+                .filter(type -> type.getDescription().equals(keyword) || type.name().equalsIgnoreCase(keyword))
+                .toList();
+        return types.isEmpty() ? null : notice.type.in(types);
     }
 
     private OrderSpecifier<?> getOrderSpecifier(NoticeSortType sortBy) {

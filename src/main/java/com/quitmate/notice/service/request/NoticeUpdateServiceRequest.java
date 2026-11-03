@@ -11,12 +11,14 @@ public class NoticeUpdateServiceRequest {
 
     private Long id;
     private NoticeType type;
+    private String title;
     private String content;
 
     @Builder
-    public NoticeUpdateServiceRequest(Long id, NoticeType type, String content) {
+    public NoticeUpdateServiceRequest(Long id, NoticeType type, String title, String content) {
         this.id = id;
         this.type = type;
+        this.title = title;
         this.content = content;
     }
 }
