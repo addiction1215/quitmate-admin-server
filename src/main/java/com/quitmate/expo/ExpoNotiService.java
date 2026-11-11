@@ -30,6 +30,8 @@ public class ExpoNotiService {
 
     private static final String EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
     private static final String EXPO_RECEIPTS_URL = "https://exp.host/--/api/v2/push/getReceipts";
+    /** Expo 푸시 API 는 한 요청에 메시지를 100건까지 받는다. 넘으면 요청 전체가 거절된다 */
+    static final int EXPO_MAX_MESSAGES_PER_REQUEST = 100;
 
     private final RestTemplate restTemplate;
     private final AlertHistoryService alertHistoryService;
@@ -39,8 +41,9 @@ public class ExpoNotiService {
         if (requests.isEmpty()) return;
 
         List<Map<String, Object>> bodies = buildPushBodies(requests);
-        if (!bodies.isEmpty()) {
-            callExpoApi(bodies);
+        // 100건씩 나눠 보낸다. 한 묶음이 실패해도 나머지 묶음은 보낸다(callExpoApi 가 예외를 삼킨다).
+        for (int from = 0; from < bodies.size(); from += EXPO_MAX_MESSAGES_PER_REQUEST) {
+            callExpoApi(bodies.subList(from, Math.min(from + EXPO_MAX_MESSAGES_PER_REQUEST, bodies.size())));
         }
         saveAlertHistories(requests);
     }

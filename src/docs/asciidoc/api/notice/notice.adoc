@@ -14,6 +14,13 @@ include::{snippets}/notice-list/response-fields.adoc[]
 [[notice-create]]
 === 공지사항 생성
 
+공지를 등록하면 공지 유형에 따라 앱 푸시를 보냅니다.
+
+* 안내(`NOTICE`)·업데이트(`FEATURE_UPDATE`)·점검(`SERVICE_CHECK`): 알림 설정의 서비스 소식이 켜진 사용자
+* 이벤트(`EVENT`): 광고성 앱 푸시 수신에 동의한 사용자만. 제목 앞에 `(광고)`, 본문 끝에 전송자와 수신 거부 방법을 붙입니다.
+* 야간(21:00~08:00)에 등록한 이벤트 공지는 공지만 등록하고 푸시는 보내지 않습니다. 이때 응답의 `pushSkipReason` 에 까닭을 담습니다.
+* 푸시 data 의 `notice_id` 에 공지 ID 를 넣습니다.
+
 ==== HTTP Request
 
 include::{snippets}/notice-create/http-request.adoc[]
