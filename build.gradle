@@ -170,7 +170,9 @@ tasks.processResources {
                 DB_PASSWORD: System.getenv('DB_PASSWORD'),
                 JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY'),
                 AWS_ACCESS_KEY: System.getenv('AWS_ACCESS_KEY'),
-                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY')
+                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY'),
+                APP_SERVER_BASE_URL: System.getenv('APP_SERVER_BASE_URL'),
+                APP_SERVER_JWT_SECRET_KEY: System.getenv('APP_SERVER_JWT_SECRET_KEY')
         )
     }
     filesMatching('application-prd.yml') {
@@ -181,7 +183,9 @@ tasks.processResources {
                 DB_PASSWORD: System.getenv('DB_PASSWORD'),
                 JWT_SECRET_KEY: System.getenv('JWT_SECRET_KEY'),
                 AWS_ACCESS_KEY: System.getenv('AWS_ACCESS_KEY'),
-                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY')
+                AWS_SECRET_KEY: System.getenv('AWS_SECRET_KEY'),
+                APP_SERVER_BASE_URL: System.getenv('APP_SERVER_BASE_URL'),
+                APP_SERVER_JWT_SECRET_KEY: System.getenv('APP_SERVER_JWT_SECRET_KEY')
         )
     }
 }

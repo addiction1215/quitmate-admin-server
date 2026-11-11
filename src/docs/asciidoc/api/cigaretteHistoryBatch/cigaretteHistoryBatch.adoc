@@ -1,0 +1,72 @@
+관리자 계정만 쓸 수 있습니다(관리자가 아니면 403). 재처리·날짜별 상태·실행 이력은 관리자 서버가 앱 서버 관리자 API를 대신 부릅니다.
+앱 서버가 준 400·409는 상태와 사유(message)를 그대로 돌려주고, 앱 서버 연결·인증 실패는 502, 응답 시간 초과는 504, 앱 서버 연동 설정이 없으면 503입니다.
+
+[[cigarette-history-batch-issue-list]]
+=== 이관 처리 대기 목록
+
+==== HTTP Request
+
+include::{snippets}/cigarette-history-batch-issue-list/http-request.adoc[]
+include::{snippets}/cigarette-history-batch-issue-list/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/cigarette-history-batch-issue-list/http-response.adoc[]
+include::{snippets}/cigarette-history-batch-issue-list/response-fields.adoc[]
+
+[[cigarette-history-batch-issue-ignore]]
+=== 이관 처리 대기 무시
+
+처리 대기(PENDING) 건만 무시할 수 있습니다. 그 사이 이미 처리된 건이면 409입니다. MySQL에 남은 흡연 원본은 지우지 않습니다.
+
+==== HTTP Request
+
+include::{snippets}/cigarette-history-batch-issue-ignore/http-request.adoc[]
+include::{snippets}/cigarette-history-batch-issue-ignore/path-parameters.adoc[]
+include::{snippets}/cigarette-history-batch-issue-ignore/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/cigarette-history-batch-issue-ignore/http-response.adoc[]
+include::{snippets}/cigarette-history-batch-issue-ignore/response-fields.adoc[]
+
+[[cigarette-history-batch-run]]
+=== 흡연 기록 이관 재처리
+
+앱 서버 `POST /api/v1/admin/cigarette-history-batch/runs` 를 `force=false` 로 부릅니다.
+
+==== HTTP Request
+
+include::{snippets}/cigarette-history-batch-run/http-request.adoc[]
+include::{snippets}/cigarette-history-batch-run/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/cigarette-history-batch-run/http-response.adoc[]
+include::{snippets}/cigarette-history-batch-run/response-fields.adoc[]
+
+[[cigarette-history-batch-run-list]]
+=== 날짜별 배치 상태
+
+==== HTTP Request
+
+include::{snippets}/cigarette-history-batch-run-list/http-request.adoc[]
+include::{snippets}/cigarette-history-batch-run-list/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/cigarette-history-batch-run-list/http-response.adoc[]
+include::{snippets}/cigarette-history-batch-run-list/response-fields.adoc[]
+
+[[cigarette-history-batch-attempt-list]]
+=== 날짜별 실행 이력
+
+==== HTTP Request
+
+include::{snippets}/cigarette-history-batch-attempt-list/http-request.adoc[]
+include::{snippets}/cigarette-history-batch-attempt-list/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/cigarette-history-batch-attempt-list/http-response.adoc[]
+include::{snippets}/cigarette-history-batch-attempt-list/response-fields.adoc[]

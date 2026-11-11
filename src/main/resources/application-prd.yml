@@ -52,3 +52,8 @@ aws:
       challenge: quitmate-challenge-prd
       challenge-badge: quitmate-challenge-badge-prd
       inquiry: quitmate-inquiry-prd
+
+# 앱 서버 관리자 API 호출(KAN-89). 값은 배포 환경 변수로만 받는다.
+app-server:
+  base-url: ${APP_SERVER_BASE_URL}
+  jwt-secret-key: ${APP_SERVER_JWT_SECRET_KEY}
