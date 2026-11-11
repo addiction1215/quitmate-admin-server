@@ -23,6 +23,13 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 	@Query("select u from User u where u.id = :id and u.useYn = 'Y'")
 	Optional<User> findById(@Param("id") Long id);
 
+    /**
+     * 같은 회원에게 동시에 이용권을 부여할 때 겹침 확인이 엇갈리지 않도록 회원 행을 잠근다(KAN-147).
+     * JPA 비관적 락은 테스트 DB(H2, PostgreSQL 방언)에서 지원하지 않는 SQL이 되어, MySQL·H2가 모두 받는 네이티브 FOR UPDATE를 쓴다.
+     */
+	@Query(value = "select id from users where id = :id and use_yn = 'Y' for update", nativeQuery = true)
+	Optional<Long> lockActiveUserId(@Param("id") Long id);
+
     boolean existsByEmail(String email);
 
 	@Query("select distinct u from User u left join fetch u.pushes where u.useYn = 'Y'")

@@ -58,3 +58,8 @@ include::api/faq/faq.adoc[]
 == 흡연 기록 이관 관리 API
 
 include::api/cigaretteHistoryBatch/cigaretteHistoryBatch.adoc[]
+
+[[User-Pass-API]]
+== QuitMate 90 이용권 API
+
+include::api/userPass/userPass.adoc[]

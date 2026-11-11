@@ -22,6 +22,8 @@ public interface UserRepository {
 
 	Optional<User> findById(Long id);
 
+	Optional<Long> lockActiveUserId(Long id);
+
 	void deleteAllInBatch();
 
 	void saveAll(List<User> users);
