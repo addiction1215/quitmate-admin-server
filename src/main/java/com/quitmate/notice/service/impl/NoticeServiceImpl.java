@@ -115,6 +115,7 @@ public class NoticeServiceImpl implements NoticeService {
      * - 안내·업데이트·점검: 서비스 소식 ON
      * - 이벤트: 광고성 앱 푸시 수신 동의(AGREED). 미동의·철회는 받지 않는다.
      * 알림 설정 행이 없으면 앱 서버 기본값(서비스 소식 ON, 광고 미동의)으로 보고, 행을 만들지 않는다.
+     * 옛 all·report 칸은 보지 않는다. 예전 거부는 KAN-107 DDL의 일회성 UPDATE로 새 칸에 옮겨 둔다.
      */
     private boolean shouldSendPush(AlertSetting alertSetting, NoticeType type) {
         if (alertSetting == null) {
