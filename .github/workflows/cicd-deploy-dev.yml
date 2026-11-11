@@ -14,6 +14,8 @@ jobs:
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
       AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      APP_SERVER_BASE_URL: ${{ secrets.APP_SERVER_BASE_URL }}
+      APP_SERVER_JWT_SECRET_KEY: ${{ secrets.APP_SERVER_JWT_SECRET_KEY }}
       USER_BUCKET: ${{ secrets.USER_BUCKET }}
       CHALLENGE_BUCKET: ${{ secrets.CHALLENGE_BUCKET }}
       CHALLENGE_BADGE_BUCKET: ${{ secrets.CHALLENGE_BADGE_BUCKET }}

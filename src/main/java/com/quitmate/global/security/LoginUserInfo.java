@@ -36,6 +36,10 @@ public class LoginUserInfo implements UserDetails, Serializable {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // 토큰에서 만든 정보에는 role이 없다(SecurityService). 권한은 DB에서 따로 확인한다.
+        if (role == null) {
+            return Collections.emptyList();
+        }
         return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
     }
 

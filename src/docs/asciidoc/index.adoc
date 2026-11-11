@@ -53,3 +53,8 @@ include::api/storage/storage.adoc[]
 == FAQ API
 
 include::api/faq/faq.adoc[]
+
+[[Cigarette-History-Batch-API]]
+== 흡연 기록 이관 관리 API
+
+include::api/cigaretteHistoryBatch/cigaretteHistoryBatch.adoc[]

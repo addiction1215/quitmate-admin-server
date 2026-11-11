@@ -1,11 +1,13 @@
 package com.quitmate.global.exception;
 
 import com.quitmate.global.ApiResponse;
+import com.quitmate.global.appserver.AppServerException;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BindException;
@@ -103,6 +105,31 @@ public class ApiControllerAdvice {
                 "데이터 제약 조건으로 인해 작업에 실패했습니다.",
                 null
         );
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ConflictException.class)
+    public ApiResponse<Object> conflict(ConflictException e) {
+        log.warn(e.getMessage());
+        return ApiResponse.of(HttpStatus.CONFLICT, e.getMessage(), null);
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(ForbiddenException.class)
+    public ApiResponse<Object> forbiddenRequest(ForbiddenException e) {
+        log.warn(e.getMessage());
+        return ApiResponse.of(HttpStatus.FORBIDDEN, e.getMessage(), null);
+    }
+
+    /**
+     * 앱 서버 호출 실패. 앱 서버가 준 400·409는 사유를 그대로, 그 밖의 실패는 502·503·504로 돌려준다.
+     * 관리자 화면은 401을 받으면 로그아웃하므로, 앱 서버의 401·403을 그대로 넘기지 않는다.
+     */
+    @ExceptionHandler(AppServerException.class)
+    public ResponseEntity<ApiResponse<Object>> appServer(AppServerException e) {
+        log.warn("앱 서버 호출 실패 - {} {}", e.getStatus(), e.getMessage());
+        return ResponseEntity.status(e.getStatus())
+                .body(ApiResponse.of(e.getStatus(), e.getMessage(), null));
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
