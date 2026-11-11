@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -51,9 +52,10 @@ public class CigaretteHistoryBatchRunService {
 
     public List<CigaretteHistoryBatchDateStatusResponse> getDateStatuses(String from, String to) {
         Long adminId = adminAccessService.getCurrentAdminId();
-        Map<String, String> query = Map.of(
-                "from", requireDate(from, "시작일(from)은"),
-                "to", requireDate(to, "종료일(to)은"));
+        // 쿼리 순서를 from, to로 고정한다(Map.of는 순서가 실행마다 달라진다).
+        Map<String, String> query = new LinkedHashMap<>();
+        query.put("from", requireDate(from, "시작일(from)은"));
+        query.put("to", requireDate(to, "종료일(to)은"));
         return nullToEmpty(appServerClient.get(RUNS_PATH, query, DATE_STATUS_LIST_TYPE, adminId));
     }
 
