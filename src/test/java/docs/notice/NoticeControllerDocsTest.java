@@ -188,7 +188,10 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.title").type(JsonFieldType.STRING)
                                         .description("제목"),
                                 fieldWithPath("data.content").type(JsonFieldType.STRING)
-                                        .description("내용")
+                                        .description("내용"),
+                                fieldWithPath("data.pushSkipReason").type(JsonFieldType.STRING).optional()
+                                        .description("공지는 등록했지만 푸시를 보내지 않은 까닭(관리자 화면에 그대로 띄울 수 있는 문장). "
+                                                + "야간(21:00~08:00)에 등록한 이벤트 공지에만 채운다. 푸시를 보냈으면 null")
                         )
                 ));
     }

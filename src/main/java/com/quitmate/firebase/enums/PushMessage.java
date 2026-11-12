@@ -24,6 +24,8 @@ public enum PushMessage {
 			case FRIEND_CODE -> FRIEND_CODE;
 			case NOTICE -> NOTICE;
 			case INQUIRY -> INQUIRY;
+			// 관리자 서버는 주간 리포트 푸시를 보내지 않는다. 앱 서버도 이 알림을 기본 제목("Quitmate 알림")으로 보낸다.
+			case WEEKLY_REPORT -> DEFAULT;
 		};
 	}
 }

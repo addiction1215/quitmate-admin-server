@@ -13,4 +13,12 @@ public enum NoticeType {
     NOTICE("안내");
 
     private final String description;
+
+    /**
+     * 광고성 정보인지. 이벤트 공지는 광고성 앱 푸시로 보고, 동의한 사람에게만 (광고) 표시를 붙여 보낸다(KAN-109).
+     * 나머지 공지는 서비스 소식이다.
+     */
+    public boolean isAdvertising() {
+        return this == EVENT;
+    }
 }

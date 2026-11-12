@@ -7,6 +7,8 @@ import com.quitmate.user.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -25,4 +27,8 @@ public class AlertSettingRepositoryImpl implements AlertSettingRepository {
         return alertSettingJpaRepository.findByUser(user);
     }
 
+    @Override
+    public List<AlertSetting> findAllByUserIn(Collection<User> users) {
+        return alertSettingJpaRepository.findAllByUserIn(users);
+    }
 }
