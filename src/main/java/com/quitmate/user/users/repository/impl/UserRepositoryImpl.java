@@ -54,6 +54,11 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
+	public Optional<Long> lockActiveUserId(Long id) {
+		return userJpaRepository.lockActiveUserId(id);
+	}
+
+	@Override
 	public void deleteAllInBatch() {
 		userJpaRepository.deleteAllInBatch();
 	}

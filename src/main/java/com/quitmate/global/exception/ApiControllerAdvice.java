@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BindException;
@@ -54,6 +55,20 @@ public class ApiControllerAdvice {
     /**
      * 임의로 발생시킨 CustomException처리
      */
+    /**
+     * 요청 본문 JSON을 읽지 못한 경우(날짜·enum 형식 오류 등). 따로 잡지 않으면 500이 된다.
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ApiResponse<Object> notReadable(HttpMessageNotReadableException e) {
+        log.warn("요청 본문을 읽지 못함: {}", e.getMostSpecificCause().getClass().getSimpleName());
+        return ApiResponse.of(
+                HttpStatus.BAD_REQUEST,
+                "요청 형식이 올바르지 않습니다. 날짜·시각은 2026-11-12T00:00:00 형식으로 보내 주세요.",
+                null
+        );
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(QuitmateException.class)
     public ApiResponse<Object> QuitmateException(QuitmateException e) {
