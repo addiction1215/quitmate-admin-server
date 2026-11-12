@@ -2,13 +2,13 @@ package com.quitmate.notice.service.impl;
 
 import com.quitmate.alertHistory.entity.AlertDestinationType;
 import com.quitmate.alertSetting.entity.AlertSetting;
-import com.quitmate.alertSetting.entity.enums.AlertType;
 import com.quitmate.alertSetting.service.AlertSettingReadService;
 import com.quitmate.expo.event.PushNotificationEvent;
 import com.quitmate.firebase.request.SendFirebaseDataDto;
 import com.quitmate.firebase.request.SendFirebaseServiceRequest;
 import com.quitmate.global.exception.QuitmateException;
 import com.quitmate.notice.entity.Notice;
+import com.quitmate.notice.enums.NoticeType;
 import com.quitmate.notice.repository.NoticeRepository;
 import com.quitmate.notice.service.NoticeService;
 import com.quitmate.notice.service.request.NoticeCreateServiceRequest;
@@ -19,13 +19,16 @@ import com.quitmate.user.push.entity.Push;
 import com.quitmate.user.users.entity.User;
 import com.quitmate.user.users.service.UserReadService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -40,40 +43,54 @@ public class NoticeServiceImpl implements NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final AlertSettingReadService alertSettingReadService;
+    private final AdPushQuietHours adPushQuietHours;
 
     @Override
     public NoticeCreateResponse createNotice(NoticeCreateServiceRequest request) {
-        NoticeCreateResponse noticeCreateResponse = NoticeCreateResponse.createResponse(noticeRepository.save(request.toEntity()));
+        Notice notice = noticeRepository.save(request.toEntity());
 
+        if (notice.getType().isAdvertising() && adPushQuietHours.isQuietNow()) {
+            // 지연 발송은 아직 없다(정현님과 방식 결정 전). 공지만 등록하고 푸시는 보내지 않는다.
+            log.info("야간 이벤트 공지 - 광고 푸시 미발송, noticeId: {}", notice.getId());
+            return NoticeCreateResponse.createResponse(notice, AdPushCopy.QUIET_HOURS_SKIP_REASON);
+        }
+
+        List<SendFirebaseServiceRequest> pushRequests = buildPushRequests(notice);
+        if (!pushRequests.isEmpty()) {
+            eventPublisher.publishEvent(new PushNotificationEvent(pushRequests));
+        }
+        return NoticeCreateResponse.createResponse(notice);
+    }
+
+    private List<SendFirebaseServiceRequest> buildPushRequests(Notice notice) {
         List<User> users = userReadService.findAllWithPushes();
+        Map<Long, AlertSetting> settingsByUserId = alertSettingReadService.findAllByUsers(users);
 
         SendFirebaseDataDto dataDto = SendFirebaseDataDto.builder()
                 .alert_destination_type(AlertDestinationType.NOTICE)
                 .alert_destination_info("공지사항")
+                .notice_id(notice.getId())
                 .build();
+        String pushTitle = toPushTitle(notice);
+        String pushBody = toPushBody(notice);
 
-        String pushBody = toPushBody(noticeCreateResponse.getContent());
         List<SendFirebaseServiceRequest> pushRequests = new ArrayList<>();
         for (User user : users) {
-            if (!shouldSendPush(user)) continue;
+            if (!shouldSendPush(settingsByUserId.get(user.getId()), notice.getType())) continue;
             List<Push> pushes = getPushToken(user);
             if (pushes.isEmpty()) continue;
 
             pushes.forEach(push -> pushRequests.add(
                     SendFirebaseServiceRequest.builder()
                             .push(push)
-                            .title(noticeCreateResponse.getTitle())
+                            .title(pushTitle)
                             .body(pushBody)
                             .sound("default")
                             .sendFirebaseDataDto(dataDto)
                             .build()
             ));
         }
-
-        if (!pushRequests.isEmpty()) {
-            eventPublisher.publishEvent(new PushNotificationEvent(pushRequests));
-        }
-        return noticeCreateResponse;
+        return pushRequests;
     }
 
     @Override
@@ -94,32 +111,40 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     /**
-     * 사용자에게 Push 알림을 전송해야 하는지 확인
-     * - 전체 알림 설정 확인
-     * - 리포트 알림 설정 확인
+     * 공지 유형별로 푸시를 받을 사람인지 확인한다(KAN-109).
+     * - 안내·업데이트·점검: 서비스 소식 ON
+     * - 이벤트: 광고성 앱 푸시 수신 동의(AGREED). 미동의·철회는 받지 않는다.
+     * 알림 설정 행이 없으면 앱 서버 기본값(서비스 소식 ON, 광고 미동의)으로 보고, 행을 만들지 않는다.
+     * 옛 all·report 칸은 보지 않는다. 예전 거부는 KAN-107 DDL의 일회성 UPDATE로 새 칸에 옮겨 둔다.
      */
-    private boolean shouldSendPush(User user) {
-        AlertSetting alertSetting = alertSettingReadService.findByUserOrCreateDefault(user);
-
+    private boolean shouldSendPush(AlertSetting alertSetting, NoticeType type) {
         if (alertSetting == null) {
-            return false;
+            return !type.isAdvertising();
         }
-
-        // 전체 알림이 OFF면 전송하지 않음
-        if (alertSetting.getAll() == AlertType.OFF) {
-            return false;
-        }
-
-        // 리포트 알림이 OFF면 전송하지 않음
-        return alertSetting.getReport() != AlertType.OFF;
+        return type.isAdvertising() ? alertSetting.agreedToAdPush() : alertSetting.receivesServiceNews();
     }
 
+    private String toPushTitle(Notice notice) {
+        return notice.getType().isAdvertising() ? AdPushCopy.title(notice.getTitle()) : notice.getTitle();
+    }
 
-    private String toPushBody(String content) {
-        if (content.codePointCount(0, content.length()) <= PUSH_BODY_MAX_LENGTH) {
+    /**
+     * 푸시 본문은 알림 기록 칸(255자)에 맞춘다. 이벤트 공지는 끝에 전송자·수신 거부 방법을 붙이고, 그만큼 내용을 줄인다.
+     */
+    private String toPushBody(Notice notice) {
+        if (!notice.getType().isAdvertising()) {
+            return truncate(notice.getContent(), PUSH_BODY_MAX_LENGTH);
+        }
+        String footer = AdPushCopy.BODY_FOOTER;
+        int contentMaxLength = PUSH_BODY_MAX_LENGTH - footer.codePointCount(0, footer.length());
+        return truncate(notice.getContent(), contentMaxLength) + footer;
+    }
+
+    private String truncate(String content, int maxLength) {
+        if (content.codePointCount(0, content.length()) <= maxLength) {
             return content;
         }
-        return content.substring(0, content.offsetByCodePoints(0, PUSH_BODY_MAX_LENGTH - 1)) + "…";
+        return content.substring(0, content.offsetByCodePoints(0, maxLength - 1)) + "…";
     }
 
     /**
