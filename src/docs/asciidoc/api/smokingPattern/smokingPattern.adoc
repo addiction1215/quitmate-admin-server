@@ -1,0 +1,119 @@
+앱 서버 주간 배치(KAN-134)가 매주 월요일 새벽에 만든 「주간 흡연 패턴 진단 스냅숏」(`smoking_pattern_snapshot`)을 읽기만 합니다.
+관리자 계정만 쓸 수 있습니다(관리자가 아니면 403). 개인정보는 회원 ID와 닉네임만 돌려줍니다.
+
+* 분석 주는 월요일~일요일입니다. `periodStart`는 그 주 월요일(yyyy-MM-dd)이고, 월요일이 아니면 400입니다.
+* **유료**는 그 분석 주(월 00:00 ~ 다음 월 00:00)와 겹치는, 회수되지 않은 QuitMate 90 이용권(`user_pass`)이 있었던 사용자, **무료**는 나머지입니다.
+* 지표마다 `status`가 `OK`일 때만 값으로 셉니다. `INSUFFICIENT_DATA`(기록 부족), `NO_BASELINE`(지표 4, 평소 흡연량 모름), `NO_DATA`(지표 7·8, 갈망 세션·금연 확정 없음)는 계산하지 못한 것으로 봅니다.
+* 지표 7(갈망 대응 후 흡연, 추정)·8(재흡연 위험 순간)은 어드민 전용입니다.
+
+[[smoking-pattern-weeks]]
+=== 진단 주 목록
+
+==== HTTP Request
+
+include::{snippets}/smoking-pattern-weeks/http-request.adoc[]
+include::{snippets}/smoking-pattern-weeks/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/smoking-pattern-weeks/http-response.adoc[]
+include::{snippets}/smoking-pattern-weeks/response-fields.adoc[]
+
+[[smoking-pattern-week-snapshots]]
+=== 주별 사용자 진단 목록
+
+==== HTTP Request
+
+include::{snippets}/smoking-pattern-week-snapshots/http-request.adoc[]
+include::{snippets}/smoking-pattern-week-snapshots/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/smoking-pattern-week-snapshots/http-response.adoc[]
+include::{snippets}/smoking-pattern-week-snapshots/response-fields.adoc[]
+
+[[smoking-pattern-user-snapshots]]
+=== 회원 주차별 진단 목록
+
+==== HTTP Request
+
+include::{snippets}/smoking-pattern-user-snapshots/http-request.adoc[]
+include::{snippets}/smoking-pattern-user-snapshots/path-parameters.adoc[]
+include::{snippets}/smoking-pattern-user-snapshots/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/smoking-pattern-user-snapshots/http-response.adoc[]
+include::{snippets}/smoking-pattern-user-snapshots/response-fields.adoc[]
+
+[[smoking-pattern-snapshot-detail]]
+=== 진단 상세
+
+==== HTTP Request
+
+include::{snippets}/smoking-pattern-snapshot-detail/http-request.adoc[]
+include::{snippets}/smoking-pattern-snapshot-detail/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/smoking-pattern-snapshot-detail/http-response.adoc[]
+include::{snippets}/smoking-pattern-snapshot-detail/response-fields.adoc[]
+
+==== 지표 구조(`data.result`)
+
+앱 서버 `SmokingPatternResult`(algorithmVersion `v1`)의 JSON 그대로입니다. 날짜는 `yyyy-MM-dd`, 시각은 `HH:mm` 문자열입니다.
+
+|===
+|필드 |지표 |주요 값
+
+|`peakTime`
+|1 주요 흡연 시간대(최근 14일 표본)
+|`hourlyCounts`(0~23시 24칸), `peakHour`, `topHours`, `peakSlot`(DAWN·MORNING·AFTERNOON·EVENING), `peakSlotPercent`
+
+|`firstCigarette`
+|2 하루 첫 담배(수면 간격 뒤 첫 기록)
+|`typicalTime`(중앙값), `earliestTime`, `latestTime`, `daysCounted`
+
+|`smokingInterval`
+|3 수면을 뺀 흡연 간격·최장 참은 시간
+|`averageIntervalMinutes`, `longestHoldMinutes`, `awakeGapCount`, `sleepGapCount`, `excludedLongGapCount`
+
+|`baselineComparison`
+|4 평소 하루 개비(자기보고)와 실제 기록
+|`baselineDailyCount`, `averageBaselineCount`, `averageDailyCount`, `differencePercent`, `comparison`(LESS·SIMILAR·MORE)
+
+|`trend`
+|5 추세(지난주와 그 전 주)
+|`currentAverage`, `previousAverage`, `changePercent`, `direction`(DECREASED·SIMILAR·INCREASED)
+
+|`routine`
+|6 루틴형·산발형(최근 14일 표본)
+|`type`(ROUTINE·SCATTERED), `routineSharePercent`, `routineSlots[]`(startHour·endHour·days)
+
+|`cravingResponse`
+|7 갈망 대응 후 흡연(추정, 어드민 전용)
+|`sessionCount`, `completedCount`, `smokedAfterCount`, `notSmokedAfterCount`, `notSmokedAfterPercent`, `windowMinutes`
+
+|`relapseMoments`
+|8 재흡연 위험 순간(어드민 전용)
+|`smokeFreeDays`, `relapseCount`, `moments[]`(date·dayOfWeek·time·smokeFreeStreakDays)
+
+|`dataSufficiency`
+|9 데이터 충족도(기록 없는 날 = 미확인)
+|`level`, `targetDays`, `observedDays`, `smokedDays`, `smokeFreeDays`, `unknownDays`, `coveragePercent`
+|===
+
+[[smoking-pattern-distribution]]
+=== 진단 전체 분포
+
+한 주의 스냅숏을 전체·유료·무료로 나눠 지표 분포를 셉니다. 사용자가 많아도 그 주 스냅숏을 500건씩 나눠 읽습니다.
+
+==== HTTP Request
+
+include::{snippets}/smoking-pattern-distribution/http-request.adoc[]
+include::{snippets}/smoking-pattern-distribution/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/smoking-pattern-distribution/http-response.adoc[]
+include::{snippets}/smoking-pattern-distribution/response-fields.adoc[]

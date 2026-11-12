@@ -54,6 +54,11 @@ include::api/storage/storage.adoc[]
 
 include::api/faq/faq.adoc[]
 
+[[Smoking-Pattern-API]]
+== 흡연 패턴 진단 API
+
+include::api/smokingPattern/smokingPattern.adoc[]
+
 [[Cigarette-History-Batch-API]]
 == 흡연 기록 이관 관리 API
 
