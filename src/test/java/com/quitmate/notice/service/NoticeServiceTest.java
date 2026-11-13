@@ -150,7 +150,7 @@ public class NoticeServiceTest extends IntegrationTestSupport {
 		assertThat(alertSettingJpaRepository.count()).isEqualTo(3);
 	}
 
-	@DisplayName("이벤트 공지 푸시는 제목 앞에 (광고)를 붙이고, 본문 끝에 전송자와 수신 거부 방법을 넣는다. 본문은 255자를 넘지 않는다.")
+	@DisplayName("이벤트 공지 푸시는 제목 앞에 (광고)를 붙이고, 본문 끝에 전송자·연락처와 수신 거부 방법을 넣는다. 본문은 255자를 넘지 않는다.")
 	@Test
 	void eventNoticePushHasAdNotation() {
 		// given
@@ -166,7 +166,7 @@ public class NoticeServiceTest extends IntegrationTestSupport {
 			.hasSize(255)
 			.startsWith("가가가")
 			.contains("…")
-			.endsWith("\n\n전송자: QuitMate\n수신 거부: 설정 > 알림 설정에서 끌 수 있어요");
+			.endsWith("\n\n전송자: QuitMate (010-5093-9902)\n수신 거부: 설정 > 알림 설정에서 끌 수 있어요");
 	}
 
 	@DisplayName("짧은 이벤트 공지는 내용을 줄이지 않고 끝에 전송자와 수신 거부 방법만 붙인다.")
