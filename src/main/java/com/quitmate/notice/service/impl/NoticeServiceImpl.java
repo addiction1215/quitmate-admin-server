@@ -1,32 +1,24 @@
 package com.quitmate.notice.service.impl;
 
-import com.quitmate.alertHistory.entity.AlertDestinationType;
-import com.quitmate.alertSetting.entity.AlertSetting;
-import com.quitmate.alertSetting.service.AlertSettingReadService;
 import com.quitmate.expo.event.PushNotificationEvent;
-import com.quitmate.firebase.request.SendFirebaseDataDto;
 import com.quitmate.firebase.request.SendFirebaseServiceRequest;
 import com.quitmate.global.exception.QuitmateException;
 import com.quitmate.notice.entity.Notice;
-import com.quitmate.notice.enums.NoticeType;
+import com.quitmate.notice.enums.NoticePushStatus;
 import com.quitmate.notice.repository.NoticeRepository;
 import com.quitmate.notice.service.NoticeService;
 import com.quitmate.notice.service.request.NoticeCreateServiceRequest;
 import com.quitmate.notice.service.request.NoticeUpdateServiceRequest;
 import com.quitmate.notice.service.response.NoticeCreateResponse;
 import com.quitmate.notice.service.response.NoticeUpdateResponse;
-import com.quitmate.user.push.entity.Push;
-import com.quitmate.user.users.entity.User;
-import com.quitmate.user.users.service.UserReadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -35,64 +27,42 @@ import java.util.Map;
 public class NoticeServiceImpl implements NoticeService {
 
     private static final String UNKNOWN_NOTICE = "해당 공지사항은 존재하지 않습니다.";
-    // 푸시 본문이 알림 기록(alert_history.alert_description, varchar(255))에 그대로 들어가 넘으면 기록 저장이 실패한다.
-    private static final int PUSH_BODY_MAX_LENGTH = 255;
 
     private final ApplicationEventPublisher eventPublisher;
-    private final UserReadService userReadService;
 
     private final NoticeRepository noticeRepository;
-    private final AlertSettingReadService alertSettingReadService;
+    private final NoticePushRequestFactory noticePushRequestFactory;
     private final AdPushQuietHours adPushQuietHours;
 
+    /**
+     * 공지를 등록하고 푸시를 보낸다. 야간(20:00~08:00)에 등록한 이벤트 공지는 푸시를 보류하고(DEFERRED),
+     * 다음 08:00 이후 {@link DeferredNoticePushSender} 가 그때의 최신 제목·내용·대상으로 보낸다(KAN-109).
+     */
     @Override
     public NoticeCreateResponse createNotice(NoticeCreateServiceRequest request) {
-        Notice notice = noticeRepository.save(request.toEntity());
+        LocalDateTime now = adPushQuietHours.now();
+        Notice notice = request.toEntity();
 
-        if (notice.getType().isAdvertising() && adPushQuietHours.isQuietNow()) {
-            // 지연 발송은 아직 없다(정현님과 방식 결정 전). 공지만 등록하고 푸시는 보내지 않는다.
-            log.info("야간 이벤트 공지 - 광고 푸시 미발송, noticeId: {}", notice.getId());
-            return NoticeCreateResponse.createResponse(notice, AdPushCopy.QUIET_HOURS_SKIP_REASON);
+        if (notice.getType().isAdvertising() && adPushQuietHours.isQuiet(now)) {
+            LocalDateTime scheduledAt = adPushQuietHours.nextSendableAt(now);
+            notice.deferPush(scheduledAt);
+            noticeRepository.save(notice);
+            log.info("야간 이벤트 공지 - 광고 푸시 보류, noticeId: {}, 보낼 시각: {}", notice.getId(), scheduledAt);
+            return NoticeCreateResponse.createResponse(notice, AdPushCopy.deferredPushReason(scheduledAt));
         }
 
-        List<SendFirebaseServiceRequest> pushRequests = buildPushRequests(notice);
+        notice.markPushSent(now);
+        noticeRepository.save(notice);
+        List<SendFirebaseServiceRequest> pushRequests = noticePushRequestFactory.create(notice);
         if (!pushRequests.isEmpty()) {
             eventPublisher.publishEvent(new PushNotificationEvent(pushRequests));
         }
         return NoticeCreateResponse.createResponse(notice);
     }
 
-    private List<SendFirebaseServiceRequest> buildPushRequests(Notice notice) {
-        List<User> users = userReadService.findAllWithPushes();
-        Map<Long, AlertSetting> settingsByUserId = alertSettingReadService.findAllByUsers(users);
-
-        SendFirebaseDataDto dataDto = SendFirebaseDataDto.builder()
-                .alert_destination_type(AlertDestinationType.NOTICE)
-                .alert_destination_info("공지사항")
-                .notice_id(notice.getId())
-                .build();
-        String pushTitle = toPushTitle(notice);
-        String pushBody = toPushBody(notice);
-
-        List<SendFirebaseServiceRequest> pushRequests = new ArrayList<>();
-        for (User user : users) {
-            if (!shouldSendPush(settingsByUserId.get(user.getId()), notice.getType())) continue;
-            List<Push> pushes = getPushToken(user);
-            if (pushes.isEmpty()) continue;
-
-            pushes.forEach(push -> pushRequests.add(
-                    SendFirebaseServiceRequest.builder()
-                            .push(push)
-                            .title(pushTitle)
-                            .body(pushBody)
-                            .sound("default")
-                            .sendFirebaseDataDto(dataDto)
-                            .build()
-            ));
-        }
-        return pushRequests;
-    }
-
+    /**
+     * 공지를 고친다. 푸시를 보류한 공지는 보낼 때 고친 제목·내용·유형으로 보낸다. 이미 보낸 푸시는 다시 보내지 않는다.
+     */
     @Override
     public NoticeUpdateResponse updateNotice(NoticeUpdateServiceRequest request) {
         Notice notice = noticeRepository.findById(request.getId())
@@ -102,56 +72,17 @@ public class NoticeServiceImpl implements NoticeService {
         return NoticeUpdateResponse.createResponse(notice);
     }
 
+    /**
+     * 공지를 지운다. 아직 보내지 않은 보류 푸시는 취소한다(CANCELED).
+     */
     @Override
     public void deleteNotice(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new QuitmateException(UNKNOWN_NOTICE));
 
         notice.delete();
-    }
-
-    /**
-     * 공지 유형별로 푸시를 받을 사람인지 확인한다(KAN-109).
-     * - 안내·업데이트·점검: 서비스 소식 ON
-     * - 이벤트: 광고성 앱 푸시 수신 동의(AGREED). 미동의·철회는 받지 않는다.
-     * 알림 설정 행이 없으면 앱 서버 기본값(서비스 소식 ON, 광고 미동의)으로 보고, 행을 만들지 않는다.
-     * 옛 all·report 칸은 보지 않는다. 예전 거부는 KAN-107 DDL의 일회성 UPDATE로 새 칸에 옮겨 둔다.
-     */
-    private boolean shouldSendPush(AlertSetting alertSetting, NoticeType type) {
-        if (alertSetting == null) {
-            return !type.isAdvertising();
+        if (noticeRepository.changePushStatus(id, NoticePushStatus.DEFERRED, NoticePushStatus.CANCELED) == 1) {
+            log.info("보류한 공지 푸시 취소(공지 삭제) - noticeId: {}", id);
         }
-        return type.isAdvertising() ? alertSetting.agreedToAdPush() : alertSetting.receivesServiceNews();
     }
-
-    private String toPushTitle(Notice notice) {
-        return notice.getType().isAdvertising() ? AdPushCopy.title(notice.getTitle()) : notice.getTitle();
-    }
-
-    /**
-     * 푸시 본문은 알림 기록 칸(255자)에 맞춘다. 이벤트 공지는 끝에 전송자·수신 거부 방법을 붙이고, 그만큼 내용을 줄인다.
-     */
-    private String toPushBody(Notice notice) {
-        if (!notice.getType().isAdvertising()) {
-            return truncate(notice.getContent(), PUSH_BODY_MAX_LENGTH);
-        }
-        String footer = AdPushCopy.BODY_FOOTER;
-        int contentMaxLength = PUSH_BODY_MAX_LENGTH - footer.codePointCount(0, footer.length());
-        return truncate(notice.getContent(), contentMaxLength) + footer;
-    }
-
-    private String truncate(String content, int maxLength) {
-        if (content.codePointCount(0, content.length()) <= maxLength) {
-            return content;
-        }
-        return content.substring(0, content.offsetByCodePoints(0, maxLength - 1)) + "…";
-    }
-
-    /**
-     * 사용자의 Push 토큰 조회
-     */
-    private List<Push> getPushToken(User user) {
-        return user.getPushes() != null ? user.getPushes() : List.of();
-    }
-
 }

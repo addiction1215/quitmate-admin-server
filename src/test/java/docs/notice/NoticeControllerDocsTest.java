@@ -5,9 +5,11 @@ import com.quitmate.global.page.response.PageableCustom;
 import com.quitmate.notice.controller.NoticeController;
 import com.quitmate.notice.controller.request.NoticeCreateRequest;
 import com.quitmate.notice.controller.request.NoticeUpdateRequest;
+import com.quitmate.notice.enums.NoticePushStatus;
 import com.quitmate.notice.enums.NoticeType;
 import com.quitmate.notice.service.NoticeReadService;
 import com.quitmate.notice.service.NoticeService;
+import com.quitmate.notice.service.impl.AdPushCopy;
 import com.quitmate.notice.service.response.NoticeCreateResponse;
 import com.quitmate.notice.service.response.NoticeListResponse;
 import com.quitmate.notice.service.response.NoticeUpdateResponse;
@@ -55,6 +57,8 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                 .title("1.2.0 업데이트 안내")
                 .content("첫 번째 공지사항입니다.")
                 .createdDate(LocalDateTime.of(2024, 1, 1, 10, 0))
+                .pushStatus(NoticePushStatus.SENT)
+                .pushSentAt(LocalDateTime.of(2024, 1, 1, 10, 0))
                 .build();
 
         NoticeListResponse notice2 = NoticeListResponse.builder()
@@ -62,7 +66,9 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                 .type(NoticeType.EVENT)
                 .title("금연 챌린지 이벤트")
                 .content("이벤트 공지사항입니다.")
-                .createdDate(LocalDateTime.of(2024, 1, 2, 10, 0))
+                .createdDate(LocalDateTime.of(2024, 1, 2, 22, 30))
+                .pushStatus(NoticePushStatus.DEFERRED)
+                .pushScheduledAt(LocalDateTime.of(2024, 1, 3, 8, 0))
                 .build();
 
         PageableCustom pageableCustom = PageableCustom.builder()
@@ -121,6 +127,14 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                         .description("내용"),
                                 fieldWithPath("data.content[].createdDate").type(JsonFieldType.STRING)
                                         .description("작성일시"),
+                                fieldWithPath("data.content[].pushStatus").type(JsonFieldType.STRING).optional()
+                                        .description("푸시 발송 상태: " + Arrays.toString(NoticePushStatus.values())
+                                                + ". DEFERRED 발송 예정(야간 이벤트 공지), SENDING 발송 중, SENT 발송함, "
+                                                + "FAILED 발송 실패(다시 보내지 않음), CANCELED 보내기 전 삭제. 이 칸이 생기기 전에 등록한 공지는 null"),
+                                fieldWithPath("data.content[].pushScheduledAt").type(JsonFieldType.STRING).optional()
+                                        .description("보류한 푸시를 보낼 시각(한국 시각). 야간에 등록한 이벤트 공지만, 아니면 null"),
+                                fieldWithPath("data.content[].pushSentAt").type(JsonFieldType.STRING).optional()
+                                        .description("푸시를 보내기 시작한 시각(한국 시각). SENT·SENDING·FAILED 일 때, 아니면 null"),
                                 fieldWithPath("data.pageInfo").type(JsonFieldType.OBJECT)
                                         .description("페이징 정보"),
                                 fieldWithPath("data.pageInfo.currentPage").type(JsonFieldType.NUMBER)
@@ -138,16 +152,21 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
     void 공지사항_생성_API() throws Exception {
         // given
         NoticeCreateRequest request = NoticeCreateRequest.builder()
-                .type(NoticeType.FEATURE_UPDATE)
-                .title("공지 제목")
-                .content("새로운 공지사항입니다.")
+                .type(NoticeType.EVENT)
+                .title("금연 챌린지 이벤트")
+                .content("이벤트 공지사항입니다.")
                 .build();
 
+        // 야간(20:00~08:00)에 등록한 이벤트 공지: 푸시를 다음 08:00으로 보류했다.
+        LocalDateTime scheduledAt = LocalDateTime.of(2026, 11, 15, 8, 0);
         NoticeCreateResponse response = NoticeCreateResponse.builder()
                 .id(1L)
-                .type(NoticeType.FEATURE_UPDATE)
-                .title("공지 제목")
-                .content("새로운 공지사항입니다.")
+                .type(NoticeType.EVENT)
+                .title("금연 챌린지 이벤트")
+                .content("이벤트 공지사항입니다.")
+                .pushSkipReason(AdPushCopy.deferredPushReason(scheduledAt))
+                .pushStatus(NoticePushStatus.DEFERRED)
+                .pushScheduledAt(scheduledAt)
                 .build();
 
         given(noticeService.createNotice(any()))
@@ -190,8 +209,12 @@ public class NoticeControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.content").type(JsonFieldType.STRING)
                                         .description("내용"),
                                 fieldWithPath("data.pushSkipReason").type(JsonFieldType.STRING).optional()
-                                        .description("공지는 등록했지만 푸시를 보내지 않은 까닭(관리자 화면에 그대로 띄울 수 있는 문장). "
-                                                + "야간(21:00~08:00)에 등록한 이벤트 공지에만 채운다. 푸시를 보냈으면 null")
+                                        .description("공지는 등록했지만 푸시를 바로 보내지 않은 까닭(관리자 화면에 그대로 띄울 수 있는 문장). "
+                                                + "야간(20:00~08:00)에 등록한 이벤트 공지에만 채운다(푸시는 pushScheduledAt 에 보냄). 바로 보냈으면 null"),
+                                fieldWithPath("data.pushStatus").type(JsonFieldType.STRING)
+                                        .description("푸시 발송 상태. 바로 보냈으면 SENT, 보류했으면 DEFERRED"),
+                                fieldWithPath("data.pushScheduledAt").type(JsonFieldType.STRING).optional()
+                                        .description("보류한 푸시를 보낼 시각(한국 시각, 다음 08:00). 바로 보냈으면 null")
                         )
                 ));
     }

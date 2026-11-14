@@ -35,7 +35,10 @@ public class NoticeQueryRepository {
                         notice.type,
                         notice.title,
                         notice.content,
-                        notice.createdDate
+                        notice.createdDate,
+                        notice.pushStatus,
+                        notice.pushScheduledAt,
+                        notice.pushSentAt
                 ))
                 .from(notice)
                 .where(
