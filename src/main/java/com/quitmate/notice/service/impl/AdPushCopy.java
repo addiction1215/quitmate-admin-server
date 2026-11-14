@@ -1,5 +1,8 @@
 package com.quitmate.notice.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * 광고성 앱 푸시(이벤트 공지)에 붙이는 문구. 정보통신망법 제50조의 (광고) 표시·전송자·수신 거부 방법.
  *
@@ -24,14 +27,18 @@ public final class AdPushCopy {
     public static final String BODY_FOOTER =
             "\n\n전송자: " + SENDER + " (" + SENDER_CONTACT + ")\n수신 거부: " + OPT_OUT_GUIDE;
 
-    /** 야간(21:00~08:00)에 이벤트 공지를 등록했을 때 관리자에게 돌려주는 안내 */
-    public static final String QUIET_HOURS_SKIP_REASON =
-            "야간(21:00~08:00)에는 광고 푸시를 보내지 않아요. 공지는 등록했고 푸시는 보내지 않았어요.";
+    private static final DateTimeFormatter SCHEDULED_AT_FORMAT = DateTimeFormatter.ofPattern("M월 d일 HH:mm");
 
     private AdPushCopy() {
     }
 
     public static String title(String title) {
         return TITLE_PREFIX + title;
+    }
+
+    /** 야간에 이벤트 공지를 등록해 푸시를 보류했을 때 관리자에게 돌려주는 안내(등록 응답 pushSkipReason) */
+    public static String deferredPushReason(LocalDateTime scheduledAt) {
+        return "야간(" + AdPushQuietHours.label() + ")에는 광고 푸시를 바로 보내지 않아요. "
+                + "공지는 등록했고, 푸시는 " + scheduledAt.format(SCHEDULED_AT_FORMAT) + "에 보내요.";
     }
 }

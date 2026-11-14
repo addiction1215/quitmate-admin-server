@@ -1,6 +1,7 @@
 package com.quitmate.notice.repository.impl;
 
 import com.quitmate.notice.entity.Notice;
+import com.quitmate.notice.enums.NoticePushStatus;
 import com.quitmate.notice.repository.NoticeJpaRepository;
 import com.quitmate.notice.repository.NoticeQueryRepository;
 import com.quitmate.notice.repository.NoticeRepository;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,5 +54,25 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     @Override
     public Page<NoticeDto> findNoticeList(NoticeListServiceRequest request, Pageable pageable) {
         return noticeQueryRepository.findNoticeList(request, pageable);
+    }
+
+    @Override
+    public List<Long> findDeferredPushNoticeIdsDue(LocalDateTime now) {
+        return noticeJpaRepository.findIdsByPushStatusAndScheduledUntil(NoticePushStatus.DEFERRED, now);
+    }
+
+    @Override
+    public List<Long> findSendingPushNoticeIdsStartedBefore(LocalDateTime startedBefore) {
+        return noticeJpaRepository.findIdsByPushStatusAndStartedBefore(NoticePushStatus.SENDING, startedBefore);
+    }
+
+    @Override
+    public int claimDeferredPush(Long id, LocalDateTime now) {
+        return noticeJpaRepository.claimScheduledPush(id, NoticePushStatus.DEFERRED, NoticePushStatus.SENDING, now);
+    }
+
+    @Override
+    public int changePushStatus(Long id, NoticePushStatus from, NoticePushStatus to) {
+        return noticeJpaRepository.updatePushStatus(id, from, to);
     }
 }
