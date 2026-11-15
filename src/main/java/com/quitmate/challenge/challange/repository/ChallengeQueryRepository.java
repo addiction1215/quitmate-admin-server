@@ -29,6 +29,7 @@ public class ChallengeQueryRepository {
 
     /**
      * Admin용 챌린지 목록 조회 (검색, 정렬, 페이징 지원)
+     * mission과 challengeHistory를 함께 조인하면 행이 미션 수 × 참여 수로 늘어나므로 두 값은 countDistinct로 센다.
      */
     public Page<ChallengeDto> findChallengeList(ChallengeSearchServiceRequest request, Pageable pageable) {
         List<ChallengeDto> content = jpaQueryFactory
@@ -37,8 +38,8 @@ public class ChallengeQueryRepository {
                         challenge.title,
                         challenge.badge,
                         challenge.reward,
-                        mission.count(),
-                        challengeHistory.count()
+                        mission.countDistinct(),
+                        challengeHistory.countDistinct()
                 ))
                 .from(challenge)
                 .leftJoin(mission).on(mission.challenge.id.eq(challenge.id), mission.useYn.eq("Y"))
@@ -108,7 +109,7 @@ public class ChallengeQueryRepository {
         if (sortType == SortType.ID) {
             return challenge.id.asc();
         } else if (sortType == SortType.USER) {
-            return challengeHistory.count().desc();
+            return challengeHistory.countDistinct().desc();
         }
         // 기본값: ID 내림차순
         return challenge.id.desc();
