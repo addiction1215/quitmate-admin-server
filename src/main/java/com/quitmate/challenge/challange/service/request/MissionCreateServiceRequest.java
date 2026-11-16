@@ -15,13 +15,16 @@ public class MissionCreateServiceRequest {
     private String title;
     private Integer reward;
     private String content;
+    private Integer minHoldSeconds;
 
     @Builder
-    public MissionCreateServiceRequest(MissionCategoryStatus category, String title, Integer reward, String content) {
+    public MissionCreateServiceRequest(MissionCategoryStatus category, String title, Integer reward, String content,
+                                       Integer minHoldSeconds) {
         this.category = category;
         this.title = title;
         this.reward = reward;
         this.content = content;
+        this.minHoldSeconds = minHoldSeconds;
     }
 
     public Mission toMissionEntity(Challenge challenge) {
@@ -31,6 +34,7 @@ public class MissionCreateServiceRequest {
                 .title(title)
                 .reward(reward)
                 .content(content)
+                .minHoldSeconds(minHoldSeconds)
                 .build();
     }
 }

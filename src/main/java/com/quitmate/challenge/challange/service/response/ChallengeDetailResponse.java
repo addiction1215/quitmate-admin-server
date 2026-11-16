@@ -49,14 +49,18 @@ public class ChallengeDetailResponse {
         private final String title;
         private final Integer reward;
         private final String content;
+        /** 참기 미션의 최소 참기 시간(초). null이면 앱 서버 기본값(지금 600초). 참기가 아니면 언제나 null */
+        private final Integer minHoldSeconds;
 
         @Builder
-        private MissionResponse(Long missionId, MissionCategoryStatus category, String title, Integer reward, String content) {
+        private MissionResponse(Long missionId, MissionCategoryStatus category, String title, Integer reward, String content,
+                                Integer minHoldSeconds) {
             this.missionId = missionId;
             this.category = category;
             this.title = title;
             this.reward = reward;
             this.content = content;
+            this.minHoldSeconds = minHoldSeconds;
         }
 
         public static MissionResponse createResponse(Mission mission) {
@@ -66,6 +70,7 @@ public class ChallengeDetailResponse {
                     .title(mission.getTitle())
                     .reward(mission.getReward())
                     .content(mission.getContent())
+                    .minHoldSeconds(mission.getMinHoldSeconds())
                     .build();
         }
     }

@@ -4,6 +4,8 @@ import com.quitmate.challenge.challange.service.request.ChallengeCreateServiceRe
 import com.quitmate.challenge.challange.service.request.MissionCreateServiceRequest;
 import com.quitmate.challenge.mission.entity.MissionCategoryStatus;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -71,12 +73,19 @@ public class ChallengeCreateRequest {
         @NotBlank(message = "미션 내용은 필수입니다.")
         private String content;
 
+        /** 참기(HOLD) 미션의 최소 참기 시간(초). 비우면 앱 서버 기본값. 참기가 아닌 미션은 보내도 저장하지 않는다. */
+        @Min(value = MinHoldSecondsRule.MIN, message = MinHoldSecondsRule.RANGE_MESSAGE)
+        @Max(value = MinHoldSecondsRule.MAX, message = MinHoldSecondsRule.RANGE_MESSAGE)
+        private Integer minHoldSeconds;
+
         @Builder
-        public MissionRequest(MissionCategoryStatus category, String title, Integer reward, String content) {
+        public MissionRequest(MissionCategoryStatus category, String title, Integer reward, String content,
+                              Integer minHoldSeconds) {
             this.category = category;
             this.title = title;
             this.reward = reward;
             this.content = content;
+            this.minHoldSeconds = minHoldSeconds;
         }
 
         public MissionCreateServiceRequest toServiceRequest() {
@@ -85,6 +94,7 @@ public class ChallengeCreateRequest {
                     .title(title)
                     .reward(reward)
                     .content(content)
+                    .minHoldSeconds(minHoldSeconds)
                     .build();
         }
     }

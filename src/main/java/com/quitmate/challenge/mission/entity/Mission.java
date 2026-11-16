@@ -36,22 +36,36 @@ public class Mission extends BaseTimeEntity {
 
     private String useYn;
 
+    /** 참기 미션이 아니면 {@code minHoldSeconds}를 버리고 비워 둔다. */
     @Builder
-    public Mission(Long id, Challenge challenge, MissionCategoryStatus category, String title, Integer reward, String content) {
+    public Mission(Long id, Challenge challenge, MissionCategoryStatus category, String title, Integer reward, String content,
+                   Integer minHoldSeconds) {
         this.id = id;
         this.challenge = challenge;
         this.category = category;
         this.title = title;
         this.reward = reward;
         this.content = content;
+        this.minHoldSeconds = holdOnly(category, minHoldSeconds);
         this.useYn = "Y";
     }
 
+    /** 최소 참기 시간은 그대로 둔다. 다만 참기가 아닌 종류로 바뀌면 비운다. */
     public void update(MissionCategoryStatus category, String title, Integer reward, String content) {
         this.category = category;
         this.title = title;
         this.reward = reward;
         this.content = content;
+        this.minHoldSeconds = holdOnly(category, this.minHoldSeconds);
+    }
+
+    /** 최소 참기 시간을 바꾼다. null이면 앱 서버 기본값으로 돌린다. 참기가 아닌 미션은 언제나 비운다. */
+    public void changeMinHoldSeconds(Integer minHoldSeconds) {
+        this.minHoldSeconds = holdOnly(this.category, minHoldSeconds);
+    }
+
+    private static Integer holdOnly(MissionCategoryStatus category, Integer minHoldSeconds) {
+        return category == MissionCategoryStatus.HOLD ? minHoldSeconds : null;
     }
 
     public void delete() {
