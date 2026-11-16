@@ -1,3 +1,6 @@
+관리자 승인·반려(`PATCH /api/v1/admin/mission-history/{id}`)는 KAN-190·194에서 없앴습니다. 앱 서버가 조건을 채운 제출을 바로 `COMPLETED`로 바꾸고, 관리자는 제출 내용(사진·위치·시간)을 보기만 합니다.
+옛 승인 대기(`READY`)·반려(`FAILED`) 기록은 KAN-197 정리 SQL을 돌리기 전까지 목록에 남아 있습니다.
+
 [[mission-history-list]]
 === 미션 히스토리 목록 조회
 
@@ -49,29 +52,3 @@ include::{snippets}/mission-history-detail-abstinence/path-parameters.adoc[]
 
 include::{snippets}/mission-history-detail-abstinence/http-response.adoc[]
 include::{snippets}/mission-history-detail-abstinence/response-fields.adoc[]
-
-[[mission-history-approve]]
-=== 미션 결과 심사 (성공)
-
-==== HTTP Request
-
-include::{snippets}/mission-history-approve/http-request.adoc[]
-include::{snippets}/mission-history-approve/path-parameters.adoc[]
-include::{snippets}/mission-history-approve/request-fields.adoc[]
-
-==== HTTP Response
-
-include::{snippets}/mission-history-approve/http-response.adoc[]
-
-[[mission-history-reject]]
-=== 미션 결과 심사 (실패)
-
-==== HTTP Request
-
-include::{snippets}/mission-history-reject/http-request.adoc[]
-include::{snippets}/mission-history-reject/path-parameters.adoc[]
-include::{snippets}/mission-history-reject/request-fields.adoc[]
-
-==== HTTP Response
-
-include::{snippets}/mission-history-reject/http-response.adoc[]
