@@ -23,6 +23,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3StorageService {
 
+    public static final String NOTICE_KEY_PREFIX = "notice/";
+
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
@@ -49,7 +51,7 @@ public class S3StorageService {
      */
     public String upload(MultipartFile file, BucketKind bucketKind) {
         validateImageFile(file);
-        return uploadFileToS3(file, getBucketName(bucketKind));
+        return uploadFileToS3(file, getBucketName(bucketKind), getKeyPrefix(bucketKind));
     }
 
     /**
@@ -60,10 +62,14 @@ public class S3StorageService {
      * @return 업로드된 객체 키
      */
     public String uploadFileToS3(MultipartFile file, String bucketName) {
+        return uploadFileToS3(file, bucketName, "");
+    }
+
+    private String uploadFileToS3(MultipartFile file, String bucketName, String keyPrefix) {
         validateFile(file);
 
         try {
-            String objectKey = generateObjectKey(file.getOriginalFilename());
+            String objectKey = keyPrefix + generateObjectKey(file.getOriginalFilename());
             String contentType = determineContentType(file);
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -143,7 +149,16 @@ public class S3StorageService {
             case CHALLENGE -> challengeBucketName;
             case CHALLENGE_BADGE -> challengeBadgeBucketName;
             case INQUIRY -> inquiryBucketName;
+            // 공지 전용 버킷이 생기면 이 줄과 getKeyPrefix 만 바꾼다.
+            case NOTICE -> challengeBadgeBucketName;
         };
+    }
+
+    /**
+     * 같은 버킷을 나눠 쓰는 종류가 파일 키 앞에 붙이는 접두사. 없으면 빈 문자열.
+     */
+    private String getKeyPrefix(BucketKind bucketKind) {
+        return bucketKind == BucketKind.NOTICE ? NOTICE_KEY_PREFIX : "";
     }
 
     private void validateFile(MultipartFile file) {

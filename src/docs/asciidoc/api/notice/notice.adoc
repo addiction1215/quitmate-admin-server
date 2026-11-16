@@ -11,6 +11,36 @@ include::{snippets}/notice-list/query-parameters.adoc[]
 include::{snippets}/notice-list/http-response.adoc[]
 include::{snippets}/notice-list/response-fields.adoc[]
 
+[[notice-detail]]
+=== 공지사항 상세 조회
+
+서식 본문(`contentHtml`)의 이미지는 `data-key`(S3 파일 키)와 1시간 서명 URL `src` 가 함께 옵니다.
+
+==== HTTP Request
+
+include::{snippets}/notice-detail/http-request.adoc[]
+include::{snippets}/notice-detail/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/notice-detail/http-response.adoc[]
+include::{snippets}/notice-detail/response-fields.adoc[]
+
+[[notice-image-upload]]
+=== 공지사항 본문 이미지 업로드
+
+파일은 CHALLENGE_BADGE 버킷의 `notice/` 아래에 저장됩니다. 응답의 `key` 를 본문 `<img data-key="…">` 에 넣습니다.
+
+==== HTTP Request
+
+include::{snippets}/notice-image-upload/http-request.adoc[]
+include::{snippets}/notice-image-upload/request-parts.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/notice-image-upload/http-response.adoc[]
+include::{snippets}/notice-image-upload/response-fields.adoc[]
+
 [[notice-create]]
 === 공지사항 생성
 
@@ -20,6 +50,13 @@ include::{snippets}/notice-list/response-fields.adoc[]
 * 이벤트(`EVENT`): 광고성 앱 푸시 수신에 동의한 사용자만. 제목 앞에 `(광고)`, 본문 끝에 전송자(`이정현(엘제이에이치)`)·연락처와 수신 거부 방법을 붙입니다.
 * 야간(21:00~08:00)에 등록한 이벤트 공지는 공지만 등록하고 푸시는 보내지 않습니다. 이때 응답의 `pushSkipReason` 에 까닭을 담습니다.
 * 푸시 data 의 `notice_id` 에 공지 ID 를 넣습니다.
+
+서식 본문(`contentHtml`)은 허용 태그만 남기고 정리해 저장하며, `content` 는 그 글자 버전으로 서버가 채웁니다.
+
+* 허용 태그: `h2, h3, p, br, strong, b, em, ul, ol, li, table, thead, tbody, tr, th, td, a, img`
+* 허용 속성: `a[href]`(http/https만, `rel="noopener noreferrer"` 자동), `img[data-key, alt]`, `th·td[colspan, rowspan]`
+* `data-key` 가 `notice/` 로 시작하지 않는 img(외부 주소 포함)는 지웁니다. style·스크립트·이벤트 속성도 지웁니다.
+* `contentHtml` 없이 `content` 만 보내는 옛 방식도 그대로 동작합니다.
 
 ==== HTTP Request
 
