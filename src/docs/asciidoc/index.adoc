@@ -24,6 +24,11 @@ include::api/user/user.adoc[]
 
 include::api/challenge/challenge.adoc[]
 
+[[Challenge-Metrics-API]]
+== 챌린지 지표 API
+
+include::api/challenge/challengeMetrics.adoc[]
+
 [[Mission-History-API]]
 == Mission History API
 
