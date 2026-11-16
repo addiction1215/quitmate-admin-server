@@ -39,11 +39,6 @@ include::api/notice/notice.adoc[]
 
 include::api/inquiry/inquiry.adoc[]
 
-[[Reward-History-API]]
-== Reward History API
-
-include::api/rewardHistory/rewardHistory.adoc[]
-
 [[storage-API]]
 == storage API
 
