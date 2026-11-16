@@ -28,6 +28,12 @@ public class Mission extends BaseTimeEntity {
 
     private String content;
 
+    /**
+     * 참기(HOLD) 미션의 최소 참기 시간(초, KAN-190 DDL의 min_hold_seconds). 비어 있으면 앱 서버 기본값(지금 600초)을 쓴다.
+     * 참기가 아닌 미션은 언제나 비어 있다.
+     */
+    private Integer minHoldSeconds;
+
     private String useYn;
 
     @Builder
