@@ -6,6 +6,7 @@ import com.quitmate.alertSetting.repository.AlertSettingJpaRepository;
 import com.quitmate.alertHistory.entity.AlertDestinationType;
 import com.quitmate.expo.event.PushNotificationEvent;
 import com.quitmate.firebase.request.SendFirebaseServiceRequest;
+import com.quitmate.global.exception.QuitmateException;
 import com.quitmate.notice.enums.NoticeType;
 import com.quitmate.notice.repository.NoticeJpaRepository;
 import com.quitmate.notice.service.impl.AdPushCopy;
@@ -31,6 +32,7 @@ import org.springframework.test.context.event.RecordApplicationEvents;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @RecordApplicationEvents
@@ -283,5 +285,59 @@ public class NoticeServiceTest extends IntegrationTestSupport {
 			.toList();
 		assertThat(requests).hasSize(1);
 		return requests.get(0);
+	}
+
+	@DisplayName("서식 본문을 보내면 정리해 저장하고 content 를 글자 버전으로 채운다.")
+	@Test
+	void createNoticeWithContentHtml() {
+		NoticeCreateServiceRequest request = NoticeCreateServiceRequest.builder()
+			.type(NoticeType.NOTICE)
+			.title("서식 공지")
+			.contentHtml("<p onclick=\"x()\">안녕</p><script>alert(1)</script><ul><li>하나</li></ul>"
+				+ "<img src=\"http://evil/a.png\"><img data-key=\"notice/a.png\">")
+			.build();
+
+		NoticeCreateResponse response = noticeService.createNotice(request);
+
+		assertThat(response.getContent()).isEqualTo("안녕\n• 하나");
+		assertThat(response.getContentHtml()).doesNotContain("script", "onclick", "evil").contains("notice/a.png");
+		assertThat(noticeJpaRepository.findById(response.getId()).orElseThrow().getContentHtml())
+			.isEqualTo(response.getContentHtml());
+	}
+
+	@DisplayName("옛 요청(content 만)은 그대로 저장하고, 수정 때 contentHtml 이 없으면 기존 서식 본문을 둔다.")
+	@Test
+	void oldRequestKeepsContentHtml() {
+		NoticeCreateResponse created = noticeService.createNotice(NoticeCreateServiceRequest.builder()
+			.type(NoticeType.NOTICE).title("t").content("옛 글").build());
+		assertThat(created.getContentHtml()).isNull();
+
+		Long id = created.getId();
+		noticeService.updateNotice(com.quitmate.notice.service.request.NoticeUpdateServiceRequest.builder()
+			.id(id).type(NoticeType.NOTICE).title("t").contentHtml("<p>서식</p>").build());
+		noticeService.updateNotice(com.quitmate.notice.service.request.NoticeUpdateServiceRequest.builder()
+			.id(id).type(NoticeType.NOTICE).title("t2").content("글자만 수정").build());
+
+		var notice = noticeJpaRepository.findById(id).orElseThrow();
+		assertThat(notice.getContent()).isEqualTo("글자만 수정");
+		assertThat(notice.getContentHtml()).isEqualTo("<p>서식</p>");
+
+		noticeService.updateNotice(com.quitmate.notice.service.request.NoticeUpdateServiceRequest.builder()
+			.id(id).type(NoticeType.NOTICE).title("t2").content("서식 해제").contentHtml("").build());
+		assertThat(noticeJpaRepository.findById(id).orElseThrow().getContentHtml()).isNull();
+	}
+
+	@DisplayName("내용이 하나도 없거나 서식 본문이 너무 크면 거절한다.")
+	@Test
+	void rejectsEmptyOrTooLarge() {
+		assertThatThrownBy(() -> noticeService.createNotice(NoticeCreateServiceRequest.builder()
+			.type(NoticeType.NOTICE).title("t").build()))
+			.isInstanceOf(QuitmateException.class);
+		assertThatThrownBy(() -> noticeService.createNotice(NoticeCreateServiceRequest.builder()
+			.type(NoticeType.NOTICE).title("t").contentHtml("<script>x</script>").build()))
+			.isInstanceOf(QuitmateException.class);
+		assertThatThrownBy(() -> noticeService.createNotice(NoticeCreateServiceRequest.builder()
+			.type(NoticeType.NOTICE).title("t").contentHtml("<p>" + "가".repeat(200_001) + "</p>").build()))
+			.isInstanceOf(QuitmateException.class);
 	}
 }

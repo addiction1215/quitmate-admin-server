@@ -9,12 +9,16 @@ import com.quitmate.firebase.request.SendFirebaseServiceRequest;
 import com.quitmate.global.exception.QuitmateException;
 import com.quitmate.notice.entity.Notice;
 import com.quitmate.notice.enums.NoticeType;
+import com.quitmate.notice.html.NoticeHtmlSanitizer;
 import com.quitmate.notice.repository.NoticeRepository;
 import com.quitmate.notice.service.NoticeService;
 import com.quitmate.notice.service.request.NoticeCreateServiceRequest;
 import com.quitmate.notice.service.request.NoticeUpdateServiceRequest;
 import com.quitmate.notice.service.response.NoticeCreateResponse;
+import com.quitmate.notice.service.response.NoticeImageUploadResponse;
 import com.quitmate.notice.service.response.NoticeUpdateResponse;
+import com.quitmate.storage.enums.BucketKind;
+import com.quitmate.storage.service.S3StorageService;
 import com.quitmate.user.push.entity.Push;
 import com.quitmate.user.users.entity.User;
 import com.quitmate.user.users.service.UserReadService;
@@ -23,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,16 +43,27 @@ public class NoticeServiceImpl implements NoticeService {
     // 푸시 본문이 알림 기록(alert_history.alert_description, varchar(255))에 그대로 들어가 넘으면 기록 저장이 실패한다.
     private static final int PUSH_BODY_MAX_LENGTH = 255;
 
+    private static final int CONTENT_HTML_MAX_LENGTH = 200_000;
+    // 이미지만 있는 서식 본문의 글자 버전(푸시·옛 앱 표시용)
+    private static final String IMAGE_ONLY_CONTENT = "이미지를 포함한 공지입니다.";
+
     private final ApplicationEventPublisher eventPublisher;
     private final UserReadService userReadService;
 
     private final NoticeRepository noticeRepository;
     private final AlertSettingReadService alertSettingReadService;
     private final AdPushQuietHours adPushQuietHours;
+    private final S3StorageService s3StorageService;
 
     @Override
     public NoticeCreateResponse createNotice(NoticeCreateServiceRequest request) {
-        Notice notice = noticeRepository.save(request.toEntity());
+        RichContent rich = resolveContent(request.getContent(), request.getContentHtml(), null);
+        Notice notice = noticeRepository.save(Notice.builder()
+                .type(request.getType())
+                .title(request.getTitle())
+                .content(rich.content())
+                .contentHtml(rich.contentHtml())
+                .build());
 
         if (notice.getType().isAdvertising() && adPushQuietHours.isQuietNow()) {
             // 지연 발송은 아직 없다(정현님과 방식 결정 전). 공지만 등록하고 푸시는 보내지 않는다.
@@ -60,6 +76,44 @@ public class NoticeServiceImpl implements NoticeService {
             eventPublisher.publishEvent(new PushNotificationEvent(pushRequests));
         }
         return NoticeCreateResponse.createResponse(notice);
+    }
+
+    private record RichContent(String content, String contentHtml) {
+    }
+
+    /**
+     * 글자 본문(content)과 서식 본문(contentHtml)을 저장할 값으로 만든다(KAN-174).
+     * - contentHtml 이 있으면: 정리(sanitize)해 저장하고, content 는 그 글자 버전으로 덮어쓴다.
+     * - contentHtml 이 null(옛 관리자 웹): content 만 받고, 서식 본문은 기존 값(수정 시)을 그대로 둔다.
+     * - contentHtml 이 빈 문자열: 서식 본문을 지우고 content 만 쓴다(서식 해제).
+     */
+    private RichContent resolveContent(String content, String contentHtml, String existingContentHtml) {
+        if (contentHtml == null) {
+            requireContent(content);
+            return new RichContent(content, existingContentHtml);
+        }
+        if (contentHtml.isBlank()) {
+            requireContent(content);
+            return new RichContent(content, null);
+        }
+        if (contentHtml.length() > CONTENT_HTML_MAX_LENGTH) {
+            throw new QuitmateException("서식 본문이 너무 큽니다. (최대 " + CONTENT_HTML_MAX_LENGTH + "자)");
+        }
+        String cleaned = NoticeHtmlSanitizer.sanitize(contentHtml);
+        String plain = NoticeHtmlSanitizer.toPlainText(cleaned);
+        if (plain.isBlank()) {
+            if (!NoticeHtmlSanitizer.hasImage(cleaned)) {
+                throw new QuitmateException("내용은 필수입니다.");
+            }
+            plain = IMAGE_ONLY_CONTENT;
+        }
+        return new RichContent(plain, cleaned);
+    }
+
+    private void requireContent(String content) {
+        if (content == null || content.isBlank()) {
+            throw new QuitmateException("내용은 필수입니다.");
+        }
     }
 
     private List<SendFirebaseServiceRequest> buildPushRequests(Notice notice) {
@@ -98,7 +152,8 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findById(request.getId())
                 .orElseThrow(() -> new QuitmateException(UNKNOWN_NOTICE));
 
-        notice.update(request.getType(), request.getTitle(), request.getContent());
+        RichContent rich = resolveContent(request.getContent(), request.getContentHtml(), notice.getContentHtml());
+        notice.update(request.getType(), request.getTitle(), rich.content(), rich.contentHtml());
         return NoticeUpdateResponse.createResponse(notice);
     }
 
@@ -108,6 +163,15 @@ public class NoticeServiceImpl implements NoticeService {
                 .orElseThrow(() -> new QuitmateException(UNKNOWN_NOTICE));
 
         notice.delete();
+    }
+
+    @Override
+    public NoticeImageUploadResponse uploadNoticeImage(MultipartFile file) {
+        String key = s3StorageService.upload(file, BucketKind.NOTICE);
+        return NoticeImageUploadResponse.builder()
+                .key(key)
+                .url(s3StorageService.createPresignedUrl(key, BucketKind.NOTICE))
+                .build();
     }
 
     /**
