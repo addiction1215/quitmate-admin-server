@@ -3,14 +3,18 @@ package com.quitmate.notice.service.impl;
 /**
  * 광고성 앱 푸시(이벤트 공지)에 붙이는 문구. 정보통신망법 제50조의 (광고) 표시·전송자·수신 거부 방법.
  *
- * <p>문구 확정 전: KAN-82 법무 검토 결과에 따라 바꾼다. 문구는 이 파일에만 둔다.</p>
+ * <p>문구는 이 파일에만 둔다.</p>
  */
 public final class AdPushCopy {
 
     /** 제목 맨 앞에 붙인다 */
     public static final String TITLE_PREFIX = "(광고) ";
 
-    public static final String SENDER = "QuitMate";
+    /**
+     * 법정 전송자 표기. 앱 안 브랜드는 QuitMate지만, 광고성 정보의 전송자는 사업자 명칭으로 적는다(KAN-82 11/15 결정, KAN-176).
+     * 앱 서버의 동의·철회 결과 응답(AdPushConsentResultResponse.SENDER)과 같은 값이다.
+     */
+    public static final String SENDER = "이정현(엘제이에이치)";
 
     /**
      * 전송자 연락처. 광고성 앱 푸시도 전화번호나 주소를 함께 적어야 한다(KISA 정보통신망법 안내서 7차 개정본).
@@ -22,7 +26,7 @@ public final class AdPushCopy {
 
     /** 본문 맨 끝에 붙인다. 본문이 길면 공지 내용 쪽을 줄여 이 문구는 늘 남긴다 */
     public static final String BODY_FOOTER =
-            "\n\n전송자: " + SENDER + " (" + SENDER_CONTACT + ")\n수신 거부: " + OPT_OUT_GUIDE;
+            "\n\n전송자: " + SENDER + ", " + SENDER_CONTACT + "\n수신 거부: " + OPT_OUT_GUIDE;
 
     /** 야간(21:00~08:00)에 이벤트 공지를 등록했을 때 관리자에게 돌려주는 안내 */
     public static final String QUIET_HOURS_SKIP_REASON =
