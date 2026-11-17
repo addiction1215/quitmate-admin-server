@@ -13,7 +13,9 @@ public enum AlertDestinationType {
 	NOTICE("공지사항"),
 	INQUIRY("1:1 문의"),
 	// 앱 서버 주간 흡연 패턴 리포트 알림(KAN-146). 관리자 서버는 보내지 않지만 alert_history에 이 값이 들어오므로 읽을 수 있어야 한다.
-	WEEKLY_REPORT("주간 흡연 패턴 리포트");
+	WEEKLY_REPORT("주간 흡연 패턴 리포트"),
+	// 앱 서버 다음 고비 알림(KAN-203). 관리자 서버는 보내지 않지만 alert_history에 이 값이 들어오므로 읽을 수 있어야 한다.
+	CRAVING_SESSION("다음 고비 알림");
 
 	private final String text;
 }
