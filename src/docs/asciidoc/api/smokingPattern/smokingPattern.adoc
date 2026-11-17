@@ -61,7 +61,7 @@ include::{snippets}/smoking-pattern-snapshot-detail/response-fields.adoc[]
 
 ==== 지표 구조(`data.result`)
 
-앱 서버 `SmokingPatternResult`(algorithmVersion `v1`)의 JSON 그대로입니다. 날짜는 `yyyy-MM-dd`, 시각은 `HH:mm` 문자열입니다.
+앱 서버 `SmokingPatternResult`(algorithmVersion `v1`·`v2`)의 JSON 그대로입니다. `v2`는 지표 8을 분석 주에 금연 확정일이 없을 때 계산하지 않고(`v1`은 그 전 주 포함 14일 기준), 모양은 같습니다. 날짜는 `yyyy-MM-dd`, 시각은 `HH:mm` 문자열입니다.
 
 |===
 |필드 |지표 |주요 값
