@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ChallengeMinHoldSecondsApiTest {
 
     private static final String BASE = "/api/v1/admin/challenge";
-    private static final String RANGE_MESSAGE = "최소 참기 시간은 60초(1분)부터 86400초(24시간)까지 넣을 수 있습니다.";
+    private static final String RANGE_MESSAGE = "최소 참기 시간은 60초(1분)부터 2592000초(30일)까지 넣을 수 있습니다.";
 
     @Autowired
     private MockMvc mockMvc;
@@ -104,10 +104,10 @@ class ChallengeMinHoldSecondsApiTest {
                 .andExpect(jsonPath("$.data.missions[?(@.title == '위치')].minHoldSeconds").value(contains(nullValue())));
     }
 
-    @DisplayName("등록·수정: 60초 미만이나 86400초 초과는 사람이 읽는 문장으로 400")
+    @DisplayName("등록·수정: 60초 미만이나 2592000초(30일) 초과는 사람이 읽는 문장으로 400")
     @Test
     void outOfRange() throws Exception {
-        for (int seconds : List.of(59, 86_401, 0, -1)) {
+        for (int seconds : List.of(59, 2_592_001, 0, -1)) {
             mockMvc.perform(post(BASE).header("Authorization", token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(challengeJson("[{\"category\":\"HOLD\",\"title\":\"참기\",\"reward\":10,"
@@ -120,11 +120,23 @@ class ChallengeMinHoldSecondsApiTest {
         mockMvc.perform(put(BASE + "/{id}", challengeId).header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(challengeJson("[{\"missionId\":" + missionId + ",\"category\":\"HOLD\",\"title\":\"참기\","
-                                + "\"reward\":10,\"content\":\"참기\",\"minHoldSeconds\":86401}]")))
+                                + "\"reward\":10,\"content\":\"참기\",\"minHoldSeconds\":2592001}]")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(RANGE_MESSAGE));
 
         assertThat(minHoldSeconds(challengeId)).containsEntry("참기", 60);
+    }
+
+    @DisplayName("등록: 하루가 넘는 최소 시간(홀수 챌린지 9일 참기 = 777600초)과 상한 30일을 받는다")
+    @Test
+    void dayLongMinHold() throws Exception {
+        long challengeId = create("[{\"category\":\"HOLD\",\"title\":\"9일 참기\",\"reward\":10,\"content\":\"참기\","
+                + "\"minHoldSeconds\":777600},{\"category\":\"HOLD\",\"title\":\"30일 참기\",\"reward\":10,"
+                + "\"content\":\"참기\",\"minHoldSeconds\":2592000}]");
+
+        assertThat(minHoldSeconds(challengeId))
+                .containsEntry("9일 참기", 777_600)
+                .containsEntry("30일 참기", 2_592_000);
     }
 
     @DisplayName("수정: 칸을 생략하면 그대로 두고, null이면 기본값으로, 숫자면 바꾸고, 참기가 아닌 종류로 바꾸면 비운다")

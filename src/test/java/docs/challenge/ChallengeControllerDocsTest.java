@@ -41,10 +41,10 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
     private static final String MIN_HOLD_SECONDS_RESPONSE =
             "참기(HOLD) 미션의 최소 참기 시간(초). null이면 앱 서버 기본값(지금 600초). 참기가 아니면 언제나 null";
     private static final String MIN_HOLD_SECONDS_CREATE =
-            "참기(HOLD) 미션의 최소 참기 시간(초), 60~86400. 비우면(null·생략) 앱 서버 기본값(지금 600초). "
+            "참기(HOLD) 미션의 최소 참기 시간(초), 60~2592000(30일). 비우면(null·생략) 앱 서버 기본값(지금 600초). "
                     + "참기가 아닌 미션은 보내도 저장하지 않음(null). 범위를 벗어나면 400";
     private static final String MIN_HOLD_SECONDS_UPDATE =
-            "참기(HOLD) 미션의 최소 참기 시간(초), 60~86400. 칸을 생략하면 기존 값을 그대로 두고, null이면 앱 서버 기본값(지금 600초)으로 돌림. "
+            "참기(HOLD) 미션의 최소 참기 시간(초), 60~2592000(30일). 칸을 생략하면 기존 값을 그대로 두고, null이면 앱 서버 기본값(지금 600초)으로 돌림. "
                     + "새 미션(missionId 없음)에서 생략하면 기본값. 참기가 아닌 미션은 보내도 저장하지 않고, 참기가 아닌 종류로 바꾸면 비움. 범위를 벗어나면 400";
 
     private final ChallengeReadService challengeReadService = mock(ChallengeReadService.class);
