@@ -3,6 +3,7 @@ package com.quitmate.global.security.config;
 import com.quitmate.global.jwt.JwtTokenProvider;
 import com.quitmate.global.jwt.filter.JwtAuthenticationFilter;
 import com.quitmate.global.jwt.filter.JwtExceptionHandlerFilter;
+import com.quitmate.global.security.AdminOnlyAccessDeniedHandler;
 import com.quitmate.user.users.entity.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -67,10 +68,14 @@ public class SecurityConfig {
 
                 .headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
 
+                // 공개 경로를 뺀 모든 API는 관리자만(KAN-206). 권한은 JwtTokenProvider가 DB 회원의 실제 role로 붙인다.
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(getPublicMatchers()).permitAll()
-                        .anyRequest().hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+                        .anyRequest().hasAuthority(Role.ADMIN.name())
                 )
+                // 관리자가 아니거나 없는·탈퇴한 계정: 403 + ApiResponse JSON("관리자 계정만 사용할 수 있습니다.")
+                .exceptionHandling(handling -> handling
+                        .accessDeniedHandler(new AdminOnlyAccessDeniedHandler()))
 
                 .logout((logout) -> logout
                         .logoutSuccessUrl("/"))

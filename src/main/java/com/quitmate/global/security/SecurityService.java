@@ -19,7 +19,7 @@ public class SecurityService {
         if (principal instanceof LoginUserInfo) {
             return (LoginUserInfo) principal;
         }
-        // JWT 필터(JwtTokenProvider.getAuthentication)는 토큰에 든 userId만 담아 넣는다. 권한은 쓰는 쪽에서 DB로 확인한다.
+        // JWT 필터(JwtTokenProvider.getAuthentication)는 토큰에 든 userId를 principal로, DB 회원의 role을 권한으로 넣는다(KAN-206).
         if (principal instanceof com.quitmate.global.jwt.dto.LoginUserInfo tokenUser && tokenUser.getUserId() != null) {
             return LoginUserInfo.of(tokenUser.getUserId(), null, null);
         }
