@@ -16,6 +16,7 @@
 --   만들 DDL과 아래 칸·타입·NULL 여부·인덱스 이름이 같은지 확인합니다.
 --     adminUserId → admin_user_id, targetUserId → target_user_id, resourceType → resource_type,
 --     resourceId → resource_id, api → api, accessedAt → accessed_at(한국 시각)
+--   보관: 기획 결정으로 6개월. 지난 행은 관리자 서버가 매일 04:40(KST)에 accessed_at 기준으로 자동 삭제합니다(표 구조 변경 없음).
 --   created_date·updated_date 는 두지 않습니다(고치지 않는 표, accessed_at 이 곧 만든 시각).
 --   회원 id 두 칸에는 외래 키를 걸지 않습니다. 회원 행이 지워져도 열람 근거는 남아야 하고, 이 표 때문에 회원 삭제가 막히면 안 됩니다.
 --   resource_type 은 MySQL ENUM 이 아니라 VARCHAR 입니다(종류를 더해도 DDL 불필요).
