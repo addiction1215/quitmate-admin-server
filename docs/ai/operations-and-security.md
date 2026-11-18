@@ -14,6 +14,6 @@ API(메서드 + 경로 패턴)와 열람 시각(한국 시각)은 서비스가 �
 저장은 `LocationAccessLogWriter`가 본 조회와 다른 트랜잭션(REQUIRES_NEW)에서 한다. 조회는 readOnly 트랜잭션이라 같은 트랜잭션에서는
 MySQL이 INSERT를 거부하고, 실패가 조회까지 되돌리기 때문이다. 저장이 실패해도 예외를 던지지 않고 응답을 그대로 주며,
 ERROR 로그 한 줄(관리자 id·회원 id·종류·행 id·예외 클래스 이름, 위치 값 없음)만 남긴다(관리자 서버에는 Slack 알림이 없다).
-표는 `docs/db/KAN-208-admin-location-access-log.sql`로 만든다. 운영은 ddl-auto: update, dev는 none이라 엔티티와 DDL을
+표는 `docs/db/KAN-208-admin-location-access-log.sql`로 만든다. 운영은 ddl-auto: update라 표가 먼저 없으면 Hibernate가 만들 수 있어서, 엔티티와 DDL을
 `AdminLocationAccessLogDdlTest`로 맞춰 둔다. 위치가 나가는 API를 더하면 `MissionHistoryLocationAccessLogApiTest`처럼
 이력 한 줄·위치 값 없음·관리자 아니면 403과 이력 없음·저장 실패해도 200을 확인한다.
