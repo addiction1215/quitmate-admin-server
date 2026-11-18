@@ -5,6 +5,7 @@ import com.quitmate.challenge.missionhistory.entity.MissionHistory;
 import com.quitmate.challenge.missionhistory.entity.MissionStatus;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,6 +61,16 @@ public class MissionHistoryDetailResponse {
                 .abstinenceData(category == MissionCategoryStatus.HOLD ?
                         AbstinenceVerificationData.of(missionHistory.getAbstinenceTime()) : null)
                 .build();
+    }
+
+    /**
+     * 이 응답에 위치 값(locationData.addresses 의 좌표)이 하나라도 담겼는지. 위치정보 열람 이력(KAN-208)을 남길지 정한다.
+     * LOCATION 이 아닌 유형, 반려로 좌표가 지워진 LOCATION 은 false 다.
+     * 응답 JSON 칸이 아니다(get·is 로 시작하지 않아 Jackson 이 내보내지 않는다).
+     */
+    public boolean containsLocation() {
+        return locationData != null && locationData.getAddresses() != null
+                && locationData.getAddresses().stream().anyMatch(StringUtils::hasText);
     }
 
     @Getter
