@@ -1,5 +1,6 @@
 package com.quitmate.global.exception;
 
+import com.quitmate.appMetrics.ga4.client.Ga4UnavailableException;
 import com.quitmate.global.ApiResponse;
 import com.quitmate.global.appserver.AppServerException;
 import feign.FeignException;
@@ -145,6 +146,17 @@ public class ApiControllerAdvice {
         log.warn("앱 서버 호출 실패 - {} {}", e.getStatus(), e.getMessage());
         return ResponseEntity.status(e.getStatus())
                 .body(ApiResponse.of(e.getStatus(), e.getMessage(), null));
+    }
+
+    /**
+     * GA4 지표를 받지 못함(권한·쿼터·네트워크·응답 이상, KAN-218). 화면은 message로 'GA4 응답 실패'를 띄운다.
+     * 사유는 로그에만 남긴다(키·토큰·속성 ID는 사유에 넣지 않는다).
+     */
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(Ga4UnavailableException.class)
+    public ApiResponse<Object> ga4Unavailable(Ga4UnavailableException e) {
+        log.warn("GA4 지표를 받지 못함 - {}", e.getMessage());
+        return ApiResponse.of(HttpStatus.SERVICE_UNAVAILABLE, Ga4UnavailableException.RESPONSE_MESSAGE, null);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

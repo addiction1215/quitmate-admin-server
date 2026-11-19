@@ -106,6 +106,19 @@ class LoggingInterceptorTest {
         assertThat(sanitized).doesNotContain("\"p1\"", "\"t1\"", "\"a1\"", "1.5", "\"a2\"", ":9");
     }
 
+    @DisplayName("앱 지표 GA4 응답의 consoleUrl(속성 ID 전체)은 가리고 지표 숫자는 남긴다(KAN-218)")
+    @Test
+    void ga4ConsoleUrlIsMasked() {
+        String body = "{\"statusCode\":200,\"data\":{\"enabled\":true,\"period\":28,"
+                + "\"consoleUrl\":\"https://analytics.google.com/analytics/web/#/p123456789/reports/intelligenthome\","
+                + "\"summary\":{\"dau\":120,\"mau\":905}}}";
+
+        String sanitized = interceptor.sanitizeBody("/api/v1/app-metrics/ga4", body);
+
+        assertThat(sanitized).contains("\"consoleUrl\":\"" + R + "\"", "\"dau\":120", "\"mau\":905", "\"period\":28");
+        assertThat(sanitized).doesNotContain("123456789", "analytics.google.com");
+    }
+
     @DisplayName("값이 null이면 보냈는지만 보이도록 null로 남긴다")
     @Test
     void nullValueStaysNull() {
