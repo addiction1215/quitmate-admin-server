@@ -63,3 +63,11 @@ include::api/cigaretteHistoryBatch/cigaretteHistoryBatch.adoc[]
 == QuitMate 90 이용권 API
 
 include::api/userPass/userPass.adoc[]
+
+[[App-Metrics-API]]
+== 앱 지표 API
+
+// GA4(KAN-218)·푸시(KAN-221)는 PR이 따로라 어느 쪽이 먼저 머지돼도 문서가 깨지지 않도록 optional로 넣는다.
+include::api/appMetrics/ga4.adoc[opts=optional]
+
+include::api/appMetrics/push.adoc[opts=optional]
