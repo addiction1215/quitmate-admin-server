@@ -136,7 +136,9 @@ class PushMetricsApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.deliveryTracking").value(true))
                 .andExpect(jsonPath("$.data.openTracking").value(true))
-                .andExpect(jsonPath("$.data.summary.requested").value(2 + 3))
+                // 발송 요청은 outbox 2건(사람 단위)만. 친구 푸시 전달 3행(기기 단위)은 더하지 않음
+                .andExpect(jsonPath("$.data.summary.requested").value(2))
+                .andExpect(jsonPath("$.data.daily[27].requested").value(2))
                 .andExpect(jsonPath("$.data.summary.ticketOk").value(3))
                 .andExpect(jsonPath("$.data.summary.ticketError").value(1))
                 .andExpect(jsonPath("$.data.summary.receiptOk").value(1))

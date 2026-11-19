@@ -4,8 +4,9 @@
 관리자 계정만 쓸 수 있습니다(관리자가 아니면 403). 앱 서버 표 `push_outbox`·`push_delivery`(KAN-219)·`push` 를 읽기만 합니다.
 
 * 기간: 끝 날짜는 **오늘(한국 날짜)**, 시작은 끝에서 period-1일 전입니다. 각 행의 `created_date`(앱 서버가 한국 시각으로 넣음) 날짜로 나눕니다.
-* `requested`(발송 요청) = 기간에 생긴 `push_outbox` 행(종류·상태 무관) + `push_outbox_id` 가 없는 `push_delivery` 행(outbox 를 거치지 않는 푸시).
-* `deliveryTracking`: 기간에 `push_delivery` 행이 없으면 false 이고, ticket·receipt 숫자는 `null`(0 아님)입니다.
+* 단위가 둘입니다. **발송 요청 = 사람 단위**(`push_outbox` 한 행 = 한 사람에게 보낼 알림 하나), **접수(ticket)·전달(receipt)·오류 코드 = 기기 단위**(`push_delivery` 한 행 = 토큰 하나). 단위가 달라 두 표의 행 수는 더하지 않습니다.
+* `requested`(발송 요청) = 기간에 생긴 `push_outbox` 행 수(하루 흡연 시간대·주간 리포트·다음 고비 알림 등, 종류·상태 무관). `daily[].requested` 도 같습니다.
+* `deliveryTracking`: 기간에 `push_delivery` 행이 없으면 false 이고, ticket·receipt 숫자는 `null`(0 아님)입니다. ticket·receipt·`errorCodes` 는 `push_delivery` 기준이라 outbox 를 거치지 않는 친구 요청·수락 푸시도 들어 있습니다. 관리자 서버가 직접 보내는 공지·광고 푸시는 들어 있지 않습니다.
 * `openTracking`: 기간 하루 흡연 시간대 푸시(`schedule_id` 있음) 중 `opened_at` 이 하나도 없으면 false 이고, `opened`·`openRate` 는 `null` 입니다.
   `openRate` 분모는 그중 **보낸 것**(`status = 'SENT'`) 또는 이미 열린 것입니다. 실패·취소·만료·대기 건은 사용자에게 가지 않았으므로 뺍니다.
 * `tokenUsers`: `push` 에서 토큰이 있는 서로 다른 회원 수(기간 무관, 지금 값).

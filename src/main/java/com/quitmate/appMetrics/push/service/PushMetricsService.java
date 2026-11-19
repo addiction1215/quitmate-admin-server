@@ -34,12 +34,14 @@ import java.util.stream.Collectors;
  *
  * <ul>
  *   <li>기간: 끝 날짜는 오늘(한국 날짜), 시작은 끝에서 period-1일 전. 각 행의 created_date 한국 날짜로 나눈다.</li>
- *   <li>발송 요청(requested) = 기간에 생긴 push_outbox 행 + push_outbox_id 없는 push_delivery 행.</li>
- *   <li>전달 추적(deliveryTracking): 기간에 push_delivery 행이 없으면(KAN-219·220 배포 전) ticket·receipt 숫자는 null.</li>
+ *   <li>발송 요청(requested) = 기간에 생긴 push_outbox 행(사람 단위). push_delivery(기기 단위)는 단위가 달라 더하지 않는다.</li>
+ *   <li>전달 추적(deliveryTracking): 기간에 push_delivery 행이 없으면(KAN-219·220 배포 전) ticket·receipt 숫자는 null.
+ *       ticket·receipt·오류 코드는 push_delivery 기준(기기 단위, 친구 푸시 포함)이다.</li>
  *   <li>열림 추적(openTracking): 기간 하루 흡연 시간대 푸시(schedule_id 있음) 중 열린 것이 없으면 opened·openRate는 null.
  *       열림률 분모는 그중 보낸 것(status = SENT) 또는 열린 것이다. 실패·취소·만료·대기 건은 사용자에게 가지 않았으므로 뺀다.</li>
  *   <li>결과는 기간별로 1시간 캐시한다.</li>
  * </ul>
+ * 숫자 정의(SQL 조건)는 {@code PushMetricsSql} 한 곳에 있다.
  */
 @Service
 @Transactional(readOnly = true)
@@ -93,8 +95,7 @@ public class PushMetricsService {
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             OutboxDailyCount outboxDay = outbox.get(date);
             DeliveryDailyCount deliveryDay = delivery.get(date);
-            long requested = (outboxDay == null ? 0 : outboxDay.requested())
-                    + (deliveryDay == null ? 0 : deliveryDay.withoutOutbox());
+            long requested = outboxDay == null ? 0 : outboxDay.requested();
             requestedTotal += requested;
             daily.add(new Daily(
                     date,

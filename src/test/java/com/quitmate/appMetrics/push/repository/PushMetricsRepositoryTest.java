@@ -86,12 +86,14 @@ class PushMetricsRepositoryTest {
                 new OutboxDailyCount(DAY7, 2, 1, 1));
     }
 
-    @DisplayName("push_delivery: outbox 없는 행, 티켓·영수증 상태별로 센다")
+    @DisplayName("push_delivery: 기기 단위로 티켓·영수증 상태별로 센다(outbox 없는 친구 푸시 포함, SKIPPED는 어디에도 안 셈)")
     @Test
     void deliveryDailyCounts() {
+        // 하루 흡연 시간대 푸시 1건(사람 단위)을 기기 2대에 보냄 → 기기 단위 2행
         long outboxId = dailySmokingOutbox(jdbcTemplate, userId, FROM.plusHours(8), "SENT", null);
         delivery(jdbcTemplate, userId, outboxId, FROM.plusHours(8), "OK", null, "OK", null);
         delivery(jdbcTemplate, userId, outboxId, FROM.plusHours(8), "OK", null, "ERROR", "DeviceNotRegistered");
+        // 친구 푸시(outbox 없음)
         delivery(jdbcTemplate, userId, null, FROM.plusHours(9), "ERROR", "DeviceNotRegistered", "SKIPPED", null);
         delivery(jdbcTemplate, userId, null, DAY7.atTime(21, 0), "OK", null, "PENDING", null);
         delivery(jdbcTemplate, userId, null, TO, "OK", null, "PENDING", null);
@@ -99,8 +101,24 @@ class PushMetricsRepositoryTest {
         List<DeliveryDailyCount> counts = repository.findDeliveryDailyCounts(FROM, TO);
 
         assertThat(counts).containsExactlyInAnyOrder(
-                new DeliveryDailyCount(DAY1, 3, 1, 2, 1, 1, 1, 0),
-                new DeliveryDailyCount(DAY7, 1, 1, 1, 0, 0, 0, 1));
+                new DeliveryDailyCount(DAY1, 3, 2, 1, 1, 1, 0),
+                new DeliveryDailyCount(DAY7, 1, 1, 0, 0, 0, 1));
+    }
+
+    @DisplayName("발송 요청은 push_outbox 행(사람 단위)만 센다. 같은 날 push_delivery 행(기기 단위)이 많아도 늘지 않는다")
+    @Test
+    void requestedCountsOutboxRowsOnly() {
+        long outboxId = dailySmokingOutbox(jdbcTemplate, userId, FROM.plusHours(8), "SENT", null);
+        delivery(jdbcTemplate, userId, outboxId, FROM.plusHours(8), "OK", null, "OK", null);
+        delivery(jdbcTemplate, userId, outboxId, FROM.plusHours(8), "OK", null, "OK", null);
+        delivery(jdbcTemplate, userId, null, FROM.plusHours(9), "OK", null, "OK", null);
+
+        assertThat(repository.findOutboxDailyCounts(FROM, TO))
+                .extracting(OutboxDailyCount::requested)
+                .containsExactly(1L);
+        assertThat(repository.findDeliveryDailyCounts(FROM, TO))
+                .extracting(DeliveryDailyCount::total)
+                .containsExactly(3L);
     }
 
     @DisplayName("오류 코드: ticket_error·receipt_error를 합쳐 많은 순(같으면 코드 순), 빈 값·기간 밖은 빼고 최대 20개")

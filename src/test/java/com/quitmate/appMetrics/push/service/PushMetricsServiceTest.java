@@ -73,15 +73,15 @@ class PushMetricsServiceTest {
         verify(repository, never()).findErrorCodeCounts(any(), any());
     }
 
-    @DisplayName("전달·열림 기록이 있으면 숫자로 채운다. 기록 없는 날은 0, 발송 요청에 outbox 없는 전달 행을 더한다")
+    @DisplayName("전달·열림 기록이 있으면 숫자로 채운다. 기록 없는 날은 0, 발송 요청은 push_outbox(사람 단위)만이고 전달 행(기기 단위)은 더하지 않는다")
     @Test
     void tracked() {
         given(repository.findOutboxDailyCounts(FROM, TO)).willReturn(List.of(
                 new OutboxDailyCount(LocalDate.of(2026, 11, 13), 100, 90, 30),
                 new OutboxDailyCount(LocalDate.of(2026, 11, 18), 50, 30, 0)));
         given(repository.findDeliveryDailyCounts(FROM, TO)).willReturn(List.of(
-                new DeliveryDailyCount(LocalDate.of(2026, 11, 18), 70, 20, 65, 5, 50, 3, 12),
-                new DeliveryDailyCount(LocalDate.of(2026, 11, 19), 10, 10, 10, 0, 0, 0, 10)));
+                new DeliveryDailyCount(LocalDate.of(2026, 11, 18), 70, 65, 5, 50, 3, 12),
+                new DeliveryDailyCount(LocalDate.of(2026, 11, 19), 10, 10, 0, 0, 0, 10)));
         given(repository.findErrorCodeCounts(FROM, TO)).willReturn(List.of(
                 new ErrorCodeCount("DeviceNotRegistered", 6), new ErrorCodeCount("MessageRateExceeded", 2)));
         given(repository.countTokenUsers()).willReturn(181L);
@@ -90,16 +90,16 @@ class PushMetricsServiceTest {
 
         assertThat(response.deliveryTracking()).isTrue();
         assertThat(response.openTracking()).isTrue();
-        // requested = outbox 150 + outbox 없는 전달 30, openRate = 30 / (90 + 30)
-        assertThat(response.summary()).isEqualTo(new Summary(180, 75L, 5L, 50L, 3L, 22L, 30L, 0.25, 181));
+        // requested = outbox 100 + 50 (전달 행 80은 기기 단위라 안 더함), openRate = 30 / (90 + 30)
+        assertThat(response.summary()).isEqualTo(new Summary(150, 75L, 5L, 50L, 3L, 22L, 30L, 0.25, 181));
         assertThat(response.daily()).containsExactly(
                 new Daily(LocalDate.of(2026, 11, 13), 100, 0L, 0L, 30L),
                 new Daily(LocalDate.of(2026, 11, 14), 0, 0L, 0L, 0L),
                 new Daily(LocalDate.of(2026, 11, 15), 0, 0L, 0L, 0L),
                 new Daily(LocalDate.of(2026, 11, 16), 0, 0L, 0L, 0L),
                 new Daily(LocalDate.of(2026, 11, 17), 0, 0L, 0L, 0L),
-                new Daily(LocalDate.of(2026, 11, 18), 70, 5L, 3L, 0L),
-                new Daily(LocalDate.of(2026, 11, 19), 10, 0L, 0L, 0L));
+                new Daily(LocalDate.of(2026, 11, 18), 50, 5L, 3L, 0L),
+                new Daily(LocalDate.of(2026, 11, 19), 0, 0L, 0L, 0L));
         assertThat(response.errorCodes()).containsExactly(
                 new ErrorCode("DeviceNotRegistered", 6), new ErrorCode("MessageRateExceeded", 2));
     }

@@ -30,10 +30,10 @@ public record PushMetricsResponse(
 ) {
 
     /**
-     * @param requested      발송 요청: 기간에 생긴 push_outbox 행 + push_outbox_id 없는 push_delivery 행
-     * @param ticketOk       Expo 티켓 OK(push_delivery.ticket_status)
+     * @param requested      발송 요청(사람 단위): 기간에 생긴 push_outbox 행 수. push_delivery 는 더하지 않음
+     * @param ticketOk       Expo 티켓 OK(push_delivery.ticket_status, 기기 단위)
      * @param ticketError    Expo 티켓 ERROR
-     * @param receiptOk      Expo 영수증 OK(push_delivery.receipt_status)
+     * @param receiptOk      Expo 영수증 OK(push_delivery.receipt_status, 기기 단위)
      * @param receiptError   Expo 영수증 ERROR
      * @param receiptPending 영수증 확인 전(PENDING)
      * @param opened         하루 흡연 시간대 푸시 중 열린 것(push_outbox.opened_at 있음)
