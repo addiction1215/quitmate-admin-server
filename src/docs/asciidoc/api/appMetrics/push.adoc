@@ -1,0 +1,27 @@
+[[app-metrics-push]]
+=== 푸시 지표 (KAN-221)
+
+관리자 계정만 쓸 수 있습니다(관리자가 아니면 403). 앱 서버 표 `push_outbox`·`push_delivery`(KAN-219)·`push` 를 읽기만 합니다.
+
+* 기간: 끝 날짜는 **오늘(한국 날짜)**, 시작은 끝에서 period-1일 전입니다. 각 행의 `created_date`(앱 서버가 한국 시각으로 넣음) 날짜로 나눕니다.
+* `requested`(발송 요청) = 기간에 생긴 `push_outbox` 행(종류·상태 무관) + `push_outbox_id` 가 없는 `push_delivery` 행(outbox 를 거치지 않는 푸시).
+* `deliveryTracking`: 기간에 `push_delivery` 행이 없으면 false 이고, ticket·receipt 숫자는 `null`(0 아님)입니다.
+* `openTracking`: 기간 하루 흡연 시간대 푸시(`schedule_id` 있음) 중 `opened_at` 이 하나도 없으면 false 이고, `opened`·`openRate` 는 `null` 입니다.
+  `openRate` 분모는 그중 **보낸 것**(`status = 'SENT'`) 또는 이미 열린 것입니다. 실패·취소·만료·대기 건은 사용자에게 가지 않았으므로 뺍니다.
+* `tokenUsers`: `push` 에서 토큰이 있는 서로 다른 회원 수(기간 무관, 지금 값).
+* 결과는 period별로 1시간 동안 서버 메모리에 담아 둡니다. `fetchedAt` 은 DB를 실제로 읽은 시각입니다.
+* `period` 가 7·28·90이 아니거나 없으면 400입니다.
+
+==== HTTP Request
+
+include::{snippets}/app-metrics-push/http-request.adoc[]
+include::{snippets}/app-metrics-push/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/app-metrics-push/http-response.adoc[]
+include::{snippets}/app-metrics-push/response-fields.adoc[]
+
+==== HTTP Response (전달·열림 추적 전)
+
+include::{snippets}/app-metrics-push-not-tracked/http-response.adoc[]
