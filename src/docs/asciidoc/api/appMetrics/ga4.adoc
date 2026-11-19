@@ -1,0 +1,24 @@
+[[app-metrics-ga4]]
+=== GA4 지표 (KAN-218)
+
+관리자 계정만 쓸 수 있습니다(관리자가 아니면 403). GA4 Data API `runReport` 를 서비스 계정으로 불러 다섯 가지(요약·날짜별·화면·플랫폼·앱 버전)를 한 응답으로 묶습니다.
+
+* 기간: 끝 날짜는 GA4 속성 보고 시간대 기준 **어제**(마지막으로 다 찬 날), 시작은 끝에서 period-1일 전입니다. GA4에는 `{period}daysAgo ~ yesterday` 로 보냅니다.
+* 결과는 period별로 1시간 동안 서버 메모리에 담아 둡니다. `fetchedAt` 은 GA4를 실제로 부른 시각입니다. 실패는 담지 않습니다.
+* **연결 전**(서버에 속성 ID·키 파일 설정이 없음): 200 + `enabled: false`, 나머지는 `null`·빈 배열입니다.
+* **GA4 호출 실패**(권한·쿼터·네트워크·응답 이상): 503, `message` 는 `GA4_UNAVAILABLE`, `data` 는 `null` 입니다.
+* `period` 가 7·28·90이 아니거나 없으면 400입니다.
+
+==== HTTP Request
+
+include::{snippets}/app-metrics-ga4/http-request.adoc[]
+include::{snippets}/app-metrics-ga4/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/app-metrics-ga4/http-response.adoc[]
+include::{snippets}/app-metrics-ga4/response-fields.adoc[]
+
+==== HTTP Response (연결 전)
+
+include::{snippets}/app-metrics-ga4-disabled/http-response.adoc[]
