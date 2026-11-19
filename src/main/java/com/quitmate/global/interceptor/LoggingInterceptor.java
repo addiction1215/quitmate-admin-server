@@ -24,6 +24,7 @@ import java.util.Set;
 /**
  * 모든 API의 JSON 요청·응답 본문을 INFO로 남긴다.
  * 비밀번호·토큰·주소·좌표는 값을 {@link #REDACTED}로 바꿔 남긴다(KAN-205). 앱 서버 LoggingInterceptor와 같은 규칙이다.
+ * GA4 속성 ID가 들어 있는 콘솔 주소(consoleUrl)도 가린다(KAN-218).
  */
 @Slf4j
 @Component
@@ -63,6 +64,11 @@ public class LoggingInterceptor implements HandlerInterceptor {
     private static final Set<String> LOCATION_FIELDS = Set.of(
             "locationaccuracy",
             "accuracymeters"
+    );
+
+    /** 외부 서비스 식별자가 통째로 들어 있는 키. 앱 지표 GA4 응답의 consoleUrl에는 GA4 속성 ID 전체가 들어 있다(KAN-218). */
+    private static final Set<String> IDENTIFIER_FIELDS = Set.of(
+            "consoleurl"
     );
 
     private final ObjectMapper objectMapper;
@@ -184,7 +190,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
     static boolean isSensitiveField(String fieldName) {
         String key = fieldName.toLowerCase(Locale.ROOT).replace("_", "").replace("-", "");
-        if (SECRET_FIELDS.contains(key) || LOCATION_FIELDS.contains(key)) {
+        if (SECRET_FIELDS.contains(key) || LOCATION_FIELDS.contains(key) || IDENTIFIER_FIELDS.contains(key)) {
             return true;
         }
         return LOCATION_KEYWORDS.stream().anyMatch(key::contains);
