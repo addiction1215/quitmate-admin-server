@@ -2,10 +2,8 @@ package docs.challenge;
 
 import com.quitmate.challenge.mission.entity.MissionCategoryStatus;
 import com.quitmate.challenge.missionhistory.controller.MissionHistoryController;
-import com.quitmate.challenge.missionhistory.controller.request.MissionHistoryUpdateRequest;
 import com.quitmate.challenge.missionhistory.entity.MissionStatus;
 import com.quitmate.challenge.missionhistory.service.MissionHistoryReadService;
-import com.quitmate.challenge.missionhistory.service.MissionHistoryService;
 import com.quitmate.challenge.missionhistory.service.response.MissionHistoryDetailResponse;
 import com.quitmate.challenge.missionhistory.service.response.MissionHistoryListResponse;
 import com.quitmate.global.page.response.PageCustom;
@@ -13,7 +11,6 @@ import com.quitmate.global.page.response.PageableCustom;
 import docs.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import java.time.LocalDateTime;
@@ -35,11 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MissionHistoryControllerDocsTest extends RestDocsSupport {
 
     private final MissionHistoryReadService missionHistoryReadService = mock(MissionHistoryReadService.class);
-    private final MissionHistoryService missionHistoryService = mock(MissionHistoryService.class);
 
     @Override
     protected Object initController() {
-        return new MissionHistoryController(missionHistoryReadService, missionHistoryService);
+        return new MissionHistoryController(missionHistoryReadService);
     }
 
     @DisplayName("미션 히스토리 목록 조회 API")
@@ -355,64 +351,6 @@ public class MissionHistoryControllerDocsTest extends RestDocsSupport {
                                         .description("금연 시간 데이터 (HOLD 타입일 때만)").optional(),
                                 fieldWithPath("data.abstinenceData.abstinenceTime").type(JsonFieldType.NUMBER)
                                         .description("금연 시간 (초 단위)")
-                        )
-                ));
-    }
-
-    @DisplayName("미션 결과 심사 API - 성공 처리")
-    @Test
-    void 미션_결과_심사_API_성공() throws Exception {
-        // given
-        MissionHistoryUpdateRequest request = MissionHistoryUpdateRequest.builder()
-                .isSuccess(true)
-                .build();
-
-        // when // then
-        mockMvc.perform(
-                        patch("/api/v1/admin/mission-history/{id}", 1L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
-                )
-                .andDo(print())
-                .andExpect(status().isNoContent())
-                .andDo(document("mission-history-approve",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("id").description("미션 히스토리 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN)
-                                        .description("심사 결과 (true: 성공/COMPLETED, false: 실패/FAILED)")
-                        )
-                ));
-    }
-
-    @DisplayName("미션 결과 심사 API - 실패 처리")
-    @Test
-    void 미션_결과_심사_API_실패() throws Exception {
-        // given
-        MissionHistoryUpdateRequest request = MissionHistoryUpdateRequest.builder()
-                .isSuccess(false)
-                .build();
-
-        // when // then
-        mockMvc.perform(
-                        patch("/api/v1/admin/mission-history/{id}", 1L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
-                )
-                .andDo(print())
-                .andExpect(status().isNoContent())
-                .andDo(document("mission-history-reject",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("id").description("미션 히스토리 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("isSuccess").type(JsonFieldType.BOOLEAN)
-                                        .description("심사 결과 (true: 성공/COMPLETED, false: 실패/FAILED)")
                         )
                 ));
     }

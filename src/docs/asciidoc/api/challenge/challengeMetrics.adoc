@@ -1,0 +1,79 @@
+챌린지 참여·미션 기록(앱 서버가 쓰는 `challenge_history`·`mission_history`)을 읽어 챌린지별 지표를 계산합니다(KAN-194).
+관리자 계정만 쓸 수 있습니다(관리자가 아니면 403).
+
+* **대상**: 기간 안에 **시작한** 참여(`challenge_history.created_date`, 한국 날짜). `from`·`to`는 둘 다 선택이고 두 날짜를 모두 포함합니다(`from` 00:00 이상, `to` 다음 날 00:00 미만). 안 주면 전체 참여입니다.
+* **상태**: 기간 끝 시점이 아니라 **지금** 상태입니다. 기간 안에 시작해 기간 뒤에 완료한 참여도 완료로 셉니다.
+* **참여 1건** = `challenge_history` 1행. 앱 서버는 같은 챌린지를 진행 중이거나 완료했으면 다시 참여하지 못하게 막으므로, 한 사람이 같은 챌린지에 2건 이상 참여하는 것은 포기 뒤 다시 참여할 때뿐입니다.
+* 비율은 `numerator`(분자)·`denominator`(분모)·`percent`(반올림한 정수)로 줍니다. 분모가 0이면 `percent`는 `null`입니다.
+* 완료·포기 시각은 `completed_at`·`cancelled_at`을 씁니다. KAN-190 배포 전에 끝난 옛 기록은 이 칸이 비어 있어 마지막 수정 시각(`updated_date`)으로 대신하고, 그 수를 `endTimeFallbackCount`로 줍니다(0보다 크면 "옛 기록은 마지막 수정 시각 기준" 표시).
+
+|===
+|지표 |분자 |분모
+
+|완료율 `completion`
+|기간 안에 시작한 참여 중 완료(`COMPLETED`) 건수
+|기간 안에 시작한 참여 건수(`participationCount`)
+
+|중도 포기율 `cancellation`
+|기간 안에 시작한 참여 중 포기(`CANCELLED`) 건수
+|기간 안에 시작한 참여 건수
+
+|재참여율 `rejoin`
+|분모의 사용자 중 그 포기한 참여보다 뒤에 같은 챌린지 참여를 시작한 사용자 수(기간 밖이어도, 상태 무관)
+|기간 안에 시작한 참여를 포기한 사용자 수(명)
+
+|미션 완료율 `missions[].completion`
+|그 미션 기록 중 완료(`COMPLETED`) 수. KAN-197 정리 전 옛 승인 대기(`READY`)는 완료로 세지 않음
+|기간 안에 시작한 참여의 그 미션 기록 수(참여를 포기했어도 듦). 참여를 시작할 때 그때 미션마다 기록이 생기므로 나중에 추가한 미션은 분모가 작음
+|===
+
+참여 전후 흡연량 변화는 넣지 않았습니다. 지난 날의 일별 흡연 기록은 앱 서버 MongoDB(`cigarette_history`)에만 있고(MySQL `user_cigarette`는 자정 이관 뒤 지움), 관리자 서버는 MongoDB에 연결하지 않습니다.
+
+[[challenge-metrics-list]]
+=== 챌린지 지표 목록
+
+사용 중인 챌린지 전체(챌린지 ID 내림차순)의 참여 지표입니다. 미션별 완료율은 상세에만 있습니다.
+
+==== HTTP Request
+
+include::{snippets}/challenge-metrics-list/http-request.adoc[]
+include::{snippets}/challenge-metrics-list/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/challenge-metrics-list/http-response.adoc[]
+include::{snippets}/challenge-metrics-list/response-fields.adoc[]
+
+[[challenge-metrics-detail]]
+=== 챌린지 지표 상세
+
+챌린지 하나의 참여 지표와 사용 중인 미션별 완료율입니다. 없거나 삭제한 챌린지면 400 "해당 챌린지는 존재하지 않습니다."입니다.
+
+==== HTTP Request
+
+include::{snippets}/challenge-metrics-detail/http-request.adoc[]
+include::{snippets}/challenge-metrics-detail/path-parameters.adoc[]
+include::{snippets}/challenge-metrics-detail/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/challenge-metrics-detail/http-response.adoc[]
+include::{snippets}/challenge-metrics-detail/response-fields.adoc[]
+
+==== 오류
+
+|===
+|상황 |상태 |message
+
+|`from`·`to` 형식이 yyyy-MM-dd가 아님
+|400
+|기간은 2026-11-01 형식(yyyy-MM-dd)으로 보내 주세요.
+
+|`from`이 `to`보다 늦음
+|400
+|기간 시작일(from)은 끝 날짜(to)보다 늦을 수 없습니다.
+
+|관리자가 아님
+|403
+|관리자 계정만 사용할 수 있습니다.
+|===

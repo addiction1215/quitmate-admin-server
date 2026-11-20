@@ -38,6 +38,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ChallengeControllerDocsTest extends RestDocsSupport {
 
+    private static final String MIN_HOLD_SECONDS_RESPONSE =
+            "참기(HOLD) 미션의 최소 참기 시간(초). null이면 앱 서버 기본값(지금 600초). 참기가 아니면 언제나 null";
+    private static final String MIN_HOLD_SECONDS_CREATE =
+            "참기(HOLD) 미션의 최소 참기 시간(초), 60~2592000(30일). 비우면(null·생략) 앱 서버 기본값(지금 600초). "
+                    + "참기가 아닌 미션은 보내도 저장하지 않음(null). 범위를 벗어나면 400";
+    private static final String MIN_HOLD_SECONDS_UPDATE =
+            "참기(HOLD) 미션의 최소 참기 시간(초), 60~2592000(30일). 칸을 생략하면 기존 값을 그대로 두고, null이면 앱 서버 기본값(지금 600초)으로 돌림. "
+                    + "새 미션(missionId 없음)에서 생략하면 기본값. 참기가 아닌 미션은 보내도 저장하지 않고, 참기가 아닌 종류로 바꾸면 비움. 범위를 벗어나면 400";
+
     private final ChallengeReadService challengeReadService = mock(ChallengeReadService.class);
     private final ChallengeService challengeService = mock(ChallengeService.class);
 
@@ -163,13 +172,22 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .content("담배 생각이 날 때 물 마시기")
                 .build();
 
+        ChallengeDetailResponse.MissionResponse mission3 = ChallengeDetailResponse.MissionResponse.builder()
+                .missionId(3L)
+                .category(MissionCategoryStatus.HOLD)
+                .title("5분 참기")
+                .reward(20)
+                .content("담배 생각이 나면 5분 동안 참아 보세요")
+                .minHoldSeconds(300)
+                .build();
+
         ChallengeDetailResponse response = ChallengeDetailResponse.builder()
                 .challengeId(1L)
                 .title("금연 챌린지")
                 .badge("금연 뱃지")
                 .content("흡연 욕구를 이겨내기 위한 7일 챌린지입니다.")
                 .reward(100)
-                .missions(List.of(mission1, mission2))
+                .missions(List.of(mission1, mission2, mission3))
                 .build();
 
         given(challengeReadService.getChallengeDetail(anyLong()))
@@ -217,7 +235,9 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("data.missions[].reward").type(JsonFieldType.NUMBER)
                                         .description("미션 보상 포인트"),
                                 fieldWithPath("data.missions[].content").type(JsonFieldType.STRING)
-                                        .description("미션 내용")
+                                        .description("미션 내용"),
+                                fieldWithPath("data.missions[].minHoldSeconds").type(JsonFieldType.NUMBER).optional()
+                                        .description(MIN_HOLD_SECONDS_RESPONSE)
                         )
                 ));
     }
@@ -240,12 +260,20 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .content("담배 생각이 날 때 물 마시기")
                 .build();
 
+        ChallengeCreateRequest.MissionRequest mission3 = ChallengeCreateRequest.MissionRequest.builder()
+                .category(MissionCategoryStatus.HOLD)
+                .title("5분 참기")
+                .reward(20)
+                .content("담배 생각이 나면 5분 동안 참아 보세요")
+                .minHoldSeconds(300)
+                .build();
+
         ChallengeCreateRequest request = ChallengeCreateRequest.builder()
                 .title("금연 챌린지")
                 .badge("금연 뱃지")
                 .content("흡연 욕구를 이겨내기 위한 7일 챌린지입니다.")
                 .reward(100)
-                .missions(List.of(mission1, mission2))
+                .missions(List.of(mission1, mission2, mission3))
                 .build();
 
         ChallengeCreateResponse response = ChallengeCreateResponse.builder()
@@ -254,7 +282,7 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .badge("금연 뱃지")
                 .content("흡연 욕구를 이겨내기 위한 7일 챌린지입니다.")
                 .reward(100)
-                .missionCount(2)
+                .missionCount(3)
                 .build();
 
         given(challengeService.createChallenge(any()))
@@ -289,7 +317,9 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("missions[].reward").type(JsonFieldType.NUMBER)
                                         .description("미션 보상 포인트"),
                                 fieldWithPath("missions[].content").type(JsonFieldType.STRING)
-                                        .description("미션 내용")
+                                        .description("미션 내용"),
+                                fieldWithPath("missions[].minHoldSeconds").type(JsonFieldType.NUMBER).optional()
+                                        .description(MIN_HOLD_SECONDS_CREATE)
                         ),
                         responseFields(
                                 fieldWithPath("statusCode").type(JsonFieldType.NUMBER)
@@ -328,12 +358,21 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                 .content("평소 흡연하던 장소를 피해 다른 루트로 이동하세요")
                 .build();
 
+        ChallengeUpdateRequest.MissionUpdateRequest mission2 = ChallengeUpdateRequest.MissionUpdateRequest.builder()
+                .missionId(3L)
+                .category(MissionCategoryStatus.HOLD)
+                .title("5분 참기")
+                .reward(20)
+                .content("담배 생각이 나면 5분 동안 참아 보세요")
+                .minHoldSeconds(300)
+                .build();
+
         ChallengeUpdateRequest request = ChallengeUpdateRequest.builder()
                 .title("금연 챌린지 수정")
                 .badge("금연 뱃지 수정")
                 .content("흡연 욕구를 이겨내기 위한 14일 챌린지입니다.")
                 .reward(150)
-                .missions(List.of(mission1))
+                .missions(List.of(mission1, mission2))
                 .build();
 
         // when // then
@@ -370,7 +409,9 @@ public class ChallengeControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("missions[].reward").type(JsonFieldType.NUMBER)
                                         .description("미션 보상 포인트"),
                                 fieldWithPath("missions[].content").type(JsonFieldType.STRING)
-                                        .description("미션 내용")
+                                        .description("미션 내용"),
+                                fieldWithPath("missions[].minHoldSeconds").type(JsonFieldType.NUMBER).optional()
+                                        .description(MIN_HOLD_SECONDS_UPDATE)
                         )
                 ));
     }

@@ -16,14 +16,20 @@ public class MissionUpdateServiceRequest {
     private String title;
     private Integer reward;
     private String content;
+    private Integer minHoldSeconds;
+    /** 요청에 minHoldSeconds 칸이 있었는지. false면 기존 미션의 값을 그대로 둔다(새 미션은 비움). */
+    private boolean minHoldSecondsSent;
 
     @Builder
-    public MissionUpdateServiceRequest(Long missionId, MissionCategoryStatus category, String title, Integer reward, String content) {
+    public MissionUpdateServiceRequest(Long missionId, MissionCategoryStatus category, String title, Integer reward, String content,
+                                       Integer minHoldSeconds, boolean minHoldSecondsSent) {
         this.missionId = missionId;
         this.category = category;
         this.title = title;
         this.reward = reward;
         this.content = content;
+        this.minHoldSeconds = minHoldSeconds;
+        this.minHoldSecondsSent = minHoldSecondsSent;
     }
 
     public Mission toMissionEntity(Challenge challenge) {
@@ -33,6 +39,7 @@ public class MissionUpdateServiceRequest {
                 .title(title)
                 .reward(reward)
                 .content(content)
+                .minHoldSeconds(minHoldSeconds)
                 .build();
     }
 }

@@ -83,6 +83,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                     missionRequest.getReward(),
                     missionRequest.getContent()
             );
+            // 칸을 보내지 않은 요청(KAN-195 전 관리자 웹)은 DB에서 넣어 둔 최소 참기 시간을 지우지 않는다
+            if (missionRequest.isMinHoldSecondsSent()) {
+                mission.changeMinHoldSeconds(missionRequest.getMinHoldSeconds());
+            }
             requestedMissionIds.add(missionId);
         });
 
