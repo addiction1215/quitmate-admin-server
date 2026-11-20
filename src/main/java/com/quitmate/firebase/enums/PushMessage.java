@@ -26,6 +26,8 @@ public enum PushMessage {
 			case INQUIRY -> INQUIRY;
 			// 관리자 서버는 주간 리포트 푸시를 보내지 않는다. 앱 서버도 이 알림을 기본 제목("Quitmate 알림")으로 보낸다.
 			case WEEKLY_REPORT -> DEFAULT;
+			// 관리자 서버는 다음 고비 알림 푸시를 보내지 않는다. 앱 서버도 이 알림을 기본 제목("Quitmate 알림")으로 보낸다.
+			case CRAVING_SESSION -> DEFAULT;
 		};
 	}
 }

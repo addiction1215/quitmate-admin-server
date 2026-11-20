@@ -101,6 +101,11 @@ dependencies {
     implementation platform('software.amazon.awssdk:bom:2.20.56')
     implementation 'software.amazon.awssdk:s3'
 
+    // GA4 Data API 서비스 계정 토큰(KAN-218). gRPC 클라이언트(google-analytics-data) 대신 토큰만 받고 REST는 RestClient로 부른다.
+    // 1.30.1은 의존성 관리(BOM)가 고정한 guava 33.3.1·gson 2.11.0과 같은 버전으로 만들어졌다. 최신(1.58)은 더 높은 guava·gson을
+    // 원하는데 BOM이 낮춰 잡아, 라이브러리가 시험된 조합과 달라진다.
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.30.1'
+
 }
 
 tasks.named('test') {

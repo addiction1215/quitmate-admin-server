@@ -11,13 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 지금 로그인한 사람이 관리자(role = ADMIN)인지 DB로 확인한다.
  * 관리자 서버 토큰에는 userId만 들어 있어, 토큰을 받은 뒤 권한이 바뀌었거나 다른 토큰이 들어와도 여기서 막는다.
+ * KAN-206부터는 인증 단계(UserRoleAuthorityResolver + SecurityConfig)가 모든 API를 먼저 막고, 이 확인은 관리자 userId가 필요한 곳의 이중 확인으로 남는다.
  */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AdminAccessService {
 
-    private static final String ADMIN_ONLY = "관리자 계정만 사용할 수 있습니다.";
+    /** 관리자 아님·없는 계정 응답 문구. 인증 단계 403(AdminOnlyAccessDeniedHandler)도 같은 문구를 쓴다. */
+    public static final String ADMIN_ONLY = "관리자 계정만 사용할 수 있습니다.";
 
     private final SecurityService securityService;
     private final UserRepository userRepository;

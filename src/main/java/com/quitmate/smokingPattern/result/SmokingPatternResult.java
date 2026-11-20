@@ -13,7 +13,8 @@ import com.quitmate.smokingPattern.enums.TrendDirection;
 /**
  * 한 사용자의 주간 흡연 패턴 진단 결과. 스냅숏 테이블의 result_json 컬럼에 그대로 저장한다.
  *
- * <p><b>앱 서버 {@code com.addiction.smokingPattern.analyzer.SmokingPatternResult}(addiction#94, algorithmVersion v1)와 같은 모양이다.</b>
+ * <p><b>앱 서버 {@code com.addiction.smokingPattern.analyzer.SmokingPatternResult}(addiction#94, algorithmVersion v1·v2)와 같은 모양이다.</b>
+ * v2(addiction#114, KAN-188)는 지표 8의 계산 못 함 조건만 바꿨고 모양은 같다.
  * 앱 서버 배치가 쓰고 관리자 서버는 읽기만 한다. 앱 서버에서 필드를 바꾸면 여기도 맞춘다(모르는 필드·enum 값은 무시하거나 null로 읽는다).
  *
  * <p>날짜는 "yyyy-MM-dd", 시각은 "HH:mm" 문자열로 둔다. 어드민 서버처럼 다른 곳에서 JSON을 읽을 때 날짜 직렬화 설정에
@@ -152,6 +153,7 @@ public record SmokingPatternResult(
 
 	/**
 	 * 지표 8. 재흡연 위험 순간(어드민 전용). 금연 확정일 다음 날 다시 피운 순간을 모은다.
+	 * v2는 분석 주에 금연 확정일이 하루도 없으면 NO_DATA다. v1은 그 전 주까지(기록을 읽는 14일) 없을 때만 NO_DATA였다.
 	 *
 	 * @param smokeFreeDays 지난주 금연 확정일 수(그날 흡연 기록 없음)
 	 */
@@ -164,7 +166,8 @@ public record SmokingPatternResult(
 	 * @param date                다시 피운 날("yyyy-MM-dd")
 	 * @param dayOfWeek           요일(MONDAY ~ SUNDAY)
 	 * @param time                그날 첫 기록 시각("HH:mm"). 시각을 모르면 null
-	 * @param smokeFreeStreakDays 다시 피우기 전까지 이어진 금연 확정 일수(분석 기간 안에서만 셈)
+	 * @param smokeFreeStreakDays 다시 피우기 전까지 이어진 금연 확정 일수. 앱 서버가 기록을 읽는 첫날(보통 그 전 주 월요일)까지
+	 *                            거슬러 센다
 	 */
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public record RelapseMoment(String date, String dayOfWeek, String time, int smokeFreeStreakDays) {
