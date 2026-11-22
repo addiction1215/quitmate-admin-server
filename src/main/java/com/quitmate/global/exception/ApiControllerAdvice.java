@@ -13,9 +13,16 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -37,6 +44,49 @@ public class ApiControllerAdvice {
                 "서버 로직 에러",
                 null
         );
+    }
+
+    /**
+     * 스프링 MVC가 던지는 "예상된" 요청 오류. 따로 잡지 않으면 위의 Exception 처리기로 가서 500이 된다.
+     * 401은 내지 않는다(관리자 웹은 401을 받으면 로그아웃한다). 로그에는 메서드·경로·예외 이름만 남긴다(쿼리·값·토큰 제외).
+     */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ApiResponse<Object> noResourceFound(NoResourceFoundException e, HttpServletRequest request) {
+        logMvcError(request, e);
+        return ApiResponse.of(HttpStatus.NOT_FOUND, "요청한 주소를 찾을 수 없습니다.", null);
+    }
+
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ApiResponse<Object> methodNotSupported(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+        logMvcError(request, e);
+        return ApiResponse.of(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 요청 방식입니다.", null);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ApiResponse<Object> missingParameter(MissingServletRequestParameterException e, HttpServletRequest request) {
+        logMvcError(request, e);
+        return ApiResponse.of(HttpStatus.BAD_REQUEST, "필수 값이 없습니다: " + e.getParameterName(), null);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ApiResponse<Object> argumentTypeMismatch(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
+        logMvcError(request, e);
+        return ApiResponse.of(HttpStatus.BAD_REQUEST, "값의 형식이 올바르지 않습니다: " + e.getName(), null);
+    }
+
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ApiResponse<Object> mediaTypeNotSupported(HttpMediaTypeNotSupportedException e, HttpServletRequest request) {
+        logMvcError(request, e);
+        return ApiResponse.of(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 요청 형식입니다.", null);
+    }
+
+    private void logMvcError(HttpServletRequest request, Exception e) {
+        log.warn("잘못된 요청 - {} {} ({})", request.getMethod(), request.getRequestURI(), e.getClass().getSimpleName());
     }
 
     /**
