@@ -89,7 +89,8 @@ class Ga4MetricsApiTest {
                 .andExpect(jsonPath("$.data.dailyActiveUsers", hasSize(0)))
                 .andExpect(jsonPath("$.data.topScreens", hasSize(0)))
                 .andExpect(jsonPath("$.data.platforms", hasSize(0)))
-                .andExpect(jsonPath("$.data.appVersions", hasSize(0)));
+                .andExpect(jsonPath("$.data.appVersions", hasSize(0)))
+                .andExpect(jsonPath("$.data.activeUsersByPlatform").isEmpty());
     }
 
     @DisplayName("period가 7·28·90이 아니거나 없거나 숫자가 아니면 400(서버 오류 500이 아님)")

@@ -1,0 +1,43 @@
+[[app-metrics-ga4-display-names]]
+=== GA4 이름 설정 (KAN-230)
+
+관리자 계정만 쓸 수 있습니다(관리자가 아니면 403). 「앱 지표」 GA4 칸의 화면·플랫폼·앱 버전 원래 값(`(main)/(tabs)/awards`, `web`, `(not set)` 등)에 보일 이름을 붙입니다. 앱이 보내는 값은 바꾸지 않습니다.
+
+* 이름 고르는 순서: 관리자 이름 → 기본 이름(코드에 둔 이름표) → (화면이고 `(` 로 시작하지 않으면) `[웹] 원래 값` → 원래 값. 원래 값은 정확히 같을 때만 맞춥니다.
+* 표 `ga4_display_name` 에는 관리자가 넣은 이름만 들어갑니다. 저장할 때 고친 관리자(`updatedBy`)를 남깁니다.
+* 이름을 바꾸면 「앱 지표」에 바로 보입니다. GA4 숫자는 1시간 캐시해도 이름은 요청마다 붙입니다.
+* `type` 은 `SCREEN`·`PLATFORM`·`APP_VERSION` 입니다. 그 밖·빈 값은 400입니다.
+
+==== 목록
+
+include::{snippets}/app-metrics-ga4-display-names/http-request.adoc[]
+include::{snippets}/app-metrics-ga4-display-names/query-parameters.adoc[]
+include::{snippets}/app-metrics-ga4-display-names/http-response.adoc[]
+include::{snippets}/app-metrics-ga4-display-names/response-fields.adoc[]
+
+==== 이름 없는 값
+
+최근 90일 GA4에 나온 값 중 관리자 이름·기본 이름이 모두 없는 것입니다. 화면·버전은 GA4 상위 200개 안에서 찾습니다. 결과는 종류별로 1시간 캐시하고, 이름은 요청마다 다시 거릅니다(이름을 넣으면 바로 빠짐). 연결 전이면 `enabled: false`, GA4 호출 실패면 503(`GA4_UNAVAILABLE`)입니다.
+
+include::{snippets}/app-metrics-ga4-display-names-unnamed/http-request.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-unnamed/query-parameters.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-unnamed/http-response.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-unnamed/response-fields.adoc[]
+
+==== 저장
+
+종류 + 원래 값 기준으로 없으면 추가하고 있으면 고칩니다. 빈 이름, 100자를 넘는 이름, 모르는 종류, 화면이 아닌데 `sourceType` 을 넣으면 400입니다.
+
+include::{snippets}/app-metrics-ga4-display-names-save/http-request.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-save/request-fields.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-save/http-response.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-save/response-fields.adoc[]
+
+==== 기본 이름으로 되돌리기
+
+관리자 이름을 지웁니다. 응답은 되돌린 뒤의 이름(기본 이름, 없으면 원래 값)입니다. 없는 ID는 404입니다.
+
+include::{snippets}/app-metrics-ga4-display-names-delete/http-request.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-delete/path-parameters.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-delete/http-response.adoc[]
+include::{snippets}/app-metrics-ga4-display-names-delete/response-fields.adoc[]
