@@ -90,7 +90,26 @@ class Ga4DataApiClientTest {
         assertThat(body.has("dimensions")).isFalse();
         assertThat(body.has("orderBys")).isFalse();
         assertThat(body.has("limit")).isFalse();
+        assertThat(body.has("dimensionFilter")).isFalse();
         assertThat(body.at("/metrics/1/name").asText()).isEqualTo("active7DayUsers");
+    }
+
+    @DisplayName("값 목록 거르기가 있으면 dimensionFilter.filter.inListFilter로 보낸다(차원에 없어도 된다, KAN-230)")
+    @Test
+    void inListFilter() throws Exception {
+        stub.respond(200, "{\"metricHeaders\":[{\"name\":\"active1DayUsers\"}],\"metadata\":{\"timeZone\":\"Asia/Seoul\"}}");
+        Ga4ReportRequest appOnly = new Ga4ReportRequest("appActiveUsers", "yesterday", "yesterday", List.of(),
+                List.of("active1DayUsers"), null, null,
+                new Ga4ReportRequest.InListFilter("platform", List.of("Android", "iOS")));
+
+        client(Duration.ofSeconds(2)).runReport(PROPERTY_ID, appOnly);
+
+        JsonNode body = objectMapper.readTree(stub.lastReceived().body());
+        assertThat(body.has("dimensions")).isFalse();
+        assertThat(body.at("/dimensionFilter/filter/fieldName").asText()).isEqualTo("platform");
+        assertThat(body.at("/dimensionFilter/filter/inListFilter/values/0").asText()).isEqualTo("Android");
+        assertThat(body.at("/dimensionFilter/filter/inListFilter/values/1").asText()).isEqualTo("iOS");
+        assertThat(body.at("/dateRanges/0/startDate").asText()).isEqualTo("yesterday");
     }
 
     @DisplayName("GA4 오류 응답(권한·쿼터)은 503 예외. 사유에는 상태만 넣고 응답 본문 문구·속성 ID·토큰은 넣지 않는다")

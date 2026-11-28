@@ -103,26 +103,35 @@ class Ga4MetricsConnectedApiTest {
                 .andExpect(jsonPath("$.data.fetchedAt").value(endsWith("+09:00")))
                 .andExpect(jsonPath("$.data.consoleUrl")
                         .value("https://analytics.google.com/analytics/web/#/p123456789/reports/intelligenthome"))
-                .andExpect(jsonPath("$.data.summary.dau").value(120))
-                .andExpect(jsonPath("$.data.summary.wau").value(410))
-                .andExpect(jsonPath("$.data.summary.mau").value(905))
+                .andExpect(jsonPath("$.data.summary.dau").value(140))
+                .andExpect(jsonPath("$.data.summary.wau").value(470))
+                .andExpect(jsonPath("$.data.summary.mau").value(1100))
                 .andExpect(jsonPath("$.data.summary.newUsers").value(85))
                 .andExpect(jsonPath("$.data.summary.activeUsers").value(1002))
                 .andExpect(jsonPath("$.data.dailyActiveUsers", hasSize(28)))
                 .andExpect(jsonPath("$.data.dailyActiveUsers[27].date").value(yesterday.toString()))
                 .andExpect(jsonPath("$.data.dailyActiveUsers[27].activeUsers").value(118))
                 .andExpect(jsonPath("$.data.dailyActiveUsers[0].activeUsers").value(0))
-                .andExpect(jsonPath("$.data.topScreens[0].screenName").value("Home"))
+                .andExpect(jsonPath("$.data.topScreens[0].screenName").value("(main)/(tabs)"))
                 .andExpect(jsonPath("$.data.topScreens[0].views").value(1234))
+                .andExpect(jsonPath("$.data.topScreens[0].displayName").value("[앱] 홈 탭"))
+                .andExpect(jsonPath("$.data.topScreens[0].sourceType").value("APP"))
                 .andExpect(jsonPath("$.data.platforms[0].platform").value("iOS"))
+                .andExpect(jsonPath("$.data.platforms[0].displayName").value("앱(iOS)"))
                 .andExpect(jsonPath("$.data.platforms[1].platform").value("Android"))
                 .andExpect(jsonPath("$.data.appVersions[0].appVersion").value("1.1.2"))
-                .andExpect(jsonPath("$.data.appVersions[0].activeUsers").value(700));
+                .andExpect(jsonPath("$.data.appVersions[0].activeUsers").value(700))
+                .andExpect(jsonPath("$.data.appVersions[0].displayName").value("1.1.2"))
+                .andExpect(jsonPath("$.data.activeUsersByPlatform.app.dau").value(120))
+                .andExpect(jsonPath("$.data.activeUsersByPlatform.app.mau").value(950))
+                .andExpect(jsonPath("$.data.activeUsersByPlatform.android.wau").value(200))
+                .andExpect(jsonPath("$.data.activeUsersByPlatform.ios.dau").value(80))
+                .andExpect(jsonPath("$.data.activeUsersByPlatform.web.mau").value(200));
 
         mockMvc.perform(get(URL).param("period", "28").header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.enabled").value(true));
-        verify(ga4DataApiClient, times(5)).runReport(eq(PROPERTY_ID), any());
+        verify(ga4DataApiClient, times(8)).runReport(eq(PROPERTY_ID), any());
     }
 
     @DisplayName("일반 회원 토큰은 연결돼 있어도 403이고 GA4를 부르지 않는다")
@@ -161,14 +170,18 @@ class Ga4MetricsConnectedApiTest {
         mockMvc.perform(get(URL).param("period", "7").header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.dailyActiveUsers", hasSize(7)));
-        verify(ga4DataApiClient, times(1 + 5)).runReport(eq(PROPERTY_ID), any());
+        verify(ga4DataApiClient, times(1 + 8)).runReport(eq(PROPERTY_ID), any());
     }
 
     private static Ga4Report report(Ga4ReportRequest request, LocalDate yesterday) {
         List<Row> rows = switch (request.name()) {
-            case "summary" -> List.of(new Row(List.of(), List.of(120L, 410L, 905L, 85L, 1002L)));
+            case "summary" -> List.of(new Row(List.of(), List.of(140L, 470L, 1100L)));
+            case "periodTotals" -> List.of(new Row(List.of(), List.of(85L, 1002L)));
             case "dailyActiveUsers" -> List.of(new Row(List.of(yesterday.toString().replace("-", "")), List.of(118L)));
-            case "topScreens" -> List.of(new Row(List.of("Home"), List.of(1234L)));
+            case "topScreens" -> List.of(new Row(List.of("(main)/(tabs)"), List.of(1234L)));
+            case "activeUsersByPlatform" -> List.of(new Row(List.of("Android"), List.of(50L, 200L, 500L)),
+                    new Row(List.of("iOS"), List.of(80L, 230L, 520L)), new Row(List.of("web"), List.of(30L, 90L, 200L)));
+            case "appActiveUsers" -> List.of(new Row(List.of(), List.of(120L, 400L, 950L)));
             case "platforms" -> List.of(new Row(List.of("Android"), List.of(402L)), new Row(List.of("iOS"), List.of(600L)));
             case "appVersions" -> List.of(new Row(List.of("1.1.2"), List.of(700L)));
             default -> throw new IllegalArgumentException(request.name());

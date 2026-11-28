@@ -16,13 +16,32 @@ import java.util.Map;
  * @param metrics       지표 API 이름(예: {@code activeUsers}). 응답의 지표 값도 이 순서로 온다
  * @param orderByMetric 이 지표로 내림차순 정렬. 없으면 null
  * @param limit         최대 행 수. 없으면 null(GA4 기본값)
+ * @param inListFilter  이 차원 값이 목록 중 하나인 행만 센다(KAN-230, 예: platform이 Android·iOS). 없으면 null
  */
 public record Ga4ReportRequest(String name, String startDate, String endDate, List<String> dimensions,
-                               List<String> metrics, String orderByMetric, Integer limit) {
+                               List<String> metrics, String orderByMetric, Integer limit, InListFilter inListFilter) {
 
     public Ga4ReportRequest {
         dimensions = List.copyOf(dimensions);
         metrics = List.copyOf(metrics);
+    }
+
+    public Ga4ReportRequest(String name, String startDate, String endDate, List<String> dimensions,
+                            List<String> metrics, String orderByMetric, Integer limit) {
+        this(name, startDate, endDate, dimensions, metrics, orderByMetric, limit, null);
+    }
+
+    /**
+     * GA4 {@code dimensionFilter.filter.inListFilter}. 대소문자는 가리지 않는다(GA4 기본값).
+     *
+     * @param fieldName 차원 API 이름(요청 차원에 없어도 된다)
+     * @param values    허용할 값
+     */
+    public record InListFilter(String fieldName, List<String> values) {
+
+        public InListFilter {
+            values = List.copyOf(values);
+        }
     }
 
     /** runReport 요청 본문(JSON) */
@@ -38,6 +57,11 @@ public record Ga4ReportRequest(String name, String startDate, String endDate, Li
         }
         if (limit != null) {
             body.put("limit", limit);
+        }
+        if (inListFilter != null) {
+            body.put("dimensionFilter", Map.of("filter", Map.of(
+                    "fieldName", inListFilter.fieldName(),
+                    "inListFilter", Map.of("values", inListFilter.values()))));
         }
         return body;
     }
